@@ -1,0 +1,48 @@
+.auth {
+  min-height: 100vh;
+  animation: fadein 1.5s;
+}
+.auth .ant-card {
+  border: none;
+}
+.auth .ant-card-head {
+  border-bottom: none;
+}
+.auth .ant-card-head-title {
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+.auth button[type="submit"] {
+  width: 100%;
+}
+.auth .below-form {
+  text-align: center;
+  padding-top: 20px;
+}
+.auth .social-media-login {
+  margin-bottom: 15px;
+}
+.auth .social-media-login:hover {
+  filter: brightness(97%);
+}
+/* This is something strange created by the library I am using */
+.auth .social-media-login div:first-child {
+  margin-bottom: -5px !important;
+  background: none !important;
+}
+@media (min-width: 768px) {
+  .auth .ant-card {
+    max-width: 331px;
+    width: calc(100% - 66px);
+    margin-top: 50px;
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

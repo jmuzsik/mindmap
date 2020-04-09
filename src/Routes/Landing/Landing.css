@@ -1,0 +1,22 @@
+.landing {
+  min-height: 100vh;
+  /* background-color:black; */
+  color: white;
+}
+.landing header {
+  position: relative;
+  max-width: 100%;
+}
+.landing header img {
+  position: relative;
+  height: 50px;
+  margin: 10px auto;
+}
+.landing .ant-page-header {
+  margin-top: 25px;
+  padding: 24px;
+}
+.landing .button-group {
+  display: flex;
+  justify-content: space-around;
+}

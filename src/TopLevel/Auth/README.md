@@ -1,0 +1,1 @@
+Handles top level authentication

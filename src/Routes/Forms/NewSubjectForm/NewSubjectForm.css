@@ -1,0 +1,13 @@
+.new-subject-form {
+  padding-top: 50px;
+}
+.new-subject-form .ant-card {
+
+}
+
+@media (min-width: 768px) {
+  .new-subject-form .ant-card {
+    max-width: 500px;
+    width: calc(100% - 66px);
+  }
+}

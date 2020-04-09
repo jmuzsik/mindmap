@@ -1,0 +1,9 @@
+.home .home-container {
+  padding-top: 4.5rem;
+}
+.home .home-container button {
+  width: 10%;
+}
+.home .home-container img {
+  max-width: 300px;
+}
