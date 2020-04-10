@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import { Typography, Divider, Layout, Card, Form, Button, Alert } from "antd";
+import { Button, Divider, Intent, Callout, Card, H4 } from "@blueprintjs/core";
 
 import FormItem from "../../../Components/Form/FormItem/FormItem";
 
 import { handleSubmit } from "./utils";
 
 import "./NewSubjectForm.css";
-
-const { Content } = Layout;
-const { Paragraph, Text } = Typography;
 
 // Name and image, is that it?
 export default function NewSubjectForm(props) {
@@ -36,24 +33,23 @@ export default function NewSubjectForm(props) {
   };
 
   return (
-    <Layout className="new-subject-form">
-      <Content>
-        <Card title="Your first subject">
-          <Typography>
-            <Paragraph>
-              The focus on this website is to offer a great way to organise
-              information. What you are creating here, a subject{" "}
-              <Text type="secondary">
-                (though what you put here can always be changed!)
-              </Text>{" "}
-              is simply the word which you want to be at the center of this
-              information. And it can literally be anything, this website aims
-              to be as fluid as your brain. But unlike our brain, the
-              information can be consolidated.
-            </Paragraph>
-          </Typography>
-          <Divider />
-          <Form>
+    <section className="new-subject-form layout">
+      <Card>
+        <H4>Your first subject</H4>
+        <Divider />
+        <div className="card-body">
+          <p className="bp3-running-text">
+            The focus on this website is to offer a great way to organise
+            information. What you are creating here, a subject{" "}
+            <span className="bp3-text-muted">
+              (though what you put here can always be changed!)
+            </span>{" "}
+            is simply the word which you want to be at the center of this
+            information. And it can literally be anything, this website aims to
+            be as fluid as your brain. But unlike our brain, the information can
+            be consolidated.
+          </p>
+          <form>
             <FormItem
               {...{
                 name: "text",
@@ -62,11 +58,10 @@ export default function NewSubjectForm(props) {
                 required: true,
                 value: name,
                 hook: changeName,
-                tabIndex: 1,
               }}
             />
             <Button
-              type="primary"
+              intent={Intent.PRIMARY}
               disabled={!submitDisabled}
               loading={submitLoading}
               onClick={() => handleSubmit(options)}
@@ -74,11 +69,13 @@ export default function NewSubjectForm(props) {
               Submit
             </Button>
             {message.length > 0 && (
-              <Alert message={message} type="error" showIcon />
+              <Callout intent={Intent.DANGER} icon="error">
+                {message}
+              </Callout>
             )}
-          </Form>
-        </Card>
-      </Content>
-    </Layout>
+          </form>
+        </div>
+      </Card>
+    </section>
   );
 }

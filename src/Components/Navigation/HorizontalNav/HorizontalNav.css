@@ -4,24 +4,11 @@ header.horizontal-nav {
   padding-left: 0;
   padding-right: 0;
 }
-.horizontal-nav .ant-row {
-  height: 64px;
+.horizontal-nav .bp3-navbar-heading .bp3-icon {
+  margin-right: 10px;
 }
-.horizontal-nav h1 {
-  padding-left: 40px;
-  font-size: 18px;
-  margin-bottom: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 40px;
-}
-.horizontal-nav h1 .ant-avatar {
-  background: white;
-  margin-right: 16px;
-}
-.horizontal-nav h1 svg {
-  font-size: 30px;
+.horizontal-nav .bp3-divider {
+  height: 20px;
 }
 .horizontal-nav .menu-col {
   display: flex;

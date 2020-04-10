@@ -1,6 +1,8 @@
 import React from "react";
 
-import { PageHeader } from "antd";
+import { Button } from "@blueprintjs/core";
+
+import "./PageHeader.css";
 
 function handleBack(history, previous) {
   history.push(previous);
@@ -9,16 +11,19 @@ function handleBack(history, previous) {
 export default function PageHeaderContainer({
   history,
   previous,
-  title,
-  subTitle,
-  extra = [],
+  rightButton,
 }) {
   return (
-    <PageHeader
-      onBack={() => handleBack(history, previous)}
-      title={title}
-      subTitle={subTitle}
-      extra={extra}
-    />
+    <nav className="page-header">
+      <div className="page-header-heading">
+        <div className="page-header-back">
+          <Button
+            icon="arrow-left"
+            onClick={() => handleBack(history, previous)}
+          />
+        </div>
+        <div className="page-header-right">{rightButton}</div>
+      </div>
+    </nav>
   );
 }

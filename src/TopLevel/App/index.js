@@ -6,7 +6,7 @@ import AuthenticatedRoutes from "../../Utils/Routes/AuthenticatedRoutes/Authenti
 function App(props) {
   const theme = props.theme;
   return (
-    <div className={`${theme}`}>
+    <div className={`${theme === "dark" ? "bp3-dark" : ""}`}>
       {props.authInfo.authenticated && <AuthenticatedRoutes {...props} />}
       {!props.authInfo.authenticated && <UnAuthenticatedRoutes {...props} />}
     </div>

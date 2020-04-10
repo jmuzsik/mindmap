@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Layout, Card, Form, Alert } from "antd";
+import { Button, Card, Callout, Divider, H4, Intent } from "@blueprintjs/core";
 
 import { handleSubmit } from "./utils";
 
 import FormItem from "../../../../../Components/Form/FormItem/FormItem";
 import PageHeader from "../../../../../Components/PageHeader/PageHeader";
-
-const { Content } = Layout;
 
 function Recover(props) {
   let { setAuthInfo, history } = props;
@@ -48,16 +46,18 @@ function Recover(props) {
   const options = { state, hooks, history };
 
   return (
-    <Layout className="auth recover">
+    <section className="auth recover layout">
       <header>
         <PageHeader history={history} previous="/" />
       </header>
-      <Content>
-        <Card title="Recover Account">
-          <div className="card-subtitle">
+      <Card>
+        <H4>Recover Account</H4>
+        <Divider />
+        <div className="card-body">
+          <p className="bp3-text-muted">
             Enter the email address used to create your account
-          </div>
-          <Form>
+          </p>
+          <form>
             <FormItem
               {...{
                 name: "email",
@@ -68,15 +68,15 @@ function Recover(props) {
                 required: true,
                 value: email,
                 hook: changeEmail,
-                tabIndex: 1,
               }}
             />
             {message.length > 0 && (
-              <Alert message={message} type="error" showIcon />
+              <Callout intent={Intent.WARNING} icon="warning-sign">
+                {message}
+              </Callout>
             )}
             <Button
-              type="ghost"
-              htmlType="button"
+              intent={Intent.PRIMARY}
               onClick={async () => {
                 const submitResult = await handleSubmit(options);
                 if (submitResult.success) {
@@ -87,15 +87,14 @@ function Recover(props) {
                 }
               }}
               disabled={submitDisabled}
-              tabIndex={2}
               loading={submitLoading}
             >
               Send Email
             </Button>
-          </Form>
-        </Card>
-      </Content>
-    </Layout>
+          </form>
+        </div>
+      </Card>
+    </section>
   );
 }
 

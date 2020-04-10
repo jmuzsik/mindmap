@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button, Layout, Form, Card, Switch, Alert } from "antd";
+import {
+  Button,
+  Card,
+  H4,
+  Divider,
+  FormGroup,
+  Switch,
+  Callout,
+  Intent,
+} from "@blueprintjs/core";
 
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
@@ -11,8 +20,6 @@ import { handleSubmit } from "./utils";
 import { GoogleSignupButton } from "../../Requests/Google";
 
 import "../../Styles/Styles.css";
-
-const { Content } = Layout;
 
 /**
  * The page which a user accesses to sign up to the application
@@ -33,6 +40,8 @@ function SignUp(props) {
   const [submitLoading, toggleSubmitLoading] = useState(false);
   // Handle errors upon submission
   const [message, setMessage] = useState("");
+  // Show password state
+  const [showPassword, toggleShowPassword] = useState(false);
 
   useEffect(() => {
     if (
@@ -70,23 +79,23 @@ function SignUp(props) {
   const options = { state, hooks, history };
 
   return (
-    <Layout className="auth signup">
+    <section className="auth signup layout">
       <header>
         <PageHeader
           history={history}
           previous="/"
-          extra={
-            <Button key="1" type="default">
-              <Link to="/login" tabIndex={1}>
-                Log in
-              </Link>
+          rightButton={
+            <Button>
+              <Link to="/login">Log In</Link>
             </Button>
           }
         />
       </header>
-      <Content>
-        <Card title="Create Account">
-          <Form>
+      <Card>
+        <H4>Create Account</H4>
+        <Divider />
+        <div className="card-body">
+          <form>
             <FormItem
               {...{
                 name: "firstName",
@@ -95,7 +104,6 @@ function SignUp(props) {
                 required: true,
                 value: firstName,
                 hook: changeFirstName,
-                tabIndex: 2,
               }}
             />
             <FormItem
@@ -105,7 +113,6 @@ function SignUp(props) {
                 required: true,
                 value: lastName,
                 hook: changeLastName,
-                tabIndex: 3,
               }}
             />
             <FormItem
@@ -115,7 +122,6 @@ function SignUp(props) {
                 required: true,
                 value: email,
                 hook: changeEmail,
-                tabIndex: 4,
               }}
             />
             <FormItem
@@ -125,43 +131,42 @@ function SignUp(props) {
                 required: true,
                 value: password,
                 hook: changePassword,
-                tabIndex: 5,
+                passwordObj: {
+                  showPassword,
+                  toggleShowPassword,
+                },
               }}
             />
-            <Form.Item label="Use Dark Theme:" name="dark theme">
-              <Switch
-                onChange={(checked) => changeDarkModeChecked(checked)}
-                checkedChildren={<CheckOutlined />}
-                unCheckedChildren={<CloseOutlined />}
-                defaultChecked
-                checked={darkModeChecked}
-              />
-            </Form.Item>
+            <Switch
+              label="Dark Theme"
+              onChange={(ev) => changeDarkModeChecked(ev.target.checked)}
+              checked={darkModeChecked}
+            />
             {message.length > 0 && (
-              <Alert message={message} type="error" showIcon />
+              <Callout intent={Intent.WARNING} icon="warning-sign">
+                {message}
+              </Callout>
             )}
             <Button
-              type="ghost"
-              htmlType="submit"
+              intent="primary"
               disabled={submitDisabled}
-              tabIndex={6}
               loading={submitLoading}
               onClick={(e) => handleSubmit(e, "password", options)}
             >
               Create Account
             </Button>
-          </Form>
-          <div className="below-form">
-            <p>or continue with</p>
-            <div className="social-media-login">
-              <GoogleSignupButton
-                cb={(result) => handleSubmit(result, "google", options)}
-              />
-            </div>
+          </form>
+        </div>
+        <div className="below-form">
+          <p>or continue with</p>
+          <div className="social-media-login">
+            <GoogleSignupButton
+              cb={(result) => handleSubmit(result, "google", options)}
+            />
           </div>
-        </Card>
-      </Content>
-    </Layout>
+        </div>
+      </Card>
+    </section>
   );
 }
 

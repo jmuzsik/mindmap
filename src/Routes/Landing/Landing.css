@@ -1,22 +1,21 @@
 .landing {
   min-height: 100vh;
-  /* background-color:black; */
-  color: white;
 }
-.landing header {
-  position: relative;
-  max-width: 100%;
-}
-.landing header img {
-  position: relative;
-  height: 50px;
-  margin: 10px auto;
-}
-.landing .ant-page-header {
-  margin-top: 25px;
-  padding: 24px;
-}
-.landing .button-group {
+.landing .bp3-navbar {
+  height: 60px;
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+}
+.landing .bp3-navbar img {
+  height: 50px;
+  margin-right: 10px;
+}
+.landing .bp3-card {
+  width: 500px;
+  margin: 50px auto;
+  text-align: center;
+}
+.landing .bp3-card button {
+  margin-left: 10px;
+  margin-right: 10px;
 }

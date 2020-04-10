@@ -1,18 +1,20 @@
 .auth {
-  min-height: 100vh;
   animation: fadein 1.5s;
+  padding-top: 50px;
 }
-.auth .ant-card {
-  border: none;
+.auth .bp3-card {
+  box-shadow: none;
+  margin-left: auto;
+  margin-right: auto;
 }
-.auth .ant-card-head {
-  border-bottom: none;
-}
-.auth .ant-card-head-title {
+.auth .bp3-card h4 {
+  padding: 16px 0;
   text-align: center;
-  border-bottom: 1px solid #f0f0f0;
 }
-.auth button[type="submit"] {
+.auth .card-body {
+  padding: 24px;
+}
+.auth .card-body button {
   width: 100%;
 }
 .auth .below-form {
@@ -27,14 +29,12 @@
 }
 /* This is something strange created by the library I am using */
 .auth .social-media-login div:first-child {
-  margin-bottom: -5px !important;
   background: none !important;
 }
 @media (min-width: 768px) {
-  .auth .ant-card {
+  .auth .bp3-card {
     max-width: 331px;
     width: calc(100% - 66px);
-    margin-top: 50px;
   }
 }
 

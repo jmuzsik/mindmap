@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Button, Layout, Card, Alert } from "antd";
+import { Button, Card, Callout, Divider, H4, Intent } from "@blueprintjs/core";
 
 import recover from "../../../Requests/Recover";
 
@@ -19,35 +19,37 @@ export default function RecoverSuccess(props) {
   const [message, setMessage] = useState("");
 
   return (
-    <Layout className="auth recover-success">
-      <Card title="Reset Password">
-        <div className="card-subtitle">
-          An email has been sent to {email} <br /> Click the link in the email
-          to reset your password.
-        </div>
-        <Button
-          type="ghost"
-          htmlType="submit"
-          tabIndex={1}
-          onClick={() =>
-            history.push({
-              pathname: "/recover-password",
-              state: { email },
-            })
-          }
-        >
-          Got It
-        </Button>
-        <div className="below-form">
-          <p>or continue with</p>
-          <Button type="link" onClick={() => sendEmail(email, setMessage)}>
-            Resend Email
+    <section className="auth recover-success layout">
+      <Card>
+        <H4>Reset Password</H4>
+        <Divider />
+        <div className="card-body">
+          <p className="bp3-text-muted">
+            An email has been sent to {email} <br /> Click the link in the email
+            to reset your password.
+          </p>
+          <Button
+            onClick={() =>
+              history.push({
+                pathname: "/recover-password",
+                state: { email },
+              })
+            }
+          >
+            Got It
           </Button>
-          {message.length > 0 && (
-            <Alert message={message} type="error" showIcon />
-          )}
+          <div className="below-form">
+            <p>or</p>
+            {/* TODO: fix this */}
+            <a onClick={() => sendEmail(email, setMessage)}>Resend Email</a>
+            {message.length > 0 && (
+              <Callout intent={Intent.DANGER} icon="error">
+                {message}
+              </Callout>
+            )}
+          </div>
         </div>
       </Card>
-    </Layout>
+    </section>
   );
 }

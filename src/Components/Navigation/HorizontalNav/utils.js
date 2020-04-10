@@ -1,14 +1,13 @@
 import React from "react";
-import { Avatar } from "antd";
-import { FireTwoTone } from "@ant-design/icons";
+import { Icon } from "@blueprintjs/core";
 
 import createGetOptions from "../../../Utils/FetchOptions/Get";
 
 export function SubjectLogo({ picture, pictureAlt }) {
   if (picture === "default") {
-    return <Avatar icon={<FireTwoTone />} alt="default subject image" />;
+    return <Icon icon="virus" alt="default subject image" />;
   } else {
-    return <Avatar src={picture} alt={pictureAlt} />;
+    return <img src={picture} alt={pictureAlt} />;
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Layout, Button, Form, Card, Alert } from "antd";
+import { Button, Card, H4, Divider, Callout, Intent } from "@blueprintjs/core";
 
 import { handleSubmit } from "./utils";
 import { GoogleLoginButton } from "../../../Authentication/Requests/Google";
@@ -9,8 +9,6 @@ import FormItem from "../../../../Components/Form/FormItem/FormItem";
 import PageHeader from "../../../../Components/PageHeader/PageHeader";
 
 import "../../Styles/Styles.css";
-
-const { Content } = Layout;
 
 /**
  * The page in which a user accesses to sign into the application
@@ -29,6 +27,8 @@ function LogIn(props) {
   const [submitLoading, toggleSubmitLoading] = useState(false);
   // Handle errors upon submission
   const [message, setMessage] = useState("");
+  // Show password state
+  const [showPassword, toggleShowPassword] = useState(false);
 
   useEffect(() => {
     if (email.length > 0 && password.length > 0) {
@@ -60,23 +60,23 @@ function LogIn(props) {
   const options = { state, hooks, history };
 
   return (
-    <Layout className="auth login">
+    <section className="auth login layout">
       <header>
         <PageHeader
           history={history}
           previous="/"
-          extra={
-            <Button key="1" type="default">
-              <Link to="/signup" tabIndex={1}>
-                Create Account
-              </Link>
+          rightButton={
+            <Button>
+              <Link to="/signup">Create Account</Link>
             </Button>
           }
         />
       </header>
-      <Content>
-        <Card title="Log In">
-          <Form>
+      <Card>
+        <H4>Log In</H4>
+        <Divider />
+        <div className="card-body">
+          <form>
             <FormItem
               {...{
                 name: "email",
@@ -87,9 +87,8 @@ function LogIn(props) {
                 required: true,
                 value: email,
                 hook: changeEmail,
-                tabIndex: 2,
               }}
-            ></FormItem>
+            />
             <FormItem
               {...{
                 name: "password",
@@ -97,17 +96,20 @@ function LogIn(props) {
                 required: true,
                 value: password,
                 hook: changePassword,
-                tabIndex: 3,
+                passwordObj: {
+                  showPassword,
+                  toggleShowPassword,
+                },
               }}
-            ></FormItem>
+            />
             {message.length > 0 && (
-              <Alert message={message} type="error" showIcon />
+              <Callout intent={Intent.WARNING} icon="warning-sign">
+                {message}
+              </Callout>
             )}
             <Button
-              type="primary"
-              htmlType="submit"
+              intent="primary"
               disabled={submitDisabled}
-              tabIndex={4}
               loading={submitLoading}
               onClick={(e) => {
                 e.preventDefault();
@@ -116,19 +118,19 @@ function LogIn(props) {
             >
               Log In
             </Button>
-          </Form>
-          <div className="below-form">
-            <p>or continue with</p>
-            <div className="social-media-login">
-              <GoogleLoginButton
-                cb={(result) => handleSubmit(result, "social", options)}
-              />
-            </div>
-            <Link to="/recover-password">Forgot login?</Link>
+          </form>
+        </div>
+        <div className="below-form">
+          <p>or continue with</p>
+          <div className="social-media-login">
+            <GoogleLoginButton
+              cb={(result) => handleSubmit(result, "social", options)}
+            />
           </div>
-        </Card>
-      </Content>
-    </Layout>
+          <Link to="/recover-password">Forgot login?</Link>
+        </div>
+      </Card>
+    </section>
   );
 }
 

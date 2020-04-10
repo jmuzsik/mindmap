@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Layout, Card, Form, Alert } from "antd";
+
+import { Button, Card, Callout, Divider, H4, Intent } from "@blueprintjs/core";
 
 import FormItem from "../../../../../Components/Form/FormItem/FormItem";
 
@@ -64,58 +65,60 @@ function NewPassword(props) {
   const options = { state, hooks, history };
 
   return (
-    <Layout className="auth new-password">
-      <Card title="Reset Password">
-        <div className="card-subtitle">
-          Enter a new password for your account <br />
-          <span>{email}</span>
+    <section className="auth new-password layout">
+      <Card>
+        <H4>Reset Password</H4>
+        <Divider />
+        <div className="card-body">
+          <p className="bp3-text-muted">
+            Enter a new password for your account
+          </p>
+          <form>
+            <FormItem
+              {...{
+                name: "password",
+                autoCorrect: "off",
+                autoCapitalize: "off",
+                autoFocus: true,
+                required: true,
+                placeholder: "Password",
+                value: password,
+                hook: changePassword,
+              }}
+            />
+            <Callout intent={Intent.PRIMARY} icon="info-sign">
+              Password must be 7 characters long, have one uppercase and
+              lowercase letter, a number, and no spaces
+            </Callout>
+            {message.length > 0 && (
+              <Callout intent={Intent.DANGER} icon="error">
+                {message}
+              </Callout>
+            )}
+            <Button
+              intent={Intent.PRIMARY}
+              disabled={submitDisabled}
+              onClick={async () => {
+                let submission;
+                try {
+                  submission = await handleSubmit(options);
+                } catch (err) {
+                  // shouldn't happen
+                }
+                if (submission && submission.success === true) {
+                  history.push("/login");
+                }
+              }}
+              tabIndex={2}
+              loading={submitLoading}
+            >
+              Save
+            </Button>
+          </form>
+          <div className="below-form" />
         </div>
-        <Form>
-          <FormItem
-            {...{
-              name: "password",
-              autoCorrect: "off",
-              autoCapitalize: "off",
-              autoFocus: true,
-              required: true,
-              placeholder: "Password",
-              value: password,
-              hook: changePassword,
-              tabIndex: 1,
-            }}
-          />
-          <Alert
-            showIcon
-            message="Password must be 7 characters long, have one uppercase and lowercase
-            letter, a number, and no spaces"
-            type="warning"
-          />
-          {message.length > 0 && (
-            <Alert showIcon message={message} type="error" />
-          )}
-          <Button
-            type="ghost"
-            disabled={submitDisabled}
-            onClick={async () => {
-              let submission;
-              try {
-                submission = await handleSubmit(options);
-              } catch (err) {
-                // shouldn't happen
-              }
-              if (submission && submission.success === true) {
-                history.push("/login");
-              }
-            }}
-            tabIndex={2}
-            loading={submitLoading}
-          >
-            Save
-          </Button>
-        </Form>
-        <div className="below-form" />
       </Card>
-    </Layout>
+    </section>
   );
 }
 

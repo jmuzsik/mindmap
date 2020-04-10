@@ -1,9 +1,33 @@
 import React from "react";
-import { Form, Input } from "antd";
+import {
+  FormGroup,
+  InputGroup,
+  Intent,
+  Tooltip,
+  Button,
+} from "@blueprintjs/core";
 
 import "./FormItem.css";
 
-const { Item } = Form;
+function createLockButton({ showPassword, toggleShowPassword }) {
+  return (
+    <Tooltip content={`${showPassword ? "Hide" : "Show"} Password`}>
+      <Button
+        icon={showPassword ? "unlock" : "lock"}
+        intent={Intent.WARNING}
+        minimal={true}
+        onClick={() => toggleShowPassword(!showPassword)}
+      />
+    </Tooltip>
+  );
+}
+
+function checkType(name, passwordObj) {
+  if (passwordObj) {
+    return passwordObj.showPassword ? "text" : "password";
+  }
+  return name;
+}
 
 export default function FormItem({
   name,
@@ -14,16 +38,15 @@ export default function FormItem({
   required,
   value,
   hook,
-  tabIndex,
-  focus,
+  passwordObj,
 }) {
   function onChange(event) {
     hook(event.target.value);
   }
   return (
-    <Item>
-      <Input
-        type={name}
+    <FormGroup>
+      <InputGroup
+        type={checkType(name, passwordObj)}
         name={name}
         placeholder={placeholder}
         autoCorrect={autoCorrect || "off"}
@@ -32,9 +55,8 @@ export default function FormItem({
         required={required || false}
         value={value}
         onChange={onChange}
-        tabIndex={tabIndex}
-        onFocus={() => focus && focus()}
+        rightElement={passwordObj ? createLockButton(passwordObj) : null}
       />
-    </Item>
+    </FormGroup>
   );
 }
