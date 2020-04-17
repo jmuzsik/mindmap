@@ -5,13 +5,10 @@ import {
   Card,
   H4,
   Divider,
-  FormGroup,
   Switch,
   Callout,
   Intent,
 } from "@blueprintjs/core";
-
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 import FormItem from "../../../../Components/Form/FormItem/FormItem";
 import PageHeader from "../../../../Components/PageHeader/PageHeader";

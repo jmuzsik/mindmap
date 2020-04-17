@@ -40,8 +40,13 @@ export default function RecoverSuccess(props) {
           </Button>
           <div className="below-form">
             <p>or</p>
-            {/* TODO: fix this */}
-            <a onClick={() => sendEmail(email, setMessage)}>Resend Email</a>
+            {/* TODO: i'm not sure what this looks like, i just wanted to get rid of the dev tool warning */}
+            <Button
+              intent={Intent.NONE}
+              onClick={() => sendEmail(email, setMessage)}
+            >
+              Resend Email
+            </Button>
             {message.length > 0 && (
               <Callout intent={Intent.DANGER} icon="error">
                 {message}

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Select } from "antd";
-import createGetOptions from "../../../../Utils/FetchOptions/Get";
+import {
+  Popover,
+  Button,
+  Menu,
+  MenuItem,
+  Intent,
+  Spinner,
+} from "@blueprintjs/core";
 
-const { Option } = Select;
+import createGetOptions from "../../../../Utils/FetchOptions/Get";
 
 function organiseSubjects({ subjects, defaultSubject }) {
   const firstSubject = subjects.filter(({ _id }) => defaultSubject === _id);
@@ -32,20 +38,38 @@ async function apiCall(
   isloading(false);
 }
 
-function createOptions(subjects) {
-  return subjects.map((subject) => {
-    const { name, _id } = subject;
-    return (
-      <Option value={JSON.stringify(subject)} key={_id}>
-        {name}
-      </Option>
-    );
-  });
+function createMenu({ subjects, loading }, { setSubjectsState, setSubject }) {
+  return (
+    <Menu>
+      {loading ? (
+        <Spinner
+          intent={Intent.NONE}
+          size={Spinner.SIZE_STANDARD}
+        />
+      ) : (
+        subjects.map((subject) => (
+          <MenuItem
+            onClick={() =>
+              handleOnChange(
+                { subjects, subject: JSON.stringify(subject) },
+                { setSubjectsState, setSubject }
+              )
+            }
+            text={subject.name}
+            key={subject._id}
+          />
+        ))
+      )}
+    </Menu>
+  );
 }
 
-function handleOnChange({ subjects, value }, { setSubjectsState, setSubject }) {
-  setSubjectsState({ subjects, subject: JSON.parse(value) });
-  setSubject(JSON.parse(value));
+function handleOnChange(
+  { subjects, subject },
+  { setSubjectsState, setSubject }
+) {
+  setSubjectsState({ subjects, subject: JSON.parse(subject) });
+  setSubject(JSON.parse(subject));
 }
 
 export default function SelectWrapper({ userId, defaultSubject, setSubject }) {
@@ -53,24 +77,28 @@ export default function SelectWrapper({ userId, defaultSubject, setSubject }) {
     subject: { name: "" },
     subjects: [],
   });
+
   const [loading, isloading] = useState(true);
 
   useEffect(() => {
     apiCall({ userId, defaultSubject }, { setSubjectsState, isloading });
-  }, []);
+  }, [userId, defaultSubject]);
 
   return (
-    <Select
-      value={subjectsState.subject.name}
-      loading={loading}
-      onChange={(value) =>
-        handleOnChange(
-          { subjects: subjectsState.subjects, value },
+    <React.Fragment>
+      <Popover
+        popoverClassName="subject-popover"
+        portalClassName="subject-popover-portal"
+        position="auto"
+        minimal
+        enforceFocus={false}
+      >
+        <Button text="Change Subject" />
+        {createMenu(
+          { subjects: subjectsState.subjects, loading },
           { setSubjectsState, setSubject }
-        )
-      }
-    >
-      {createOptions(subjectsState.subjects)}
-    </Select>
+        )}
+      </Popover>
+    </React.Fragment>
   );
 }

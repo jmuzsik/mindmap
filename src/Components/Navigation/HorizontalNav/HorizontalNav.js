@@ -26,7 +26,7 @@ export default function HorizontalNav({ setAuthInfo, onLogout, authInfo }) {
 
   useEffect(() => {
     getSubject(defaultSubject, { setSubject, finishedLoading });
-  }, []);
+  }, [defaultSubject]);
 
   return (
     <header className="horizontal-nav">

@@ -51,6 +51,7 @@ function NewPassword(props) {
   // Create options for simplified passing of arguments.
   const state = {
     submitDisabled,
+    email,
     password,
     submitLoading,
     message,

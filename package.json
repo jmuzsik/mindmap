@@ -7,7 +7,6 @@
     "@testing-library/jest-dom": "*",
     "@testing-library/react": "*",
     "@testing-library/user-event": "*",
-    "antd": "*",
     "email-validator": "2.0.4",
     "password-validator": "5.0.3",
     "react": "*",
@@ -41,6 +40,7 @@
   },
   "proxy": "http://localhost:6009",
   "devDependencies": {
-    "prettier": "^2.0.4"
+    "prettier": "^2.0.4",
+    "@blueprintjs/select": "*"
   }
 }

@@ -2,10 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Switch, Route } from "react-router-dom";
 import NewSubjectForm from "../../../Routes/Forms/NewSubjectForm/NewSubjectForm";
 
-import {
-  handleFirstSubjectRoute,
-  handleHomeRoute,
-} from "./AuthenticatedRoutesUtils";
+import { handleHomeRoute } from "./AuthenticatedRoutesUtils";
 
 const Home = lazy(() => import("../../../Routes/Home/Home"));
 

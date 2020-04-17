@@ -7,7 +7,6 @@ import AuthWrapper from "./TopLevel/Auth";
 import ThemeWrapper from "./TopLevel/Theme";
 import App from "./TopLevel/App";
 
-import 'antd/dist/antd.css';
 import "./index.css";
 
 import * as serviceWorker from "./serviceWorker";

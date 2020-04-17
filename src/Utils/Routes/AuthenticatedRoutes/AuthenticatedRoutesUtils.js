@@ -1,8 +1,3 @@
-// I am intentionally avoiding all state passed through history
-// so we are dependent on API calls
-
-import getSubject from "./ApiCalls/getSubject";
-
 export function handleFirstSubjectRoute({ location: { state }, history }) {
   if (!state || !state.firstSubject) {
     // This page should only be accessible instantly after the user signs up, so reroute otherwise
