@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-import { Navbar, Alignment, Button, Divider } from "@blueprintjs/core";
+import { Navbar, Divider } from "@blueprintjs/core";
 
-import Autocomplete from "./Autocomplete/Autocomplete";
-import Select from "./Select/Select";
+import Search from "./Search/Search";
+import ChangeSubject from "./ChangeSubject/ChangeSubject";
 
 import { SubjectLogo, getSubject } from "./utils";
 
 import "./HorizontalNav.css";
+import Options from "./Options/Options";
 
 // TODO: Add something like a tooltip to the name next to the logo as there is limitted text real estate
 // TODO: continued: and the user should have someway to see the entirety of their subject
@@ -15,7 +16,7 @@ export default function HorizontalNav({ setAuthInfo, onLogout, authInfo }) {
   const { user } = authInfo;
   const defaultSubject = user.defaultSubject;
   const userId = user._id;
-  // const { picture, pictureAlt, name } = subject;
+  // const { picture, pic tureAlt, name } = subject;
   const [subject, setSubject] = useState({
     name: "",
     picture: "",
@@ -32,17 +33,19 @@ export default function HorizontalNav({ setAuthInfo, onLogout, authInfo }) {
     <header className="horizontal-nav">
       {loading && (
         <Navbar>
-          <Navbar.Group align={Alignment.LEFT}>
+          <Navbar.Group>
             <Navbar.Heading>
               <SubjectLogo {...{ picture, pictureAlt }} />
               <span>{name}</span>
             </Navbar.Heading>
             <Divider />
           </Navbar.Group>
-          <Navbar.Group align={Alignment.RIGHT}>
-            <Autocomplete />
-            <Select {...{ defaultSubject, userId, setSubject }} />
-            <Button icon="log-out" onClick={() => onLogout(setAuthInfo)} />
+          <Navbar.Group>
+            <Search />
+          </Navbar.Group>
+          <Navbar.Group className="right-group">
+            <ChangeSubject {...{ defaultSubject, userId, setSubject }} />
+            <Options {...{ userId, setAuthInfo }} />
           </Navbar.Group>
         </Navbar>
       )}

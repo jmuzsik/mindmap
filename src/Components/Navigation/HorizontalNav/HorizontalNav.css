@@ -4,6 +4,18 @@ header.horizontal-nav {
   padding-left: 0;
   padding-right: 0;
 }
+.horizontal-nav .bp3-navbar {
+  display: grid;
+  gap: 0 15px;
+  grid-template-columns: 2fr 5fr 3fr;
+}
+.horizontal-nav .bp3-navbar-group {
+  float: none;
+  justify-content: space-between;
+}
+.horizontal-nav .bp3-navbar-group.right-group {
+  justify-content: space-evenly;
+}
 .horizontal-nav .bp3-navbar-heading .bp3-icon {
   margin-right: 10px;
 }

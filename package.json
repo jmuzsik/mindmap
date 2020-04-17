@@ -40,7 +40,8 @@
   },
   "proxy": "http://localhost:6009",
   "devDependencies": {
+    "@blueprintjs/select": "*",
     "prettier": "^2.0.4",
-    "@blueprintjs/select": "*"
+    "webpack-bundle-analyzer": "^3.7.0"
   }
 }

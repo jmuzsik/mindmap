@@ -72,7 +72,7 @@ function handleOnChange(
   setSubject(JSON.parse(subject));
 }
 
-export default function SelectWrapper({ userId, defaultSubject, setSubject }) {
+export default function ChangeSubject({ userId, defaultSubject, setSubject }) {
   const [subjectsState, setSubjectsState] = useState({
     subject: { name: "" },
     subjects: [],

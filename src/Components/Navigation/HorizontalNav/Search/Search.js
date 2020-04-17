@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { MenuItem, Button } from "@blueprintjs/core";
+import { MenuItem, Divider } from "@blueprintjs/core";
 import { Suggest } from "@blueprintjs/select";
 
+import "./Search.css";
+
+// TODO: this is pointless to work on atm, until I start creating data
+// TODO: and set up elasticsearch and begin to get that working
 // This is not at all what the data will look like in the end
 const mockData = [
   {
@@ -166,7 +170,6 @@ const mockData = [
 function filterItem(query, data, _index, exactMatch) {
   const normalizedTitle = data.title.toLowerCase();
   const normalizedQuery = query.toLowerCase();
-
   if (exactMatch) {
     return normalizedTitle === normalizedQuery;
   } else {
@@ -174,95 +177,97 @@ function filterItem(query, data, _index, exactMatch) {
   }
 }
 
-function highlightText(text, query) {
-  let lastIndex = 0;
-  const words = query
-    .split(/\s+/)
-    .filter((word) => word.length > 0)
-    .map(escapeRegExpChars);
-  if (words.length === 0) {
-    return [text];
-  }
-  const regexp = new RegExp(words.join("|"), "gi");
-  const tokens = [];
-  while (true) {
-    const match = regexp.exec(text);
-    if (!match) {
-      break;
-    }
-    const length = match[0].length;
-    const before = text.slice(lastIndex, regexp.lastIndex - length);
-    if (before.length > 0) {
-      tokens.push(before);
-    }
-    lastIndex = regexp.lastIndex;
-    tokens.push(<strong key={lastIndex}>{match[0]}</strong>);
-  }
-  const rest = text.slice(lastIndex);
-  if (rest.length > 0) {
-    tokens.push(rest);
-  }
-  return tokens;
-}
+// function highlightText(text, query) {
+//   let lastIndex = 0;
+//   const words = query
+//     .split(/\s+/)
+//     .filter((word) => word.length > 0)
+//     .map(escapeRegExpChars);
+//   if (words.length === 0) {
+//     return [text];
+//   }
+//   const regexp = new RegExp(words.join("|"), "gi");
+//   const tokens = [];
+//   while (true) {
+//     const match = regexp.exec(text);
+//     if (!match) {
+//       break;
+//     }
+//     const length = match[0].length;
+//     const before = text.slice(lastIndex, regexp.lastIndex - length);
+//     if (before.length > 0) {
+//       tokens.push(before);
+//     }
+//     lastIndex = regexp.lastIndex;
+//     tokens.push(<strong key={lastIndex}>{match[0]}</strong>);
+//   }
+//   const rest = text.slice(lastIndex);
+//   if (rest.length > 0) {
+//     tokens.push(rest);
+//   }
+//   console.log(tokens);
+//   return tokens;
+// }
 
-function escapeRegExpChars(text) {
-  return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
+// function escapeRegExpChars(text) {
+//   return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+// }
 
-export function areItemsEqual(itemA, itemB) {
+function areItemsEqual(itemA, itemB) {
   // Compare only the titles (ignoring case) just for simplicity.
   return itemA.title.toLowerCase() === itemB.title.toLowerCase();
 }
 
-export function doesItemEqualQuery(item, query) {
-  return item.title.toLowerCase() === query.toLowerCase();
-}
-
-export function arrayContainsItem(items, itemToFind) {
-  return items.some((item) => item.title === itemToFind.title);
-}
-
-export function addItemToArray(items, itemToAdd) {
-  return [...items, itemToAdd];
-}
-
-function createSearchItem(data, { handleClick, modifiers, query }) {
+function createSearchItem(data, { modifiers, query }) {
   return (
     <MenuItem
       active={modifiers.active}
       disabled={modifiers.disabled}
-      label={data.title}
+      label={createText(data.title.slice(0, 50), data.type)}
       key={data._id}
-      // onClick={handleClick}
-      text={highlightText(data.title, query)}
+      onClick={() => handleSelection({ title: "ay", type: "thing" })}
+      // text={highlightText(data.title, query)}
     />
   );
+}
+
+function createText(title, type) {
+  return (
+    <div className="text">
+      <span className="title">{title}</span>
+      <span className="type">
+        <Divider /> ({type})
+      </span>
+    </div>
+  );
+}
+
+function handleSelection({ title, type }) {
+  // Here is where i can handle if something is clicked
+  console.log("hey");
+  return title;
 }
 
 export default function SelectWrapper() {
   return (
     <Suggest
+      className="horizontal-nav-search"
       itemsEqual={areItemsEqual}
       items={mockData}
       noResults={<MenuItem disabled={true} text="No results." />}
-      popoverProps={{ minimal: true }}
+      popoverProps={{
+        minimal: true,
+        popoverClassName: "horizontal-nav-search-popover",
+        position: "bottom",
+      }}
       itemPredicate={filterItem}
       itemRenderer={createSearchItem}
+      inputValueRenderer={handleSelection}
       minimal
       resetOnClose
       resetOnQuery
       resetOnSelect
       filterable
-    >
-      <Button
-        icon="film"
-        rightIcon="caret-down"
-        text={
-          mockData[0]
-            ? `${mockData[0].title} (${mockData[0].type})`
-            : "(No selection)"
-        }
-      />
-    </Suggest>
+    />
   );
 }

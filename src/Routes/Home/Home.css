@@ -1,9 +1,9 @@
-.home .home-container {
-  padding-top: 4.5rem;
+.home {
 }
-.home .home-container button {
-  width: 10%;
+.home main {
+  display: grid;
+  gap: 0 15px;
+  grid-template-columns: 1fr 4fr;
 }
-.home .home-container img {
-  max-width: 300px;
+.home .content-wrapper {
 }
