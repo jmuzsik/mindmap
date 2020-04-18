@@ -3,10 +3,19 @@ import { MenuItem, Menu } from "@blueprintjs/core";
 
 import "./VerticalNav.css";
 
-export default function VerticalNav() {
+function goTo(place, goTo) {
+  console.log(goTo)
+  return goTo.push(place);
+}
+
+export default function VerticalNav({ history }) {
   return (
     <Menu className="vertical-nav">
-      <MenuItem icon="annotation" text="Notes" />
+      <MenuItem
+        icon="annotation"
+        text="Notes"
+        onClick={() => goTo("/notes", history)}
+      />
       <MenuItem icon="media" text="Media" />
     </Menu>
   );

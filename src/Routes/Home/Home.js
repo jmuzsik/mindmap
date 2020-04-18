@@ -5,13 +5,13 @@ import VerticalNav from "../../Components/Navigation/VerticalNav/VerticalNav";
 
 import "./Home.css";
 
-export default function Home(props) {
+export default function Home({ setAuthInfo, onLogout, authInfo, history }) {
   return (
     <section className="home layout">
-      <HorizontalNav {...props} />
+      <HorizontalNav {...{ setAuthInfo, onLogout, authInfo }} />
       <main>
-          <VerticalNav />
-          <div>This is a div with a little content</div>
+        <VerticalNav {...{ history }} />
+        <div>This is a div with a little content</div>
       </main>
     </section>
   );
