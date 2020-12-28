@@ -1,10 +1,7 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
 import { Switch, Route } from "react-router-dom";
-import NewSubjectForm from "../../../Routes/Forms/NewSubjectForm/NewSubjectForm";
 
-import { handleHomeRoute } from "./AuthenticatedRoutesUtils";
-
-const Home = lazy(() => import("../../../Routes/Home/Home"));
+import { renderFunction } from "./AuthenticatedRoutesUtils";
 
 export default function AuthenticatedRoutes(props) {
   return (
@@ -13,23 +10,14 @@ export default function AuthenticatedRoutes(props) {
         <Route
           path="/"
           exact
-          render={(renderProps) => {
-            const properties = handleHomeRoute(renderProps, props);
-            if (properties.error === "no subject") {
-              return <NewSubjectForm {...properties} />;
-            }
-            return <Home {...properties} />;
-          }}
+          render={(renderProps) => renderFunction(renderProps, props)}
         />
         <Route
-          render={(renderProps) => {
-            const properties = handleHomeRoute(renderProps, props);
-            if (properties.error === "no subject") {
-              return <NewSubjectForm {...properties} />;
-            }
-            return <Home {...properties} />;
-          }}
+          exact
+          path="/notes"
+          render={(renderProps) => renderFunction(renderProps, props)}
         />
+        <Route render={(renderProps) => renderFunction(renderProps, props)} />
       </Switch>
     </Suspense>
   );

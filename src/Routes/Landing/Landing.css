@@ -2,9 +2,12 @@
   min-height: 100vh;
 }
 .landing .bp3-navbar {
-  height: 60px;
+  height: 200px;
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+.landing .bp3-card {
 }
 .landing .bp3-navbar img {
   height: 50px;

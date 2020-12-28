@@ -9,10 +9,12 @@ import { SubjectLogo, getSubject } from "./utils";
 
 import "./HorizontalNav.css";
 import Options from "./Options/Options";
+import { goTo } from "../utils";
 
 // TODO: Add something like a tooltip to the name next to the logo as there is limitted text real estate
 // TODO: continued: and the user should have someway to see the entirety of their subject
-export default function HorizontalNav({ setAuthInfo, onLogout, authInfo }) {
+export default function HorizontalNav(props) {
+  const { setAuthInfo, authInfo, history } = props;
   const { user } = authInfo;
   const defaultSubject = user.defaultSubject;
   const userId = user._id;
@@ -34,7 +36,7 @@ export default function HorizontalNav({ setAuthInfo, onLogout, authInfo }) {
       {loading && (
         <Navbar>
           <Navbar.Group>
-            <Navbar.Heading>
+            <Navbar.Heading onClick={() => goTo("/", history)}>
               <SubjectLogo {...{ picture, pictureAlt }} />
               <span>{name}</span>
             </Navbar.Heading>

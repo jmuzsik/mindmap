@@ -1,3 +1,10 @@
+import React, { lazy } from "react";
+import Notes from "../../../Notes/Notes";
+
+import NewSubjectForm from "../../../Routes/Forms/NewSubjectForm/NewSubjectForm";
+
+const Home = lazy(() => import("../../../Routes/Home/Home"));
+
 export function handleFirstSubjectRoute({ location: { state }, history }) {
   if (!state || !state.firstSubject) {
     // This page should only be accessible instantly after the user signs up, so reroute otherwise
@@ -23,4 +30,24 @@ export function handleHomeRoute(renderProps, props) {
     ...renderProps,
     ...props,
   };
+}
+
+function getLocation(props) {
+  return props?.history?.location?.pathname;
+}
+
+export function renderFunction(renderProps, props) {
+  const properties = handleHomeRoute(renderProps, props);
+
+  if (properties.error === "no subject") {
+    return <NewSubjectForm {...properties} />;
+  }
+  switch (getLocation(properties)) {
+    case "/":
+      return <Home {...properties} />;
+    case "/notes":
+      return <Notes {...properties} />;
+    default:
+      return <Home {...properties} />;
+  }
 }

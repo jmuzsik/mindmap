@@ -7,7 +7,7 @@
     "@testing-library/jest-dom": "*",
     "@testing-library/react": "*",
     "@testing-library/user-event": "*",
-    "draft-js": "^0.11.5",
+    "draft-js": "^0.11.7",
     "email-validator": "2.0.4",
     "password-validator": "5.0.3",
     "react": "*",
@@ -42,7 +42,6 @@
   "proxy": "http://localhost:6009",
   "devDependencies": {
     "@blueprintjs/select": "*",
-    "prettier": "^2.0.4",
     "webpack-bundle-analyzer": "^3.7.0"
   }
 }

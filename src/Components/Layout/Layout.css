@@ -1,0 +1,11 @@
+.layout main {
+  display: grid;
+  gap: 0 15px;
+  grid-template-columns: 1fr 4fr;
+}
+.layout aside {
+  margin-right: 15px;
+}
+.layout aside section {
+  margin-right: 15px;
+}

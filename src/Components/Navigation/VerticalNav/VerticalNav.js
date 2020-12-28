@@ -2,11 +2,7 @@ import React from "react";
 import { MenuItem, Menu } from "@blueprintjs/core";
 
 import "./VerticalNav.css";
-
-function goTo(place, goTo) {
-  console.log(goTo)
-  return goTo.push(place);
-}
+import { goTo } from "../utils";
 
 export default function VerticalNav({ history }) {
   return (
