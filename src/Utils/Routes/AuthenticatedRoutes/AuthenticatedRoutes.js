@@ -17,6 +17,11 @@ export default function AuthenticatedRoutes(props) {
           path="/notes"
           render={(renderProps) => renderFunction(renderProps, props)}
         />
+        <Route
+          exact
+          path="/images"
+          render={(renderProps) => renderFunction(renderProps, props)}
+        />
         <Route render={(renderProps) => renderFunction(renderProps, props)} />
       </Switch>
     </Suspense>

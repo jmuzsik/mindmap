@@ -3,6 +3,7 @@ header.horizontal-nav {
   box-shadow: 0 2px 8px #f0f1f2;
   padding-left: 0;
   padding-right: 0;
+  height: 60px;
 }
 .horizontal-nav .bp3-navbar {
   display: grid;

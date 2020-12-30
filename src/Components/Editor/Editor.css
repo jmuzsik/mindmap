@@ -1,6 +1,12 @@
 .DraftEditor-root {
   height: 270px;
 }
+.minimal .DraftEditor-root {
+  height: auto;
+}
+.minimal .RichEditor-editor {
+  height: auto;
+}
 .RichEditor-editor {
   height: 300px;
   padding: 15px;
@@ -13,7 +19,6 @@
   transition: box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9),
     -webkit-box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9);
 }
-
 .RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
   display: none;
 }

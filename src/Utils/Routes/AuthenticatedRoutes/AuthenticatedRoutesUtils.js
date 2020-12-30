@@ -1,9 +1,11 @@
-import React, { lazy } from "react";
-import Notes from "../../../Notes/Notes";
+import React from "react";
+import Notes from "../../../Routes/Notes/Notes";
 
 import NewSubjectForm from "../../../Routes/Forms/NewSubjectForm/NewSubjectForm";
 
-const Home = lazy(() => import("../../../Routes/Home/Home"));
+import Home from "../../../Routes/Home/Home";
+import Images from "../../../Routes/Images/Images";
+// const Home = lazy(() => import("../../../Routes/Home/Home"));
 
 export function handleFirstSubjectRoute({ location: { state }, history }) {
   if (!state || !state.firstSubject) {
@@ -47,6 +49,8 @@ export function renderFunction(renderProps, props) {
       return <Home {...properties} />;
     case "/notes":
       return <Notes {...properties} />;
+    case "/images":
+      return <Images {...properties} />;
     default:
       return <Home {...properties} />;
   }

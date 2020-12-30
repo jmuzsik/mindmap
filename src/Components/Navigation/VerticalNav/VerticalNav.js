@@ -1,18 +1,23 @@
 import React from "react";
-import { MenuItem, Menu } from "@blueprintjs/core";
+import { Menu, MenuItem, Classes } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 
 import "./VerticalNav.css";
 import { goTo } from "../utils";
 
-export default function VerticalNav({ history }) {
+export default function VerticalNav(props) {
   return (
     <Menu className="vertical-nav">
       <MenuItem
-        icon="annotation"
+        icon={IconNames.ANNOTATION}
         text="Notes"
-        onClick={() => goTo("/notes", history)}
+        onClick={() => goTo("/notes", props.history)}
       />
-      <MenuItem icon="media" text="Media" />
+      <MenuItem
+        icon={IconNames.IMAGE_ROTATE_LEFT}
+        text="Images"
+        onClick={() => goTo("/images", props.history)}
+      />
     </Menu>
   );
 }

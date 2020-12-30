@@ -33,24 +33,22 @@ export default function HorizontalNav(props) {
 
   return (
     <header className="horizontal-nav">
-      {loading && (
-        <Navbar>
-          <Navbar.Group>
-            <Navbar.Heading onClick={() => goTo("/", history)}>
-              <SubjectLogo {...{ picture, pictureAlt }} />
-              <span>{name}</span>
-            </Navbar.Heading>
-            <Divider />
-          </Navbar.Group>
-          <Navbar.Group>
-            <Search />
-          </Navbar.Group>
-          <Navbar.Group className="right-group">
-            <ChangeSubject {...{ defaultSubject, userId, setSubject }} />
-            <Options {...{ userId, setAuthInfo }} />
-          </Navbar.Group>
-        </Navbar>
-      )}
+      <Navbar>
+        <Navbar.Group>
+          <Navbar.Heading onClick={() => goTo("/", history)}>
+            <SubjectLogo {...{ picture, pictureAlt }} />
+            <span>{name}</span>
+          </Navbar.Heading>
+          <Divider />
+        </Navbar.Group>
+        <Navbar.Group>
+          <Search />
+        </Navbar.Group>
+        <Navbar.Group className="right-group">
+          <ChangeSubject {...{ defaultSubject, userId, setSubject }} />
+          <Options {...{ userId, setAuthInfo }} />
+        </Navbar.Group>
+      </Navbar>
     </header>
   );
 }

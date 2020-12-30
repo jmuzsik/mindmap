@@ -45,27 +45,32 @@ export default class RichEditor extends React.Component {
       }
     }
     return (
-      <div className="RichEditor-root" onClick={this.focus}>
-        <ButtonGroup minimal>
-          <Controls
-            editorState={editorState}
-            onToggle={this.toggleBlockType}
-            name="Block"
-            styles={BLOCK_TYPES}
-          />
-          <Controls
-            editorState={editorState}
-            onToggle={this.toggleBlockType}
-            name="Block"
-            styles={ALIGNMENT_TYPES}
-          />
-          <Controls
-            editorState={editorState}
-            onToggle={this.toggleInlineStyle}
-            name="Misc"
-            styles={INLINE_STYLES}
-          />
-        </ButtonGroup>
+      <div
+        className={`RichEditor-root${this.props.minimal ? " minimal" : ""}`}
+        onClick={this.focus}
+      >
+        {this.props.controls && (
+          <ButtonGroup minimal>
+            <Controls
+              editorState={editorState}
+              onToggle={this.toggleBlockType}
+              name="Block"
+              styles={BLOCK_TYPES}
+            />
+            <Controls
+              editorState={editorState}
+              onToggle={this.toggleBlockType}
+              name="Block"
+              styles={ALIGNMENT_TYPES}
+            />
+            <Controls
+              editorState={editorState}
+              onToggle={this.toggleInlineStyle}
+              name="Misc"
+              styles={INLINE_STYLES}
+            />
+          </ButtonGroup>
+        )}
         <div className={className}>
           <Editor
             blockStyleFn={getBlockStyle}
@@ -75,6 +80,7 @@ export default class RichEditor extends React.Component {
             onChange={this.onChange}
             ref={this.setEditorRef}
             spellCheck={true}
+            readOnly={this.props.readOnly}
           />
         </div>
       </div>
