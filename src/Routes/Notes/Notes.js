@@ -30,7 +30,12 @@ async function handleSubmit(
 ) {
   const id = AuthClass.getUser()._id;
   const url = `/api/note/${id}`;
-  const options = createPostOptions(data);
+  const elem = document.querySelector(".public-DraftEditor-content");
+  let height;
+  if (elem) {
+    height = elem.children[0].clientHeight;
+  }
+  const options = createPostOptions({ raw: data, height });
   let res = await fetch(url, options);
   // TODO: handle error
   res = await res.json();

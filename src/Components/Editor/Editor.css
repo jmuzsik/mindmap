@@ -7,6 +7,9 @@
 .minimal .RichEditor-editor {
   height: auto;
 }
+.public-DraftEditor-content {
+  overflow: scroll;
+}
 .RichEditor-editor {
   height: 300px;
   padding: 15px;

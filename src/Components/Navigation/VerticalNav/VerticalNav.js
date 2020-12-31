@@ -9,6 +9,11 @@ export default function VerticalNav(props) {
   return (
     <Menu className="vertical-nav">
       <MenuItem
+        icon={IconNames.HOME}
+        text="Home"
+        onClick={() => goTo("/", props.history)}
+      />
+      <MenuItem
         icon={IconNames.ANNOTATION}
         text="Notes"
         onClick={() => goTo("/notes", props.history)}

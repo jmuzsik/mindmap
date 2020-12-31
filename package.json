@@ -11,11 +11,13 @@
     "draft-js": "^0.11.7",
     "email-validator": "2.0.4",
     "password-validator": "5.0.3",
+    "rc-tree": "^4.1.1",
     "react": "*",
     "react-detect-offline": "*",
     "react-dom": "*",
     "react-google-login": "5.1.2",
     "react-grid-layout": "^0.18.3",
+    "react-mindmap-test": "^2.1.5",
     "react-router-dom": "5.1.2",
     "react-scripts": "3.4.1"
   },
