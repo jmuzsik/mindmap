@@ -1,20 +1,29 @@
-import { categoryToIMG } from '../parser/emojis';
+import React from "react";
+import { categoryToIMG } from "../parser/emojis";
 
 /*
  * Return the HTML representation of a node.
  * The node is an object that has text, url, and category attributes;
  * all of them optional.
  */
-export default (node, index) => {
+export default (node, index, jsx) => {
   let href = `href="${node.url}"`;
-  let emoji = categoryToIMG(node.category);
+  // let emoji = categoryToIMG(node.category);
 
   // If url is not specified remove the emoji and the href attribute,
   // so that the node isn't clickable, and the user can see that without
   // having to hover the node.
   if (!node.url) {
-    href = '';
-    emoji = '';
+    href = "";
+    // emoji = "";
   }
-  return `<a id="node-${index}" ${href}>${node.text || ''} ${emoji}</a>`;
+  return jsx ? (
+    <a id={`node-${index}`} href={href}>
+      {/* ${node.text || ""} {emoji} */}
+      ${node.text || ""}
+    </a>
+  ) : (
+    // `<a id="node-${index}" ${href}>${node.text || ""} ${emoji}</a>`
+    `<a id="node-${index}" ${href}>${node.text || ""}</a>`
+  );
 };

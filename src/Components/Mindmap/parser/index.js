@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const walkSync = require("fs-walk").walkSync;
 
-const { emojiToCategory, matchEmojis } = require("./emojis");
+// const { emojiToCategory, matchEmojis } = require("./emojis");
 const { getText, getURL } = require("./regex");
 
 // These two arguments must be directories.
@@ -92,12 +92,12 @@ const parseNode = (node) => {
     );
   }
 
-  const match = parsedNode.text.match(matchEmojis);
+  // const match = parsedNode.text.match(matchEmojis);
 
-  if (match) {
-    parsedNode.category = emojiToCategory(match[0]);
-    parsedNode.text = parsedNode.text.replace(matchEmojis, "").trim();
-  }
+  // if (match) {
+  //   parsedNode.category = emojiToCategory(match[0]);
+  //   parsedNode.text = parsedNode.text.replace(matchEmojis, "").trim();
+  // }
 
   return parsedNode;
 };

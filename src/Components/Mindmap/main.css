@@ -63,3 +63,9 @@
 .reddit-emoji {
   border-radius: 50%;
 }
+
+.mindmap-svg path {
+  transition-duration: 2000;
+  transition-timing-function: linear;
+  transition-property: "stroke-dashoffset";
+}
