@@ -9,6 +9,7 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Box } from "../../Components/Tree/Box";
+import { Dustbin } from "../../Components/Tree/Dustbin";
 
 export const tempNotes = [
   {
@@ -232,4 +233,63 @@ export function createSmap(note) {
       },
     ],
   };
+}
+
+export function createMindTree(mindTree) {
+  return mindTree.map(({ type, id, label, data }, i) => {
+    return {
+      label: (
+        <Dustbin
+          content={
+            <React.Fragment>
+              <span className="treenode-id">{id || label}</span>
+              {type ? (
+                <Popover
+                  popoverClassName={`note-${i}-popover`}
+                  portalClassName={`note-${i}-portal`}
+                  interactionKind={PopoverInteractionKind.HOVER}
+                  intent={Intent.WARNING}
+                  minimal
+                >
+                  <Button intent={Intent.PRIMARY} minimal>
+                    View
+                  </Button>
+                  {type &&
+                    (type === "note" ? (
+                      <RichEditor
+                        id={id}
+                        minimal
+                        controls={false}
+                        editorState={EditorState.createWithContent(
+                          convertFromRaw(JSON.parse(data.raw))
+                        )}
+                        contentEditable={false}
+                        readOnly={true}
+                        onChange={() => null}
+                      />
+                    ) : (
+                      <img
+                        src={data.src}
+                        alt={id}
+                        width={data.width}
+                        height={data.height}
+                      />
+                    ))}
+                </Popover>
+              ) : null}
+            </React.Fragment>
+          }
+        />
+      ),
+      id,
+      hasCaret: true,
+      childNodes: [],
+      icon:
+        type === "note"
+          ? IconNames.DOCUMENT
+          : type === "image"
+          ? IconNames.MEDIA
+          : IconNames.FOLDER_CLOSE,
+    };
+  });
 }
