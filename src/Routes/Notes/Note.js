@@ -7,10 +7,15 @@ import createPostOptions from "../../Utils/FetchOptions/Post";
 
 async function handleEditSave(
   data,
-  { setLoading, setDisabled, setEditable, setNotes, idx, notes }
+  { setLoading, setDisabled, setEditable, setNotes, idx, notes, id }
 ) {
-  const id = notes[idx]._id;
   const url = `/api/note/${id}`;
+  console.log(data)
+  const elem = document.querySelector(`[id="${id}"] [data-contents="true"]`);
+  const height = elem.clientHeight;
+  const width = elem.clientWidth;
+  data.height = height;
+  data.width = width;
   const options = createPostOptions(data, "PUT");
   let editedNote = await fetch(url, options);
 
@@ -86,6 +91,7 @@ export default function Note(props) {
           </Button>
         </ButtonGroup>
         <RichEditor
+          id={note._id}
           minimal={true}
           controls={editable}
           editorState={editorState}
@@ -103,11 +109,12 @@ export default function Note(props) {
               setLoading(true);
               setDisabled(true);
               await handleEditSave(
-                convertToRaw(editorState.getCurrentContent()),
+                { raw: convertToRaw(editorState.getCurrentContent()) },
                 {
                   setLoading,
                   setDisabled,
                   setEditable,
+                  id: note._id,
                   setNotes,
                   idx,
                   notes,

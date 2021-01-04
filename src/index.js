@@ -8,11 +8,13 @@ import ThemeWrapper from "./TopLevel/Theme";
 import App from "./TopLevel/App";
 
 import "./index.css";
+import 'antd/dist/antd.css';
 
 import * as serviceWorker from "./serviceWorker";
 
 const createHistory = history.createBrowserHistory;
 const browserHistory = createHistory();
+
 
 ReactDOM.render(
   <Router history={browserHistory}>

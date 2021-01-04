@@ -1,6 +1,6 @@
 import React from "react";
 import { Editor, RichUtils } from "draft-js";
-import { ButtonGroup, Button } from "@blueprintjs/core";
+import { ButtonGroup, Button, Divider } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
 import "./Editor.css";
@@ -48,21 +48,24 @@ export default class RichEditor extends React.Component {
       <div
         className={`RichEditor-root${this.props.minimal ? " minimal" : ""}`}
         onClick={this.focus}
+        id={this.props.id || ""}
       >
         {this.props.controls && (
-          <ButtonGroup minimal>
+          <ButtonGroup minimal className="controls-container">
             <Controls
               editorState={editorState}
               onToggle={this.toggleBlockType}
               name="Block"
               styles={BLOCK_TYPES}
             />
+            <Divider />
             <Controls
               editorState={editorState}
               onToggle={this.toggleBlockType}
               name="Block"
               styles={ALIGNMENT_TYPES}
             />
+            <Divider />
             <Controls
               editorState={editorState}
               onToggle={this.toggleInlineStyle}

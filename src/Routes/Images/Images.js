@@ -25,10 +25,6 @@ function handleFileChosen(file, { setImage, setFormData, setDisabled }) {
   const formData = new FormData();
   formData.append("file", file);
   setImage(file && blobUrl(file));
-  const elem = document.querySelector(".selected-image");
-  if (elem) {
-    console.log(elem.children[0].clientHeight);
-  }
   setFormData(formData);
   setDisabled(false);
 }
@@ -39,12 +35,10 @@ async function submitImage(
 ) {
   const id = AuthClass.getUser()._id;
   const url = `/api/image/${id}`;
-  const file = data.get("file");
-  console.log(file);
   const elem = document.querySelector(".selected-image");
-  file.height = elem.clientHeight;
-  file.width = elem.clientWidth;
-  data.append("file", file);
+  const height = elem.clientHeight;
+  const width = elem.clientWidth;
+  data.append("dimensions", JSON.stringify({ height, width }));
   let res = await axios.post(url, data);
   if (!res.error) {
     setLoading(false);

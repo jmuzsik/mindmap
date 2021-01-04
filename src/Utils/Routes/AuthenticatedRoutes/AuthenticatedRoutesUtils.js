@@ -21,11 +21,11 @@ export function handleFirstSubjectRoute({ location: { state }, history }) {
 export function handleHomeRoute(renderProps, props) {
   const {
     authInfo: {
-      user: { defaultSubject },
+      user: { currentSubject },
     },
   } = props;
   // This is when no subject has yet been created - should only run after signup
-  if (!defaultSubject) {
+  if (!currentSubject) {
     return { error: "no subject", ...renderProps, ...props };
   }
   return {

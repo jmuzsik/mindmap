@@ -8,17 +8,13 @@ import {
   Spinner,
 } from "@blueprintjs/core";
 
+import AuthClass from "../../../../TopLevel/Auth/Class";
 import createGetOptions from "../../../../Utils/FetchOptions/Get";
-
-function organiseSubjects({ subjects, defaultSubject }) {
-  const firstSubject = subjects.filter(({ _id }) => defaultSubject === _id);
-  const otherSubjects = subjects.filter(({ _id }) => defaultSubject !== _id);
-  const organisedSubjects = firstSubject.concat(otherSubjects);
-  return { organisedSubjects, subject: firstSubject[0] };
-}
+import createPostOptions from "../../../../Utils/FetchOptions/Post";
+import { organiseSubjects } from "../utils";
 
 async function apiCall(
-  { userId, defaultSubject },
+  { userId, currentSubject },
   { setSubjectsState, isloading }
 ) {
   const url = `/api/subject/user/${userId}`;
@@ -32,26 +28,26 @@ async function apiCall(
   }
   const { organisedSubjects, subject } = organiseSubjects({
     subjects,
-    defaultSubject,
+    currentSubject,
   });
   setSubjectsState({ subjects: organisedSubjects, subject });
   isloading(false);
 }
 
-function createMenu({ subjects, loading }, { setSubjectsState, setSubject }) {
+function createMenu(
+  { subjects, loading, userId },
+  { setSubjectsState, setSubject }
+) {
   return (
     <Menu>
       {loading ? (
-        <Spinner
-          intent={Intent.NONE}
-          size={Spinner.SIZE_STANDARD}
-        />
+        <Spinner intent={Intent.NONE} size={Spinner.SIZE_STANDARD} />
       ) : (
         subjects.map((subject) => (
           <MenuItem
             onClick={() =>
               handleOnChange(
-                { subjects, subject: JSON.stringify(subject) },
+                { subjects, subject, userId },
                 { setSubjectsState, setSubject }
               )
             }
@@ -64,25 +60,42 @@ function createMenu({ subjects, loading }, { setSubjectsState, setSubject }) {
   );
 }
 
-function handleOnChange(
-  { subjects, subject },
+async function handleOnChange(
+  { subjects, subject, userId },
   { setSubjectsState, setSubject }
 ) {
-  setSubjectsState({ subjects, subject: JSON.parse(subject) });
-  setSubject(JSON.parse(subject));
+  console.log(userId);
+  const url = `/api/users/update-subject/${userId}`;
+  const postOptions = createPostOptions({ id: subject._id });
+  let user;
+  try {
+    user = await fetch(url, postOptions);
+    user = await user.json();
+  } catch (error) {
+    console.log("within fetching subjects", error);
+  }
+  AuthClass.setUser(Object.assign(AuthClass.getUser(), user));
+  const subjectsObj = organiseSubjects({
+    subjects,
+    currentSubject: subject,
+  });
+  const organisedSubjects = subjectsObj.organisedSubjects;
+  setSubjectsState({ subjects: organisedSubjects, subject });
+  setSubject(subject);
 }
 
-export default function ChangeSubject({ userId, defaultSubject, setSubject }) {
-  const [subjectsState, setSubjectsState] = useState({
-    subject: { name: "" },
-    subjects: [],
-  });
-
+export default function ChangeSubject({
+  userId,
+  currentSubject,
+  subjectsState,
+  setSubject,
+  setSubjectsState,
+}) {
   const [loading, isloading] = useState(true);
-
+  console.log(subjectsState, currentSubject);
   useEffect(() => {
-    apiCall({ userId, defaultSubject }, { setSubjectsState, isloading });
-  }, [userId, defaultSubject]);
+    apiCall({ userId, currentSubject }, { setSubjectsState, isloading });
+  }, [userId, currentSubject]);
 
   return (
     <React.Fragment>
@@ -93,9 +106,9 @@ export default function ChangeSubject({ userId, defaultSubject, setSubject }) {
         minimal
         enforceFocus={false}
       >
-        <Button text="Change Subject" />
+        <Button text="Change Subject" intent={Intent.PRIMARY} />
         {createMenu(
-          { subjects: subjectsState.subjects, loading },
+          { subjects: subjectsState.subjects, loading, userId },
           { setSubjectsState, setSubject }
         )}
       </Popover>

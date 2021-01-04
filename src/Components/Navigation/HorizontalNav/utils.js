@@ -24,3 +24,10 @@ export async function getSubject(subjectId, { setSubject, finishedLoading }) {
   setSubject(subject);
   finishedLoading(true);
 }
+
+export function organiseSubjects({ subjects, currentSubject }) {
+  const firstSubject = subjects.filter(({ _id }) => currentSubject === _id);
+  const otherSubjects = subjects.filter(({ _id }) => currentSubject !== _id);
+  const organisedSubjects = firstSubject.concat(otherSubjects);
+  return { organisedSubjects, subject: firstSubject[0] };
+}

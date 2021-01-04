@@ -22,6 +22,7 @@ async function getNotes(setNotes) {
   }
 }
 
+//TODO: cannot select both heeaders and alignment at same time
 const emptyEditor = () => EditorState.createEmpty();
 
 async function handleSubmit(
@@ -30,12 +31,10 @@ async function handleSubmit(
 ) {
   const id = AuthClass.getUser()._id;
   const url = `/api/note/${id}`;
-  const elem = document.querySelector(".public-DraftEditor-content");
-  let height;
-  if (elem) {
-    height = elem.children[0].clientHeight;
-  }
-  const options = createPostOptions({ raw: data, height });
+  const elem = document.querySelector('[data-contents="true"');
+  const height = elem.clientHeight;
+  const width = elem.clientWidth;
+  const options = createPostOptions({ raw: data, height, width });
   let res = await fetch(url, options);
   // TODO: handle error
   res = await res.json();
@@ -81,8 +80,8 @@ export default function Notes(props) {
                     setDisabled,
                     setEditorState,
                     setOpen,
-                    notes,
                     setNotes,
+                    notes,
                   }
                 );
                 // TODO: Handle error

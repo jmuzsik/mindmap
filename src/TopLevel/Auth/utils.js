@@ -27,7 +27,7 @@ export const onLogout = async (setAuthInfo) => {
         picture: "",
         pictureAlt: "",
         theme: "light",
-        defaultSubject: "",
+        currentSubject: "",
         subjects: [],
       },
       token: null,

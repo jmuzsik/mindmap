@@ -40,14 +40,8 @@ export default function NewSubjectForm(props) {
         <div className="card-body">
           <p className="bp3-running-text">
             The focus on this website is to offer a great way to organise
-            information. What you are creating here, a subject{" "}
-            <span className="bp3-text-muted">
-              (though what you put here can always be changed!)
-            </span>{" "}
-            is simply the word which you want to be at the center of this
-            information. And it can literally be anything, this website aims to
-            be as fluid as your brain. But unlike our brain, the information can
-            be consolidated.
+            information. What you are creating here, a subject, is simply the
+            word which you want to be at the center of a set of information.
           </p>
           <form>
             <FormItem

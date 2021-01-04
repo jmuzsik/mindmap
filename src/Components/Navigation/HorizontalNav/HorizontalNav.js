@@ -4,6 +4,7 @@ import { Navbar, Divider } from "@blueprintjs/core";
 
 import Search from "./Search/Search";
 import ChangeSubject from "./ChangeSubject/ChangeSubject";
+import CreateSubject from "./CreateSubject/CreateSubject";
 
 import { SubjectLogo, getSubject } from "./utils";
 
@@ -16,7 +17,7 @@ import { goTo } from "../utils";
 export default function HorizontalNav(props) {
   const { setAuthInfo, authInfo, history } = props;
   const { user } = authInfo;
-  const defaultSubject = user.defaultSubject;
+  const currentSubject = user.currentSubject;
   const userId = user._id;
   // const { picture, pic tureAlt, name } = subject;
   const [subject, setSubject] = useState({
@@ -25,11 +26,15 @@ export default function HorizontalNav(props) {
     pictureAlt: "",
   });
   const [loading, finishedLoading] = useState(false);
+  const [subjectsState, setSubjectsState] = useState({
+    subject: { name: "" },
+    subjects: [],
+  });
   const { name, picture, pictureAlt } = subject;
 
   useEffect(() => {
-    getSubject(defaultSubject, { setSubject, finishedLoading });
-  }, [defaultSubject]);
+    getSubject(currentSubject, { setSubject, finishedLoading });
+  }, [currentSubject]);
 
   return (
     <header className="horizontal-nav">
@@ -45,7 +50,24 @@ export default function HorizontalNav(props) {
           <Search />
         </Navbar.Group>
         <Navbar.Group className="right-group">
-          <ChangeSubject {...{ defaultSubject, userId, setSubject }} />
+          <CreateSubject
+            {...{
+              authInfo,
+              setAuthInfo,
+              setSubject,
+              subjectsState,
+              setSubjectsState,
+            }}
+          />
+          <ChangeSubject
+            {...{
+              currentSubject,
+              userId,
+              setSubject,
+              subjectsState,
+              setSubjectsState,
+            }}
+          />
           <Options {...{ userId, setAuthInfo }} />
         </Navbar.Group>
       </Navbar>

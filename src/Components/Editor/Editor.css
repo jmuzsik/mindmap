@@ -10,6 +10,16 @@
 .public-DraftEditor-content {
   overflow: scroll;
 }
+.RichEditor-root .controls-container {
+  /* display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas: "block""Alignment" "Inline"; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .RichEditor-editor {
   height: 300px;
   padding: 15px;

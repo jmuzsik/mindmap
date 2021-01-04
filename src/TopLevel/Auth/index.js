@@ -11,7 +11,7 @@ const defaultUser = {
   picture: "",
   pictureAlt: "",
   theme: "light",
-  defaultSubject: "",
+  currenSubject: "",
   subjects: [],
 };
 
