@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { convertToRaw, EditorState } from "draft-js";
 import { Button, Card, Elevation, Collapse } from "@blueprintjs/core";
 import RichEditor from "../../Components/Editor/Editor";
@@ -50,12 +50,37 @@ async function handleSubmit(
 export default function Notes(props) {
   const [notes, setNotes] = useState([]);
 
+  const prevItemIdRef = useRef();
   useEffect(() => {
+    prevItemIdRef.current = props.authInfo.user.currentSubject;
+  });
+  const prevItemId = prevItemIdRef.current;
+
+  // TODO: rewrite other useEffects as shown below
+  // In a callback Hook to prevent unnecessary re-renders
+  const handleFetchItems = useCallback(() => {
     getNotes(setNotes);
-    return () => {
-      setNotes([]);
-    };
   }, []);
+
+  // Fetch items on mount
+  useEffect(() => {
+    handleFetchItems();
+  }, []);
+
+  // I want this effect to run only when 'props.itemId' changes,
+  // not when 'items' changes
+  useEffect(() => {
+    if (prevItemId !== props.authInfo.user.currentSubject) {
+      handleFetchItems();
+    }
+
+    // keeping this for future reference
+    // if (items) {
+    //   const item = items.find(item => item.id === props.itemId);
+    //   console.log("Item changed to " item.name);
+    // }
+  }, [props.authInfo.user.currentSubject]);
+  // }, [ items, props.itemId ])
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);

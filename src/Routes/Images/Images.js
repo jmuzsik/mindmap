@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   FileInput,
   Button,
@@ -81,12 +81,37 @@ async function getImages(setImages) {
 
 export default function Images(props) {
   const [images, setImages] = useState([]);
+
+  const prevItemIdRef = useRef();
   useEffect(() => {
+    prevItemIdRef.current = props.authInfo.user.currentSubject;
+  });
+  const prevItemId = prevItemIdRef.current;
+  // TODO: rewrite other useEffects as shown below
+  // In a callback Hook to prevent unnecessary re-renders
+  const handleFetchItems = useCallback(() => {
     getImages(setImages);
-    return () => {
-      setImages([]);
-    };
   }, []);
+
+  // Fetch items on mount
+  useEffect(() => {
+    handleFetchItems();
+  }, []);
+
+  // I want this effect to run only when 'props.itemId' changes,
+  // not when 'items' changes
+  useEffect(() => {
+    if (prevItemId !== props.authInfo.user.currentSubject) {
+      handleFetchItems();
+    }
+
+    // keeping this for future reference
+    // if (items) {
+    //   const item = items.find(item => item.id === props.itemId);
+    //   console.log("Item changed to " item.name);
+    // }
+  }, [props.authInfo.user.currentSubject]);
+  // }, [ items, props.itemId ])
 
   const [image, setImage] = useState(null);
   const [formData, setFormData] = useState(null);

@@ -8,6 +8,8 @@ import CreateSubject from "./CreateSubject/CreateSubject";
 
 import { SubjectLogo, getSubject } from "./utils";
 
+import AuthClass from "../../../TopLevel/Auth/Class";
+
 import "./HorizontalNav.css";
 import Options from "./Options/Options";
 import { goTo } from "../utils";
@@ -16,7 +18,7 @@ import { goTo } from "../utils";
 // TODO: continued: and the user should have someway to see the entirety of their subject
 export default function HorizontalNav(props) {
   const { setAuthInfo, authInfo, history } = props;
-  const { user } = authInfo;
+  const user = AuthClass.getUser();
   const currentSubject = user.currentSubject;
   const userId = user._id;
   // const { picture, pic tureAlt, name } = subject;
@@ -62,13 +64,14 @@ export default function HorizontalNav(props) {
           <ChangeSubject
             {...{
               currentSubject,
-              userId,
               setSubject,
+              authInfo,
+              setAuthInfo,
               subjectsState,
               setSubjectsState,
             }}
           />
-          <Options {...{ userId, setAuthInfo }} />
+          <Options {...{ userId, authInfo, setAuthInfo }} />
         </Navbar.Group>
       </Navbar>
     </header>

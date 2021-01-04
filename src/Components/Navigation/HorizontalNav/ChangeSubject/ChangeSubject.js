@@ -13,10 +13,8 @@ import createGetOptions from "../../../../Utils/FetchOptions/Get";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
 import { organiseSubjects } from "../utils";
 
-async function apiCall(
-  { userId, currentSubject },
-  { setSubjectsState, isloading }
-) {
+async function apiCall({ currentSubject }, { setSubjectsState, isloading }) {
+  const userId = AuthClass.getUser()._id;
   const url = `/api/subject/user/${userId}`;
   const getOptions = createGetOptions();
   let subjects;
@@ -35,8 +33,8 @@ async function apiCall(
 }
 
 function createMenu(
-  { subjects, loading, userId },
-  { setSubjectsState, setSubject }
+  { subjects, loading, authInfo },
+  { setSubjectsState, setSubject, setAuthInfo }
 ) {
   return (
     <Menu>
@@ -47,8 +45,8 @@ function createMenu(
           <MenuItem
             onClick={() =>
               handleOnChange(
-                { subjects, subject, userId },
-                { setSubjectsState, setSubject }
+                { subjects, subject, authInfo },
+                { setSubjectsState, setSubject, setAuthInfo }
               )
             }
             text={subject.name}
@@ -61,10 +59,10 @@ function createMenu(
 }
 
 async function handleOnChange(
-  { subjects, subject, userId },
-  { setSubjectsState, setSubject }
+  { subjects, subject, authInfo },
+  { setSubjectsState, setSubject, setAuthInfo }
 ) {
-  console.log(userId);
+  const userId = AuthClass.getUser()._id;
   const url = `/api/users/update-subject/${userId}`;
   const postOptions = createPostOptions({ id: subject._id });
   let user;
@@ -74,7 +72,9 @@ async function handleOnChange(
   } catch (error) {
     console.log("within fetching subjects", error);
   }
-  AuthClass.setUser(Object.assign(AuthClass.getUser(), user));
+  const newUserObj = Object.assign(AuthClass.getUser(), user, {});
+  AuthClass.setUser(newUserObj);
+  setAuthInfo({ ...authInfo, user: newUserObj, updateUser: true });
   const subjectsObj = organiseSubjects({
     subjects,
     currentSubject: subject,
@@ -85,17 +85,18 @@ async function handleOnChange(
 }
 
 export default function ChangeSubject({
-  userId,
   currentSubject,
   subjectsState,
+  authInfo,
+  setAuthInfo,
   setSubject,
   setSubjectsState,
 }) {
   const [loading, isloading] = useState(true);
-  console.log(subjectsState, currentSubject);
   useEffect(() => {
+    const userId = AuthClass.getUser()._id;
     apiCall({ userId, currentSubject }, { setSubjectsState, isloading });
-  }, [userId, currentSubject]);
+  }, [currentSubject]);
 
   return (
     <React.Fragment>
@@ -108,8 +109,8 @@ export default function ChangeSubject({
       >
         <Button text="Change Subject" intent={Intent.PRIMARY} />
         {createMenu(
-          { subjects: subjectsState.subjects, loading, userId },
-          { setSubjectsState, setSubject }
+          { subjects: subjectsState.subjects, loading, authInfo },
+          { setSubjectsState, setSubject, setAuthInfo }
         )}
       </Popover>
     </React.Fragment>

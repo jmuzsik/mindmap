@@ -8,6 +8,7 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
+import AuthClass from "../../../../TopLevel/Auth/Class";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
 import { organiseSubjects } from "../utils";
 
@@ -32,7 +33,7 @@ async function apiCall(data) {
 }
 
 export async function handleSubmit(
-  { authInfo, name, subjectsState },
+  { name, subjectsState, authInfo },
   {
     setSubjectsState,
     setError,
@@ -43,8 +44,8 @@ export async function handleSubmit(
     finishedSubmitting,
   }
 ) {
-  console.log(authInfo)
-  const userId = authInfo.user._id;
+  const user = AuthClass.getUser();
+  const userId = user._id;
   let response;
   try {
     response = await apiCall({ name, userId });
@@ -58,13 +59,13 @@ export async function handleSubmit(
     return;
   }
   const newSubject = response.subject;
-  const user = response.user;
+  const updatedUser = response.user;
   const subjects = subjectsState.subjects.concat(newSubject);
   const { organisedSubjects, subject } = organiseSubjects({
     subjects,
     currentSubject: name,
   });
-  setAuthInfo({ ...authInfo, user, updateUser: true });
+  setAuthInfo({ ...authInfo, user: updatedUser, updateUser: true });
   setSubjectsState({ subjects: organisedSubjects, subject });
   setSubject(newSubject);
   isSubmitting(false);
@@ -75,8 +76,8 @@ export async function handleSubmit(
 
 export default function CreateSubject({
   setSubject,
-  authInfo,
   setAuthInfo,
+  authInfo,
   subjectsState,
   setSubjectsState,
 }) {
