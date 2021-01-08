@@ -37,7 +37,6 @@ export async function handleSubmit(
   {
     setSubjectsState,
     setError,
-    setSubject,
     setAuthInfo,
     isSubmitting,
     handleChange,
@@ -66,8 +65,7 @@ export async function handleSubmit(
     currentSubject: name,
   });
   setAuthInfo({ ...authInfo, user: updatedUser, updateUser: true });
-  setSubjectsState({ subjects: organisedSubjects, subject });
-  setSubject(newSubject);
+  setSubjectsState({ subjects: organisedSubjects, subject, current: subject });
   isSubmitting(false);
   handleChange("");
   finishedSubmitting(true);

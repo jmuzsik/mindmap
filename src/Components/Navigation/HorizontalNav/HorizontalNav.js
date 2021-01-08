@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import { Navbar, Divider } from "@blueprintjs/core";
 
-import Search from "./Search/Search";
 import ChangeSubject from "./ChangeSubject/ChangeSubject";
 import CreateSubject from "./CreateSubject/CreateSubject";
 
-import { SubjectLogo, getSubject } from "./utils";
+import { SubjectLogo, getSubject, getSubjects } from "./utils";
 
 import AuthClass from "../../../TopLevel/Auth/Class";
 
 import "./HorizontalNav.css";
 import Options from "./Options/Options";
 import { goTo } from "../utils";
+
+const DEFAULT_SUBJECTS_STATE = {
+  subject: { name: "" },
+  subjects: [],
+  current: {
+    name: "",
+    picture: "",
+    pictureAlt: "",
+  },
+};
 
 // TODO: Add something like a tooltip to the name next to the logo as there is limitted text real estate
 // TODO: continued: and the user should have someway to see the entirety of their subject
@@ -21,23 +30,32 @@ export default function HorizontalNav(props) {
   const user = AuthClass.getUser();
   const currentSubject = user.currentSubject;
   const userId = user._id;
-  // const { picture, pic tureAlt, name } = subject;
-  const [subject, setSubject] = useState({
-    name: "",
-    picture: "",
-    pictureAlt: "",
-  });
-  const [loading, finishedLoading] = useState(false);
-  const [subjectsState, setSubjectsState] = useState({
-    subject: { name: "" },
-    subjects: [],
-  });
-  const { name, picture, pictureAlt } = subject;
+
+  const [subjectsState, setSubjectsState] = useState(DEFAULT_SUBJECTS_STATE);
+  const { name, picture, pictureAlt } = subjectsState.current;
+
+  const handleFetchItems = useCallback(() => {
+    (async () => {
+      const subject = await getSubject(currentSubject);
+      const subjects = await getSubjects(currentSubject, userId);
+      setSubjectsState({
+        subject: subjects.subject,
+        current: subject,
+        subjects: subjects.subjects,
+      });
+    })();
+  }, []);
 
   useEffect(() => {
-    getSubject(currentSubject, { setSubject, finishedLoading });
-  }, [currentSubject]);
+    handleFetchItems();
+    return () => {
+      setSubjectsState(DEFAULT_SUBJECTS_STATE);
+    };
+  }, []);
 
+  // useEffect(() => {
+  //   handleFetchItems();
+  // }, [currentSubject]);
   return (
     <header className="horizontal-nav">
       <Navbar>
@@ -48,15 +66,11 @@ export default function HorizontalNav(props) {
           </Navbar.Heading>
           <Divider />
         </Navbar.Group>
-        <Navbar.Group>
-          <Search />
-        </Navbar.Group>
         <Navbar.Group className="right-group">
           <CreateSubject
             {...{
               authInfo,
               setAuthInfo,
-              setSubject,
               subjectsState,
               setSubjectsState,
             }}
@@ -64,7 +78,6 @@ export default function HorizontalNav(props) {
           <ChangeSubject
             {...{
               currentSubject,
-              setSubject,
               authInfo,
               setAuthInfo,
               subjectsState,

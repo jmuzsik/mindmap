@@ -34,7 +34,6 @@ export default function UserWrapper({ children }) {
   // TODO: what did i do to this...
   useEffect(() => {
     // Init page load without local storage does nothing
-
     // Tokens have been set in the past
     if (token && refreshToken) {
       if (authInfo.updateUser) {

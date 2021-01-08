@@ -5,7 +5,7 @@ import { ItemTypes } from "./ItemTypes";
 export const Dustbin = ({ content, name }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.BOX,
-    drop: () => ({ name: "Dustbin" }),
+    drop: () => ({ name }),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),

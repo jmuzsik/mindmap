@@ -1,6 +1,8 @@
 .layout main {
-  display: grid;
-  gap: 0 15px;
+  display: flex;
+  overflow: hidden;
+}
+.layout.open main {
   grid-template-columns: 1fr 4fr;
 }
 .layout aside {
@@ -8,4 +10,28 @@
 }
 .layout aside section {
   margin-right: 15px;
+}
+.mindmap {
+  flex-grow: 1;
+}
+.vertical-nav {
+  transition: width 0.4s;
+  width: 0;
+}
+.vertical-nav.open {
+  width: 20vw;
+}
+.vertical-nav .sidebar {
+  transition: transform 0.4s;
+}
+.open .vertical-nav .sidebar-open {
+  display: none;
+}
+.vertical-nav .sidebar-open {
+  position: fixed;
+  z-index: 10;
+}
+.vertical-nav .header {
+  display: flex;
+  justify-content: flex-end;
 }

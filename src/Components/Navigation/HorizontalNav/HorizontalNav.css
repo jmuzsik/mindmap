@@ -8,7 +8,7 @@ header.horizontal-nav {
 .horizontal-nav .bp3-navbar {
   display: grid;
   gap: 0 15px;
-  grid-template-columns: 2fr 3fr 3fr;
+  grid-template-columns: 2fr 6fr;
 }
 .horizontal-nav .bp3-navbar-group {
   float: none;

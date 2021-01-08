@@ -1,4 +1,5 @@
 import Login from "../../Requests/Login";
+import AuthClass from "../../../../TopLevel/Auth/Class";
 
 /** Handles login through email or google */
 export async function handleSubmit(e, type, options) {
@@ -27,6 +28,7 @@ export async function handleSubmit(e, type, options) {
   // This will add an error: true key if one is found, and specifies the error
   // otherwise nothing happens
   result = checkResult(result);
+
   // Handle the error and return
   if (result.error) {
     // Trigger alert
@@ -36,7 +38,13 @@ export async function handleSubmit(e, type, options) {
   }
   // Set the token to localStorage for lasting authentication
   const { user, token, refreshToken } = result;
+  console.log(token, refreshToken);
   if (token && refreshToken) {
+    AuthClass.setUser(user);
+    AuthClass.setTokens({
+      token,
+      refreshToken,
+    });
     setAuthInfo({ authenticated: true, token, refreshToken, user });
   }
   // This is a top parent function call (roots from App.js)

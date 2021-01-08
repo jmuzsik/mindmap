@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Button } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import { useSpring, animated } from "react-spring";
 import { createConnections, createNodes } from "./utils/jsx";
 
 import "./main.css";
+import { useDeepEffect } from "../../Utils/utils";
 
 const getCircularReplacer = () => {
   const seen = new WeakSet();
@@ -37,24 +40,20 @@ export default function Mindmap(props) {
     jsx: createConnections(props.nodes, props.connections),
   });
 
-  useEffect(() => {
-    if (check(nodes.data, props.nodes)) {
-      setNodes({ data: props.nodes, jsx: createNodes(props.nodes) });
-    }
-    if (check(connections.data, props.connections)) {
-      setConnections({
-        data: props.connections,
-        jsx: createConnections(props.nodes, props.connections),
-      });
-    }
-  }, [props.nodes, nodes, props.connections, connections]);
+  useDeepEffect(() => {
+    setNodes({ data: props.nodes, jsx: createNodes(props.nodes) });
+  }, [props.nodes]);
+
+  useDeepEffect(() => {
+    setConnections({
+      data: props.connections,
+      jsx: createConnections(props.nodes, props.connections),
+    });
+  }, [props.connections]);
 
   return (
-    <div className="mindmap">
-      <svg
-        viewBox="0 0 1000 1000"
-        className="mindmap-svg"
-      >
+    <div className={`mindmap`}>
+      <svg viewBox="0 0 1000 1000" className="mindmap-svg">
         <g>{connections.jsx}</g>
         <g>{nodes.jsx}</g>
       </svg>

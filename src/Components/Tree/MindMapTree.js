@@ -4,7 +4,7 @@ import { Classes, Tree } from "@blueprintjs/core";
 
 // use Component so it re-renders everytime: `nodes` are not a primitive type
 // and therefore aren't included in shallow prop comparison
-export default class MindTree extends React.Component {
+export default class MindMapTree extends React.Component {
   state = { nodes: this.props.nodes };
 
   render() {
