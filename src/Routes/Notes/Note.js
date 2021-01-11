@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
-import { Button, ButtonGroup, Card } from "@blueprintjs/core";
+import { Button, ButtonGroup, Classes } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import RichEditor from "../../Components/Editor/Editor";
 import createPostOptions from "../../Utils/FetchOptions/Post";
 
 async function handleEditSave(
   data,
-  { setLoading, setDisabled, setEditable, setNotes, idx, notes, id }
+  { setLoading, setDisabled, setEditable, changeData, id }
 ) {
   const url = `/api/note/${id}`;
-  console.log(data)
   const elem = document.querySelector(`[id="${id}"] [data-contents="true"]`);
   const height = elem.clientHeight;
   const width = elem.clientWidth;
@@ -25,18 +24,11 @@ async function handleEditSave(
     setLoading(false);
     setDisabled(false);
     setEditable(false);
-    setNotes(
-      notes.map((note, i) => {
-        if (i === idx) {
-          return editedNote;
-        } else return note;
-      })
-    );
+    changeData({ update: true });
   }
 }
 
-async function handleDelete({ setNotes, idx, notes }) {
-  const id = notes[idx]._id;
+async function handleDelete({ changeData, setOpen, id }) {
   const url = `/api/note/${id}`;
   const options = createPostOptions({}, "DELETE");
   let res = await fetch(url, options);
@@ -44,12 +36,13 @@ async function handleDelete({ setNotes, idx, notes }) {
   // TODO: handle error
   res = await res.json();
   if (!res.error) {
-    setNotes(notes.filter((_, i) => i !== idx));
+    setOpen(false);
+    changeData({ update: true });
   }
 }
 
 export default function Note(props) {
-  const { notes, note, setNotes, idx } = props;
+  const { note, changeData, setOpen, idx } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -60,7 +53,7 @@ export default function Note(props) {
 
   return (
     <form className="note">
-      <Card>
+      <div className={Classes.DIALOG_BODY}>
         <ButtonGroup>
           <Button
             type="button"
@@ -80,9 +73,10 @@ export default function Note(props) {
               setLoading(true);
               setDisabled(true);
               await handleDelete({
-                setNotes,
+                changeData,
+                setOpen,
                 idx,
-                notes,
+                id: note._id,
               });
               // TODO: Handle error
             }}
@@ -99,34 +93,37 @@ export default function Note(props) {
           readOnly={!editable}
           onChange={setEditorState}
         />
-        {editable && (
-          <Button
-            type="button"
-            intent="primary"
-            disabled={disabled}
-            loading={loading}
-            onClick={async () => {
-              setLoading(true);
-              setDisabled(true);
-              await handleEditSave(
-                { raw: convertToRaw(editorState.getCurrentContent()) },
-                {
-                  setLoading,
-                  setDisabled,
-                  setEditable,
-                  id: note._id,
-                  setNotes,
-                  idx,
-                  notes,
-                }
-              );
-              // TODO: Handle error
-            }}
-          >
-            Save
-          </Button>
-        )}
-      </Card>
+      </div>
+      <div className={Classes.DIALOG_FOOTER}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+          {editable && (
+            <Button
+              type="button"
+              intent="primary"
+              disabled={disabled}
+              loading={loading}
+              onClick={async () => {
+                setLoading(true);
+                setDisabled(true);
+                await handleEditSave(
+                  { raw: convertToRaw(editorState.getCurrentContent()) },
+                  {
+                    setLoading,
+                    setDisabled,
+                    setEditable,
+                    id: note._id,
+                    idx,
+                    changeData,
+                  }
+                );
+                // TODO: Handle error
+              }}
+            >
+              Save
+            </Button>
+          )}
+        </div>
+      </div>
     </form>
   );
 }

@@ -11,7 +11,6 @@ export default class DataTree extends React.Component {
     return (
       <Tree
         contents={this.state.nodes}
-        onNodeClick={this.handleNodeClick}
         onNodeCollapse={this.handleNodeCollapse}
         onNodeExpand={this.handleNodeExpand}
         className={Classes.ELEVATION_0}
@@ -19,15 +18,15 @@ export default class DataTree extends React.Component {
     );
   }
 
-  handleNodeClick = (nodeData, _nodePath, e) => {
-    const originallySelected = nodeData.isSelected;
-    if (!e.shiftKey) {
-      this.forEachNode(this.state.nodes, (n) => (n.isSelected = false));
-    }
-    nodeData.isSelected =
-      originallySelected == null ? true : !originallySelected;
-    this.setState(this.state);
-  };
+  // handleNodeClick = (nodeData, _nodePath, e) => {
+  //   const originallySelected = nodeData.isSelected;
+  //   if (!e.shiftKey) {
+  //     this.forEachNode(this.state.nodes, (n) => (n.isSelected = false));
+  //   }
+  //   nodeData.isSelected =
+  //     originallySelected == null ? true : !originallySelected;
+  //   this.setState(this.state);
+  // };
 
   handleNodeCollapse = (nodeData) => {
     nodeData.isExpanded = false;

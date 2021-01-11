@@ -10,17 +10,19 @@ import { useDeepEffect } from "../../Utils/utils";
 import AuthClass from "../../TopLevel/Auth/Class";
 
 import {
-  tempImages,
-  tempNotes,
-  createSmap,
   createTreeMap,
   createMindMapTreeData,
   handleDataChange,
   createMindMapStructure,
 } from "./utils";
 
-import { getImages, getMindMapTreeData, getNotes } from "./requests";
-import { getSubject } from "../../Components/Navigation/HorizontalNav/utils";
+import {
+  getImages,
+  getMindMapTreeData,
+  getNotes,
+  getSubjects,
+  getSubject,
+} from "./requests";
 
 const DEF_TREE_DATA = [
   { id: 0, childNodes: [] },
@@ -38,8 +40,14 @@ const DEF_STRUCTURE_DATA = [
 ];
 
 const DEF_SUBJECT_DATA = { name: "" };
+const DEF_SUBJECTS_DATA = [{ name: "" }];
 
-const DEF_DATA_CHANGE = { structureId: null, dataId: null };
+const DEF_DATA_CHANGE = {
+  structureId: null,
+  dataId: null,
+  update: null,
+  newData: null,
+};
 
 const DEF_MINDMAP_STRUCTURE = {
   nodes: [
@@ -69,13 +77,14 @@ const DEF_MINDMAP_STRUCTURE = {
 // - [{childNodes: [{childNodes: [...]}, ...]}]
 // For both objects there are additional key/values
 export default function Layout(props) {
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(true);
   const open = isOpen ? "open" : "closed";
 
   const [treeData, setTreeData] = useState({
     structure: DEF_STRUCTURE_DATA,
     data: DEF_TREE_DATA,
     subject: DEF_SUBJECT_DATA,
+    subjects: DEF_SUBJECTS_DATA,
     mindMapStructure: DEF_MINDMAP_STRUCTURE,
   });
   const [dataChange, changeData] = useState(DEF_DATA_CHANGE);
@@ -86,26 +95,27 @@ export default function Layout(props) {
       const user = AuthClass.getUser();
 
       const currentSubject = user.currentSubject;
-      // const notes = await getNotes();
-      // const images = await getImages();
-      const notes = tempNotes;
-      const images = tempImages;
+      const notes = await getNotes();
+      const images = await getImages();
+      // const notes = tempNotes;
+      // const images = tempImages;
       const tree = await getMindMapTreeData({
         state: { images, notes },
       });
       const subject = await getSubject(currentSubject);
-      console.log(subject);
+      const subjects = await getSubjects(currentSubject, user._id);
       const mindMapTree = createMindMapTreeData(tree);
       const mindMapStructure = createMindMapStructure(tree, subject);
 
       setTreeData({
         subject,
+        subjects,
         structure: mindMapTree,
         mindMapStructure,
         data: createTreeMap({
           images,
           notes,
-          hooks: { changeData },
+          hooks: { changeData, setTreeData },
         }),
       });
     })();
@@ -116,22 +126,48 @@ export default function Layout(props) {
     return () => {
       setTreeData();
     };
-  }, []);
+  }, [handleFetchItems]);
 
   useDeepEffect(() => {
-    if (dataChange.dataId !== null && dataChange.structureId !== null) {
+    if (dataChange.dataId && dataChange.structureId) {
       handleDataChange({ treeData, dataChange }, { setTreeData, changeData });
+    }
+    // Handle deletion and edit
+    if (dataChange.update === true) {
+      handleFetchItems();
+    }
+    // Handle insertion
+    if (dataChange.newData === true) {
+      handleFetchItems();
+    }
+    // Subject change
+    if (dataChange.updateSubject === true) {
+      AuthClass.setUser({
+        ...AuthClass.getUser(),
+        currentSubject: dataChange.currentSubject,
+      });
+      handleFetchItems();
     }
   }, [dataChange]);
 
-  const sMap = createSmap();
-  const { setAuthInfo, onLogout, authInfo, history } = props;
+  const { history } = props;
 
   return (
     <section className={`layout ${open}`}>
-      <HorizontalNav {...{ setAuthInfo, onLogout, authInfo, history }} />
+      <HorizontalNav
+        {...{
+          ...props,
+          changeData,
+          subjectsData: {
+            subjects: treeData.subjects,
+            subject: treeData.subject,
+          },
+        }}
+      />
       <main>
-        <VerticalNav {...{ history, isOpen, setOpen, treeData, setTreeData }} />
+        <VerticalNav
+          {...{ history, isOpen, setOpen, treeData, changeData, setTreeData }}
+        />
         <MindMap
           {...{
             ...props,

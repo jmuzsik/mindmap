@@ -1,75 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Popover,
   Button,
   Menu,
   MenuItem,
   Intent,
-  Spinner,
 } from "@blueprintjs/core";
 
 import AuthClass from "../../../../TopLevel/Auth/Class";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
-import { organiseSubjects } from "../utils";
 
-function createMenu(
-  { subjects, loading, authInfo },
-  { setSubjectsState, setSubject, setAuthInfo }
-) {
+function createMenu({ subjects }, { changeData }) {
   return (
     <Menu>
-      {loading ? (
-        <Spinner intent={Intent.NONE} size={Spinner.SIZE_STANDARD} />
-      ) : (
-        subjects.map((subject) => (
-          <MenuItem
-            onClick={() =>
-              handleOnChange(
-                { subjects, subject, authInfo },
-                { setSubjectsState, setSubject, setAuthInfo }
-              )
-            }
-            text={subject.name}
-            key={subject._id}
-          />
-        ))
-      )}
+      {subjects.map((subject, i) => (
+        <MenuItem
+          onClick={() => handleOnChange({ subjects, subject }, { changeData })}
+          text={subject.name}
+          key={subject._id || i}
+        />
+      ))}
     </Menu>
   );
 }
 
-async function handleOnChange(
-  { subjects, subject, authInfo },
-  { setSubjectsState, setAuthInfo }
-) {
+async function handleOnChange({ subject }, { changeData }) {
   const userId = AuthClass.getUser()._id;
   const url = `/api/users/update-subject/${userId}`;
   const postOptions = createPostOptions({ id: subject._id });
-  let user;
   try {
-    user = await fetch(url, postOptions);
-    user = await user.json();
+    await fetch(url, postOptions);
   } catch (error) {
     console.log("within fetching subjects", error);
   }
-  const newUserObj = Object.assign(AuthClass.getUser(), user, {});
-  AuthClass.setUser(newUserObj);
-  setAuthInfo({ ...authInfo, user: newUserObj, updateUser: true });
-  const subjectsObj = organiseSubjects({
-    subjects,
-    currentSubject: subject,
-  });
-  const organisedSubjects = subjectsObj.organisedSubjects;
-  setSubjectsState({ subjects: organisedSubjects, subject, current: subject });
+  changeData({ updateSubject: true, currentSubject: subject._id });
 }
 
-export default function ChangeSubject({
-  subjectsState,
-  authInfo,
-  setAuthInfo,
-  setSubjectsState,
-}) {
-
+export default function ChangeSubject({ changeData, subjects }) {
   return (
     <React.Fragment>
       <Popover
@@ -80,10 +47,7 @@ export default function ChangeSubject({
         enforceFocus={false}
       >
         <Button text="Change Subject" intent={Intent.PRIMARY} />
-        {createMenu(
-          { subjects: subjectsState.subjects, authInfo },
-          { setSubjectsState, setAuthInfo }
-        )}
+        {createMenu({ subjects }, { changeData })}
       </Popover>
     </React.Fragment>
   );

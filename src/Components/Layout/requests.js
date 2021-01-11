@@ -1,14 +1,5 @@
 import AuthClass from "../../TopLevel/Auth/Class";
 import createGetOptions from "../../Utils/FetchOptions/Get";
-import {
-  createTreeMap,
-  tempImages,
-  tempNotes,
-  createSmap,
-  createMindMapTreeData,
-  createSimplifiedTreeMap,
-  createCallout,
-} from "./utils";
 
 export async function getNotes() {
   const id = AuthClass.getUser()._id;
@@ -86,7 +77,7 @@ export async function getMindMapTreeData() {
   }
 }
 
-export async function getSubject(subjectId, setSubject) {
+export async function getSubject(subjectId) {
   const url = `/api/subject/${subjectId}`;
   const getOptions = createGetOptions();
   let subject;
@@ -100,5 +91,29 @@ export async function getSubject(subjectId, setSubject) {
   } catch (error) {
     console.log("within fetching subject by id, there is no subject!", error);
   }
-  setSubject(subject);
+  return subject;
+}
+
+export function organiseSubjects({ subjects, currentSubject }) {
+  const firstSubject = subjects.filter(({ _id }) => currentSubject === _id);
+  const otherSubjects = subjects.filter(({ _id }) => currentSubject !== _id);
+  const organisedSubjects = firstSubject.concat(otherSubjects);
+  return organisedSubjects;
+}
+
+export async function getSubjects(currentSubject, userId) {
+  const url = `/api/subject/user/${userId}`;
+  const getOptions = createGetOptions();
+  let subjects;
+  try {
+    subjects = await fetch(url, getOptions);
+    subjects = await subjects.json();
+  } catch (error) {
+    console.log("within fetching subjects", error);
+  }
+  const organisedSubjects = organiseSubjects({
+    subjects,
+    currentSubject,
+  });
+  return organisedSubjects;
 }

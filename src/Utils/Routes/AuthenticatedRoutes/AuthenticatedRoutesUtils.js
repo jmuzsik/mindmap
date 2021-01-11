@@ -1,10 +1,7 @@
 import React from "react";
-import Notes from "../../../Routes/Notes/Notes";
 
 import NewSubjectForm from "../../../Routes/Forms/NewSubjectForm/NewSubjectForm";
 
-import Home from "../../../Routes/Home/Home";
-import Images from "../../../Routes/Images/Images";
 import Layout from "../../../Components/Layout/Layout";
 // const Home = lazy(() => import("../../../Routes/Home/Home"));
 

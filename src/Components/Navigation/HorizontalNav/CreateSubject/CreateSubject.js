@@ -10,7 +10,6 @@ import { IconNames } from "@blueprintjs/icons";
 
 import AuthClass from "../../../../TopLevel/Auth/Class";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
-import { organiseSubjects } from "../utils";
 
 async function apiCall(data) {
   let result;
@@ -33,15 +32,8 @@ async function apiCall(data) {
 }
 
 export async function handleSubmit(
-  { name, subjectsState, authInfo },
-  {
-    setSubjectsState,
-    setError,
-    setAuthInfo,
-    isSubmitting,
-    handleChange,
-    finishedSubmitting,
-  }
+  { name },
+  { changeData, setError, isSubmitting, handleChange, finishedSubmitting }
 ) {
   const user = AuthClass.getUser();
   const userId = user._id;
@@ -58,27 +50,14 @@ export async function handleSubmit(
     return;
   }
   const newSubject = response.subject;
-  const updatedUser = response.user;
-  const subjects = subjectsState.subjects.concat(newSubject);
-  const { organisedSubjects, subject } = organiseSubjects({
-    subjects,
-    currentSubject: name,
-  });
-  setAuthInfo({ ...authInfo, user: updatedUser, updateUser: true });
-  setSubjectsState({ subjects: organisedSubjects, subject, current: subject });
+  changeData({ updateSubject: true, currentSubject: newSubject._id });
   isSubmitting(false);
   handleChange("");
   finishedSubmitting(true);
   setTimeout(() => finishedSubmitting(false), 5000);
 }
 
-export default function CreateSubject({
-  setSubject,
-  setAuthInfo,
-  authInfo,
-  subjectsState,
-  setSubjectsState,
-}) {
+export default function CreateSubject({ changeData }) {
   const [submitting, isSubmitting] = useState(false);
   const [submitted, finishedSubmitting] = useState(false);
   const [error, setError] = useState(false);
@@ -101,11 +80,9 @@ export default function CreateSubject({
               e.preventDefault();
               isSubmitting(true);
               handleSubmit(
-                { name, subjectsState, authInfo },
+                { name },
                 {
-                  setSubjectsState,
-                  setAuthInfo,
-                  setSubject,
+                  changeData,
                   setError,
                   isSubmitting,
                   handleChange,

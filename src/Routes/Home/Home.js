@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import AuthClass from "../../TopLevel/Auth/Class";
@@ -39,7 +39,7 @@ export default function Home(props) {
 }
 
 function Inner(props) {
-  const { structure, data, subject } = props.treeData;
+  const { structure, data } = props.treeData;
   const setTreeData = props.setTreeData;
 
   // const smap = createSmap(note);

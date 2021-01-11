@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { convertFromRaw, EditorState } from "draft-js";
 import RichEditor from "../../Components/Editor/Editor";
 import {
@@ -6,10 +6,16 @@ import {
   Intent,
   Popover,
   PopoverInteractionKind,
+  Dialog,
+  Icon,
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Box } from "../Tree/Box";
 import { Dustbin } from "../Tree/Dustbin";
+import Note from "../../Routes/Notes/Note";
+import Image from "../../Routes/Images/Image";
+
+const truncate = (s = "") => s.slice(0, 9);
 
 export const tempNotes = [
   {
@@ -68,85 +74,103 @@ export const tempImages = [
   },
 ];
 
-export function createSimplifiedTreeMap({ notes, images }) {
-  const treeNodes = [
-    {
-      id: "notes",
-      type: "folder",
-      childNodes: [],
-    },
-    {
-      id: "images",
-      type: "folder",
-      childNodes: [],
-    },
-  ];
-  for (let i = 0; i < notes.length; i++) {
-    const notesFolder = treeNodes[0];
-    const note = notes[i];
-    notesFolder.childNodes.push({
-      type: "note",
-      id: note._id,
-      childNodes: [],
-    });
-  }
-  for (let i = 0; i < images.length; i++) {
-    const imagesFolder = treeNodes[1];
-    const image = images[i];
-
-    imagesFolder.childNodes.push({
-      type: "image",
-      id: image.id,
-      childNodes: [],
-    });
-  }
-  return treeNodes;
+function DialogWrapper(props) {
+  const { className, icon, hook, title, isOpen, children } = props;
+  return (
+    <Dialog
+      {...props}
+      className={className}
+      icon={icon}
+      onClose={() => hook(false)}
+      title={title}
+      autoFocus
+      canEscapeKeyClose
+      canOutsideClickClose={false}
+      enforceFocus
+      isOpen={isOpen}
+      usePortal
+      labelElement={<Icon icon={IconNames.SHARE} />}
+    >
+      {children}
+    </Dialog>
+  );
 }
 
-function createTreeNode({ i, id, data, type, hooks }) {
+function Content(props) {
+  const { i, id, data, type, hooks } = props;
+  const [isOpen, setOpen] = useState(false);
+
+  return (
+    <div>
+      <span className="treenode-id">{truncate(id)}</span>
+      <Popover
+        popoverClassName={`${type}-${i}-popover`}
+        portalClassName={`${type}-${i}-portal`}
+        position="auto-start"
+      >
+        <Button intent={Intent.PRIMARY} minimal>
+          View
+        </Button>
+        {type === "note" ? (
+          <RichEditor
+            id={id}
+            minimal
+            controls={false}
+            editorState={EditorState.createWithContent(
+              convertFromRaw(JSON.parse(data.raw))
+            )}
+            contentEditable={false}
+            readOnly={true}
+            onChange={() => null}
+          />
+        ) : (
+          <img
+            src={data.src}
+            alt={id}
+            width={data.width}
+            height={data.height}
+          />
+        )}
+      </Popover>
+      <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>
+        Edit
+      </Button>
+      <DialogWrapper
+        {...{
+          className: type === "note" ? "edit-note-dialog" : "edit-image-dialog",
+          icon:
+            type === "note"
+              ? IconNames.ANNOTATION
+              : IconNames.IMAGE_ROTATE_LEFT,
+          hook: setOpen,
+          title: type === "note" ? "Edit Note" : "Edit Image",
+          isOpen: isOpen,
+        }}
+      >
+        {type === "note" ? (
+          <Note
+            note={data}
+            idx={i}
+            changeData={hooks.changeData}
+            setOpen={setOpen}
+          />
+        ) : (
+          <Image
+            key={id}
+            image={data}
+            changeData={hooks.changeData}
+            setOpen={setOpen}
+            idx={i}
+          />
+        )}
+      </DialogWrapper>
+    </div>
+  );
+}
+function createTreeNode(props) {
+  const { id, data, type, hooks } = props;
   return {
-    label: (
-      <Box
-        hooks={hooks}
-        name={id}
-        content={
-          <React.Fragment>
-            <span className="treenode-id">{id}</span>
-            <Popover
-              popoverClassName={`note-${i}-popover`}
-              portalClassName={`note-${i}-portal`}
-              interactionKind={PopoverInteractionKind.HOVER}
-              intent={Intent.WARNING}
-              minimal
-            >
-              <Button intent={Intent.PRIMARY} minimal>
-                View
-              </Button>
-              {type === "note" ? (
-                <RichEditor
-                  id={id}
-                  minimal
-                  controls={false}
-                  editorState={EditorState.createWithContent(
-                    convertFromRaw(JSON.parse(data.raw))
-                  )}
-                  contentEditable={false}
-                  readOnly={true}
-                  onChange={() => null}
-                />
-              ) : (
-                <img
-                  src={data.src}
-                  alt={id}
-                  width={data.width}
-                  height={data.height}
-                />
-              )}
-            </Popover>
-          </React.Fragment>
-        }
-      />
-    ),
+    label: <Box hooks={hooks} name={id} content={<Content {...props} />} />,
     id,
     hasCaret: false,
     childNodes: [],
@@ -185,7 +209,7 @@ export function createTreeMap({ images, notes, hooks }) {
         i,
         id: note._id,
         idx: id++,
-        data: { raw: note.raw },
+        data: note,
         type: "note",
         hooks,
       })
@@ -199,7 +223,7 @@ export function createTreeMap({ images, notes, hooks }) {
         i,
         id: image.id,
         idx: id++,
-        data: { src: image.src, height: image.height, width: image.width },
+        data: image,
         type: "image",
         hooks,
       })
@@ -279,7 +303,7 @@ export function createSmap(note) {
 function createContent({ type, id, label, data }) {
   return (
     <React.Fragment>
-      <span className="treenode-id">{id || label}</span>
+      <span className="treenode-id">{truncate(label)}</span>
       {type ? (
         <Popover
           popoverClassName={`note-dustbin-popover`}
