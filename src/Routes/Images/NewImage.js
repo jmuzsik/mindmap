@@ -37,7 +37,7 @@ async function submitImage(
     setDisabled(false);
     setOpen(false);
     setImage(null);
-    changeData({ newData: true });
+    changeData({ newData: true, images: true });
   }
 }
 

@@ -22,6 +22,7 @@ import {
   getNotes,
   getSubjects,
   getSubject,
+  updateFolder,
 } from "./requests";
 
 const DEF_TREE_DATA = [
@@ -129,7 +130,7 @@ export default function Layout(props) {
   }, [handleFetchItems]);
 
   useDeepEffect(() => {
-    if (dataChange.dataId && dataChange.structureId) {
+    if (!!dataChange.dataId && !!dataChange.structureId) {
       handleDataChange({ treeData, dataChange }, { setTreeData, changeData });
     }
     // Handle deletion and edit
@@ -138,7 +139,8 @@ export default function Layout(props) {
     }
     // Handle insertion
     if (dataChange.newData === true) {
-      handleFetchItems();
+      const type = dataChange.notes === true ? "notes" : "images";
+      updateFolder(treeData, { setTreeData, changeData }, type);
     }
     // Subject change
     if (dataChange.updateSubject === true) {
@@ -151,7 +153,6 @@ export default function Layout(props) {
   }, [dataChange]);
 
   const { history } = props;
-
   return (
     <section className={`layout ${open}`}>
       <HorizontalNav

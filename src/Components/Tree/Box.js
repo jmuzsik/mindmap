@@ -8,7 +8,12 @@ export const Box = ({ name, content, hooks: { changeData } }) => {
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
       if (item && dropResult) {
-        changeData({ structureId: dropResult.name, dataId: item.name });
+        console.log(item, dropResult)
+        // problem with name being a zero
+        changeData({
+          structureId: String(dropResult.name),
+          dataId: String(item.name),
+        });
       }
     },
     collect: (monitor) => ({

@@ -99,7 +99,6 @@ function DialogWrapper(props) {
 function Content(props) {
   const { i, id, data, type, hooks } = props;
   const [isOpen, setOpen] = useState(false);
-
   return (
     <div>
       <span className="treenode-id">{truncate(id)}</span>
@@ -167,7 +166,7 @@ function Content(props) {
     </div>
   );
 }
-function createTreeNode(props) {
+export function createTreeNode(props) {
   const { id, data, type, hooks } = props;
   return {
     label: <Box hooks={hooks} name={id} content={<Content {...props} />} />,
@@ -308,7 +307,6 @@ function createContent({ type, id, label, data }) {
         <Popover
           popoverClassName={`note-dustbin-popover`}
           portalClassName={`note-dustbin-portal`}
-          interactionKind={PopoverInteractionKind.HOVER}
           intent={Intent.WARNING}
           minimal
         >
@@ -378,7 +376,7 @@ export function createMindMapTreeData(mindMapTreeData) {
 // https://stackoverflow.com/questions/22222599/javascript-recursive-search-in-json-object
 function findNode(id, currentNode) {
   let i, currentChild, result;
-  if (id === currentNode.id) {
+  if (String(id) === String(currentNode.id)) {
     return currentNode;
   } else {
     // Use a for loop instead of forEach to avoid nested functions
@@ -402,7 +400,7 @@ function findNode(id, currentNode) {
 
 export function handleDataChange(
   {
-    treeData: { structure, data, subject },
+    treeData: { structure, data, subject, subjects },
     dataChange: { structureId, dataId },
   },
   { setTreeData, changeData }
@@ -419,7 +417,7 @@ export function handleDataChange(
   const dustbinObj = createDustbinObj({
     type: noteOrImageStr,
     id: node.id,
-    label: node.label,
+    label: node.id,
     data: node.data,
     additionalProps: {
       hasCaret: true,
@@ -431,7 +429,7 @@ export function handleDataChange(
     content: createContent({
       type: noteOrImageStr,
       id: node.id,
-      label: node.label,
+      label: node.id,
       data: node.data,
     }),
     id: node.id,
@@ -445,6 +443,8 @@ export function handleDataChange(
   // [0] as that is the top level node (it is array solely for the blueprint library)
   // TODO: no good reason to be array
   const mindMapTreeNode = findNode(structureId, structure[0]);
+  console.log(structureId, structure[0])
+  console.log(mindMapTreeNode)
   // push updated
   mindMapTreeNode.childNodes.push(dustbinObj);
 
@@ -452,44 +452,72 @@ export function handleDataChange(
 
   setTreeData({
     subject,
+    subjects,
     data,
     structure,
-    mindMapStructure: {
-      nodes: [
-        {
-          content: "",
-          id: "0",
-          fx: 0,
-          fy: 0,
-          width: 0,
-          height: 0,
-          nodes: [],
-        },
-      ],
-      connections: [
-        // {
-        //   source: "1",
-        //   target: "3",
-        // },
-      ],
-    },
+    mindMapStructure,
   });
   changeData({ structureId: null, dataId: null });
 }
 
+function createNodes(nodes) {
+  // use icon to distinguish - media for image
+  return nodes.map(({ data, id, label, childNodes, icon }) => ({
+    content: createContent({
+      type: icon === "media" ? "image" : "note",
+      id,
+      label: data.id,
+      data,
+    }),
+    id,
+    width: data.width,
+    height: data.height,
+    fx: 500,
+    fy: 100,
+    nodes: createNodes(childNodes),
+  }));
+}
+
+// https://stackoverflow.com/questions/35272533/flattening-deeply-nested-array-of-objects
+function flatten(arr, parent) {
+  let result = [];
+  arr.forEach(function (a) {
+    a.parent = parent;
+    result.push(a);
+    if (Array.isArray(a.childNodes)) {
+      result = result.concat(flatten(a.childNodes, a.id));
+    }
+  });
+  return result;
+}
+
+function createConnections(nodes, parent) {
+  const flattenedNodes = flatten(nodes, parent);
+  return flattenedNodes.map(({ id, parent }) => ({
+    source: parent,
+    target: id,
+  }));
+}
+
+function createHeader(subject) {
+  return <h1>{subject.name}</h1>;
+}
+
 export function createMindMapStructure(tree, subject) {
+  const node = tree[0];
   return {
     nodes: [
       {
-        content: <h3>{subject.name}</h3>,
-        id: 1,
+        content: createHeader(subject),
+        data: subject,
+        id: 0,
         fx: 400,
         fy: 50,
         width: 100,
         height: 100,
-        nodes: [],
+        nodes: createNodes(node.childNodes),
       },
     ],
-    connections: [],
+    connections: createConnections(node.childNodes, node.id),
   };
 }

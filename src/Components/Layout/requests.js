@@ -1,5 +1,6 @@
 import AuthClass from "../../TopLevel/Auth/Class";
 import createGetOptions from "../../Utils/FetchOptions/Get";
+import { updateTreeMap, createTreeNode } from "./utils";
 
 export async function getNotes() {
   const id = AuthClass.getUser()._id;
@@ -116,4 +117,40 @@ export async function getSubjects(currentSubject, userId) {
     currentSubject,
   });
   return organisedSubjects;
+}
+
+export async function updateFolder(treeData, hooks, type) {
+  const t = type === "notes" ? "note" : "image";
+  let req;
+  let data;
+  if (type === "notes") {
+    req = await getNotes();
+    data = req[req.length - 1];
+  } else {
+    req = await getImages();
+    data = req[req.length - 1];
+  }
+  const node = createTreeNode({
+    i: Math.random() * 10,
+    id: data._id || data.id,
+    idx: data._id || data.id,
+    data: data,
+    type: t,
+    hooks,
+  });
+  let notesMap = treeData.data[0],
+    imagesMap = treeData.data[1];
+  if (type === "notes") {
+    notesMap.childNodes.push(node);
+  } else {
+    imagesMap.childNodes.push(node);
+  }
+  console.log({
+    ...treeData,
+    data: [notesMap, imagesMap],
+  })
+  hooks.setTreeData({
+    ...treeData,
+    data: [notesMap, imagesMap],
+  });
 }

@@ -14,7 +14,7 @@ function GTag({ x, y, className, children, id }) {
 function createKey(i, level = 0) {
   return `${level}-${i}`;
 }
-function ForeignObject({ node, level, i, className, children }) {
+function CustomLabel({ node, level, i, className, children }) {
   const key = createKey(i, level);
   return (
     <foreignObject
@@ -22,7 +22,7 @@ function ForeignObject({ node, level, i, className, children }) {
       y={node.fy}
       width={node.width}
       height={node.height}
-      key={`${key}`}
+      key={key}
       className={className}
     >
       {children}
@@ -37,9 +37,14 @@ export function createLeftNodes(nodes) {
       id={`${i}-left`}
       className="mindmap-node mindmap-node--editable"
     >
-      <ForeignObject i={i} node={node} className="mindmap-node">
+      <CustomLabel
+        key={Math.random() * 100}
+        i={i}
+        node={node}
+        className="mindmap-node"
+      >
         {node.content}
-      </ForeignObject>
+      </CustomLabel>
     </GTag>
   ));
 }
@@ -53,9 +58,9 @@ export function createRightNodes(nodes, level = 1) {
       final.push(null);
     } else if (node.nodes.length === 0 && level > 1) {
       final.push(
-        <ForeignObject key={Math.random()} i={i} node={node} level={level}>
+        <CustomLabel key={Math.random() * 100} i={i} node={node} level={level}>
           {node.content}
-        </ForeignObject>
+        </CustomLabel>
       );
     } else {
       if (level === 1) {
@@ -71,10 +76,10 @@ export function createRightNodes(nodes, level = 1) {
         );
       } else if (level > 1) {
         elem = (
-          <ForeignObject i={i} node={node} level={level}>
+          <CustomLabel key={Math.random * 100} i={i} node={node} level={level}>
             {node.content}
             {createRightNodes(node.nodes, level + 1)}
-          </ForeignObject>
+          </CustomLabel>
         );
       }
       final.push(elem);

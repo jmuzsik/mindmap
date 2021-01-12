@@ -27,7 +27,7 @@ async function handleSubmit(
     setLoading(false);
     setDisabled(false);
     setEditorState(emptyEditor());
-    changeData({ newData: true });
+    changeData({ newData: true, notes: true });
     setOpen(false);
   }
 }
