@@ -1,6 +1,7 @@
 .layout main {
   display: flex;
   overflow: hidden;
+  width: 100%;
 }
 .layout.open main {
   grid-template-columns: 1fr 4fr;
@@ -24,6 +25,9 @@
 .vertical-nav .sidebar {
   transition: transform 0.4s;
 }
+.vertical-nav .sidebar .bp3-tree-node-label {
+  overflow-x: scroll;
+}
 .open .vertical-nav .sidebar-open {
   display: none;
 }
@@ -34,4 +38,26 @@
 .vertical-nav .header {
   display: flex;
   justify-content: flex-end;
+}
+.network-container {
+  width: 100%;
+  height: calc(100vh - 60px);
+}
+.network-container-inner {
+  height: 100%;
+  width: 100%;
+}
+.network-container svg foreignObject {
+  background-color: black;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.network-container svg .depth-0:hover {
+  fill: #D13913;
+}
+.network-container svg foreignObject:hover {
+  fill: #D13913;
+}
+.network-container svg foreignObject {
+  filter: brightness(90%);
 }

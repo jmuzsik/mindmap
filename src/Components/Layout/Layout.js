@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 import HorizontalNav from "../Navigation/HorizontalNav/HorizontalNav";
 import VerticalNav from "../Navigation/VerticalNav/VerticalNav";
@@ -8,6 +8,7 @@ import "./Layout.css";
 
 import { useDeepEffect } from "../../Utils/utils";
 import AuthClass from "../../TopLevel/Auth/Class";
+import Network from "./Network";
 
 import {
   createTreeMap,
@@ -23,6 +24,7 @@ import {
   getSubjects,
   getSubject,
   updateFolder,
+  updateTree,
 } from "./requests";
 
 const DEF_TREE_DATA = [
@@ -53,22 +55,32 @@ const DEF_DATA_CHANGE = {
 const DEF_MINDMAP_STRUCTURE = {
   nodes: [
     {
-      content: "",
-      id: 0,
-      fx: 0,
-      fy: 0,
-      width: 0,
-      height: 0,
-      nodes: [],
+      id: "0",
+      radius: 20,
+      depth: 0,
+      label: null,
+      jsx: null,
+      color: "#2965CC",
     },
   ],
-  connections: [
-    // {
-    //   source: "1",
-    //   target: "3",
-    // },
-  ],
+  links: [],
 };
+
+const DEF_DIMENSIONS = { width: null, height: null };
+
+function getDim(ref, isOpen) {
+  if (ref.current) {
+    const [width, height] = [ref.current.clientWidth, ref.current.clientHeight];
+    if (isOpen) {
+      return {
+        width: width - width / 4,
+        height,
+      };
+    } else {
+      return { width, height };
+    }
+  }
+}
 
 // This is where the primary data is located
 // Two different data objects
@@ -81,15 +93,26 @@ export default function Layout(props) {
   const [isOpen, setOpen] = useState(true);
   const open = isOpen ? "open" : "closed";
 
+  // https://stackoverflow.com/questions/49058890/how-to-get-a-react-components-size-height-width-before-render
+  // This is done to keep track of the size of the svg mindmap
+  // - as i have to work with height/width of elemtns within
+  //   the svg
+  const svgRef = useRef();
   const [treeData, setTreeData] = useState({
     structure: DEF_STRUCTURE_DATA,
     data: DEF_TREE_DATA,
     subject: DEF_SUBJECT_DATA,
     subjects: DEF_SUBJECTS_DATA,
     mindMapStructure: DEF_MINDMAP_STRUCTURE,
+    dimensions: DEF_DIMENSIONS,
   });
   const [dataChange, changeData] = useState(DEF_DATA_CHANGE);
-  // This is to be displayed if user has no subjects
+
+  const treeUpdate = async () => {
+    // const tree = await updateTree(treeData.structure, treeData.structure.id);
+    // const data = JSON.parse(tree.json);
+    // setTreeData({ ...treeData, structure: { ...data, id: tree._id } });
+  };
 
   const handleFetchItems = useCallback(() => {
     (async () => {
@@ -103,11 +126,12 @@ export default function Layout(props) {
       const tree = await getMindMapTreeData({
         state: { images, notes },
       });
+      const treeJSON = JSON.parse(tree.json);
       const subject = await getSubject(currentSubject);
       const subjects = await getSubjects(currentSubject, user._id);
-      const mindMapTree = createMindMapTreeData(tree);
-      const mindMapStructure = createMindMapStructure(tree, subject);
-
+      const mindMapTree = createMindMapTreeData(treeJSON, subject);
+      const mindMapStructure = createMindMapStructure(treeJSON, subject);
+      mindMapTree.id = tree._id;
       setTreeData({
         subject,
         subjects,
@@ -118,6 +142,7 @@ export default function Layout(props) {
           notes,
           hooks: { changeData, setTreeData },
         }),
+        dimensions: getDim(svgRef, isOpen),
       });
     })();
   }, []);
@@ -150,9 +175,23 @@ export default function Layout(props) {
       });
       handleFetchItems();
     }
+    if (dataChange.updateTree) {
+      treeUpdate();
+    }
   }, [dataChange]);
 
+  useEffect(() => {
+    if (treeData.dimensions.width && treeData.dimensions.height) {
+      setTreeData({
+        // TODO: i need to update the tree data here
+        ...treeData,
+        dimensions: getDim(svgRef, isOpen),
+      });
+    }
+  }, [isOpen]);
+
   const { history } = props;
+
   return (
     <section className={`layout ${open}`}>
       <HorizontalNav
@@ -165,17 +204,26 @@ export default function Layout(props) {
           },
         }}
       />
-      <main>
+      <main ref={svgRef}>
         <VerticalNav
           {...{ history, isOpen, setOpen, treeData, changeData, setTreeData }}
         />
-        <MindMap
+        {/* <MindMap
           {...{
             ...props,
             nodes: treeData.mindMapStructure.nodes,
             connections: treeData.mindMapStructure.connections,
           }}
-        />
+        /> */}
+        <div
+          className="network-container"
+          style={{
+            height: treeData.dimensions.height,
+            width: treeData.dimensions.width,
+          }}
+        >
+          <Network history={history} data={treeData.mindMapStructure} />
+        </div>
       </main>
     </section>
   );

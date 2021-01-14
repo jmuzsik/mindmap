@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { convertFromRaw, EditorState } from "draft-js";
 import RichEditor from "../../Components/Editor/Editor";
-import {
-  Button,
-  Intent,
-  Popover,
-  PopoverInteractionKind,
-  Dialog,
-  Icon,
-} from "@blueprintjs/core";
+import { Button, Intent, Popover, Dialog, Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Box } from "../Tree/Box";
 import { Dustbin } from "../Tree/Dustbin";
@@ -96,11 +89,30 @@ function DialogWrapper(props) {
   );
 }
 
+function createInnerNodeContent({ type, data, id }) {
+  return type === "note" ? (
+    <RichEditor
+      id={id}
+      minimal
+      controls={false}
+      editorState={EditorState.createWithContent(
+        convertFromRaw(JSON.parse(data.raw))
+      )}
+      contentEditable={false}
+      readOnly={true}
+      onChange={() => null}
+    />
+  ) : (
+    <img src={data.src} alt={id} width={data.width} height={data.height} />
+  );
+}
+
 function Content(props) {
   const { i, id, data, type, hooks } = props;
   const [isOpen, setOpen] = useState(false);
+
   return (
-    <div>
+    <div className="data-content">
       <span className="treenode-id">{truncate(id)}</span>
       <Popover
         popoverClassName={`${type}-${i}-popover`}
@@ -286,7 +298,7 @@ export function createSmap(note) {
         nodes: [],
       },
     ],
-    connections: [
+    links: [
       {
         source: "1",
         target: "3",
@@ -299,10 +311,46 @@ export function createSmap(note) {
   };
 }
 
-function createContent({ type, id, label, data }) {
+function createInnerContent({ type, id, data }) {
+  return (
+    type &&
+    (type === "note" ? (
+      <RichEditor
+        id={id}
+        minimal
+        controls={false}
+        editorState={EditorState.createWithContent(
+          convertFromRaw(JSON.parse(data.raw))
+        )}
+        contentEditable={false}
+        readOnly={true}
+        onChange={() => null}
+      />
+    ) : (
+      <img src={data.src} alt={id} width={data.width} height={data.height} />
+    ))
+  );
+}
+
+function handleStringCreation(label, data, subject, init) {
+  if (typeof label === "string") {
+    return truncate(label);
+  } else if (init) {
+    return subject.name;
+  } else if (data._id) {
+    return truncate(data._id);
+  } else {
+    return subject.name;
+  }
+}
+
+function createContent(props, subject, init) {
+  const { type, id, data, label } = props;
   return (
     <React.Fragment>
-      <span className="treenode-id">{truncate(label)}</span>
+      <span className="treenode-id">
+        {handleStringCreation(label, data, subject, init)}
+      </span>
       {type ? (
         <Popover
           popoverClassName={`note-dustbin-popover`}
@@ -313,51 +361,35 @@ function createContent({ type, id, label, data }) {
           <Button intent={Intent.PRIMARY} minimal>
             View
           </Button>
-          {type &&
-            (type === "note" ? (
-              <RichEditor
-                id={id}
-                minimal
-                controls={false}
-                editorState={EditorState.createWithContent(
-                  convertFromRaw(JSON.parse(data.raw))
-                )}
-                contentEditable={false}
-                readOnly={true}
-                onChange={() => null}
-              />
-            ) : (
-              <img
-                src={data.src}
-                alt={id}
-                width={data.width}
-                height={data.height}
-              />
-            ))}
+          {createInnerContent({ id, data, type })}
         </Popover>
       ) : null}
     </React.Fragment>
   );
 }
 
-function createDustbin({ type, id, label, data, additionalProps }) {
+function createDustbin(
+  { type, id, data, label, additionalProps },
+  subject,
+  init
+) {
   return (
     <Dustbin
       {...additionalProps}
       name={id}
-      content={createContent({ type, id, label, data })}
+      content={createContent({ type, id, data, label }, subject, init)}
     />
   );
 }
 
-function createDustbinObj(state) {
+function createDustbinObj(state, subject, childNodes, init) {
   return {
-    label: createDustbin(state),
+    label: createDustbin(state, subject, init),
     id: state.id,
     hasCaret: true,
     isExpanded: true,
     data: state.data,
-    childNodes: [],
+    childNodes: childNodes,
     icon:
       state.type === "note"
         ? IconNames.DOCUMENT
@@ -367,17 +399,51 @@ function createDustbinObj(state) {
   };
 }
 
-export function createMindMapTreeData(mindMapTreeData) {
-  return mindMapTreeData.map((state) => {
-    return createDustbinObj(state);
+function recurseNodes(nodes, subject) {
+  return nodes.map((node) => {
+    return createDustbinObj(
+      node,
+      subject,
+      node.childNodes ? recurseNodes(node.childNodes, subject) : []
+    );
   });
 }
 
+export function createMindMapTreeData(mindMapTreeData, subject) {
+  const mainNode = mindMapTreeData.nodes[0];
+  console.log(mainNode);
+  let nodes;
+  if (mainNode.childNodes) {
+    nodes = [
+      createDustbinObj(
+        mainNode,
+        subject,
+        recurseNodes(mainNode.childNodes, subject, []),
+        true
+      ),
+    ];
+  } else {
+    nodes = [createDustbinObj(mainNode, subject, [], true)];
+  }
+
+  return {
+    nodes,
+    links: mindMapTreeData.links,
+  };
+}
+
 // https://stackoverflow.com/questions/22222599/javascript-recursive-search-in-json-object
-function findNode(id, currentNode) {
+function findNode(id, currentNode, depth = 1) {
   let i, currentChild, result;
-  if (String(id) === String(currentNode.id)) {
-    return currentNode;
+  if (
+    // note
+    String(id) === String(currentNode?.data?._id) ||
+    // image
+    String(id) === String(currentNode?.data?.id) ||
+    // init subject
+    String(id) === String(currentNode.id)
+  ) {
+    return [currentNode, depth];
   } else {
     // Use a for loop instead of forEach to avoid nested functions
     // Otherwise "return" will not work properly
@@ -385,22 +451,22 @@ function findNode(id, currentNode) {
       currentChild = currentNode.childNodes[i];
 
       // Search in the current child
-      result = findNode(id, currentChild);
+      [result, depth] = findNode(id, currentChild, depth + 1);
 
       // Return the result if the node has been found
       if (result !== false) {
-        return result;
+        return [result, depth];
       }
     }
 
     // The node has not been found and we have no more options
-    return false;
+    return [false, false];
   }
 }
 
 export function handleDataChange(
   {
-    treeData: { structure, data, subject, subjects },
+    treeData: { structure, data, subject, subjects, dimensions },
     dataChange: { structureId, dataId },
   },
   { setTreeData, changeData }
@@ -411,113 +477,205 @@ export function handleDataChange(
   // Get node from tree map
   const node = data[noteOrImage].childNodes.filter((n) => n.id === dataId)[0];
   // Remove node from tree map
-  node.className = "hidden";
-  // Update node for mind tree (ie. box becomes dustbin)
+  // TODO: turn this into something undraggable but have view/edit functionality
+  // ie. get rid of box jsx but keep other jsx
+  // { i, id, data, type, hooks }
   const noteOrImageStr = noteOrImage === 0 ? "note" : "image";
-  const dustbinObj = createDustbinObj({
-    type: noteOrImageStr,
-    id: node.id,
-    label: node.id,
-    data: node.data,
-    additionalProps: {
-      hasCaret: true,
-      isExpanded: true,
-      icon: "folder-close",
-    },
-  });
-  const treeObj = {
-    content: createContent({
+  node.label = (
+    <Content
+      {...{
+        id: node.id,
+        data: node.data,
+        hooks: { changeData },
+        type: noteOrImageStr,
+        i: Math.random() * 100,
+      }}
+    />
+  );
+  // Get insertion point
+  // [0] as that is the top level node (it is array solely for the blueprint library)
+  // TODO: no good reason to be array
+  const [mindMapTreeNode, depth] = findNode(structureId, structure.nodes[0]);
+
+  // Update node for mind tree (ie. box becomes dustbin) (max depth of 2)
+  let treeObj;
+  // Right now I only support a depth of 2: 0 -> 1 -> 1.1
+  if (depth === 2) {
+    treeObj = {
+      id: node.id,
+      hasCaret: false,
+      isExpanded: false,
+      data: node.data,
+      childNodes: [],
+      icon:
+        noteOrImageStr === "note"
+          ? IconNames.DOCUMENT
+          : noteOrImageStr === "image"
+          ? IconNames.MEDIA
+          : IconNames.FOLDER_CLOSE,
+      label: createContent({
+        type: noteOrImageStr,
+        id: node.id,
+        data: node.data,
+        label: node.id,
+      }),
+    };
+  } else {
+    treeObj = createDustbinObj({
       type: noteOrImageStr,
       id: node.id,
       label: node.id,
       data: node.data,
-    }),
-    id: node.id,
-    fx: 100,
-    fy: 100,
-    width: node.data.width,
-    height: node.data.height,
-    nodes: [],
-  };
-  // Get insertion point
-  // [0] as that is the top level node (it is array solely for the blueprint library)
-  // TODO: no good reason to be array
-  const mindMapTreeNode = findNode(structureId, structure[0]);
-  console.log(structureId, structure[0])
-  console.log(mindMapTreeNode)
+      additionalProps: {
+        hasCaret: true,
+        isExpanded: true,
+        icon: "folder-close",
+      },
+    });
+  }
   // push updated
-  mindMapTreeNode.childNodes.push(dustbinObj);
+  mindMapTreeNode.childNodes.push(treeObj);
 
   const mindMapStructure = createMindMapStructure(structure, subject);
-
+  console.log(structure);
   setTreeData({
     subject,
     subjects,
     data,
     structure,
+    dimensions,
     mindMapStructure,
   });
-  changeData({ structureId: null, dataId: null });
+
+  changeData({ structureId: null, dataId: null, updateTree: true });
 }
 
-function createNodes(nodes) {
+const createRadius = (depth) => (depth === 1 ? 10 : 5);
+
+function createNodes(nodes, parent) {
   // use icon to distinguish - media for image
-  return nodes.map(({ data, id, label, childNodes, icon }) => ({
-    content: createContent({
-      type: icon === "media" ? "image" : "note",
+  const flattenedNodes = flatten(nodes, parent);
+  return flattenedNodes.map(({ data, id, parent, icon, depth }) => {
+    const type = icon === "media" ? "image" : "note";
+    return {
+      jsx: createInnerNodeContent({
+        type,
+        id,
+        data,
+      }),
+      depth,
+      type,
       id,
-      label: data.id,
-      data,
-    }),
-    id,
-    width: data.width,
-    height: data.height,
-    fx: 500,
-    fy: 100,
-    nodes: createNodes(childNodes),
-  }));
+      parent,
+      color: pickColor("n", depth),
+      radius: createRadius(depth),
+      group: 0,
+    };
+  });
 }
 
 // https://stackoverflow.com/questions/35272533/flattening-deeply-nested-array-of-objects
-function flatten(arr, parent) {
+function flatten(array) {
   let result = [];
-  arr.forEach(function (a) {
-    a.parent = parent;
-    result.push(a);
-    if (Array.isArray(a.childNodes)) {
-      result = result.concat(flatten(a.childNodes, a.id));
+  let parent = 0;
+  let id = 1;
+  let depth = 1;
+  function inner(arr, p, i, d) {
+    for (let j = 0; j < arr.length; j++) {
+      const n = arr[j];
+      // parent is the parent elements id
+      n.parent = String(p);
+      // i is either incremented from 0 (ie. 1, ...) (depth 1) or a key corresponding to
+      // the parent (ie. 1.1, ..., 1.10, ...) - only 2 layers of depth
+      if (d === 1) {
+        n.id = String(i);
+        i++;
+      } else {
+        const key = p + "." + j;
+        n.id = key;
+      }
+      // this is the depth of the node ( -0- node -> ( -1- node, node -> ( -2- node)))
+      n.depth = d;
+      result.push(n);
+      if (Array.isArray(n.childNodes) && n.childNodes.length > 0) {
+        // Parent is now id of current node (child nodes of current node accesses here)
+        const check = result.concat(
+          inner(n.childNodes, Number(n.id), i, d + 1)
+        );
+        if (check[check.length - 1] !== undefined) {
+          result = check;
+        }
+      }
     }
-  });
+  }
+  inner(array, parent, id, depth);
   return result;
 }
 
-function createConnections(nodes, parent) {
+function calcDistance(depth) {
+  if (depth === 1) return 100;
+  else return 30;
+}
+
+// just something simple/aesthetic
+function pickColor(type, depth) {
+  if (type === "l") {
+    if (depth === 1) {
+      return colors[2];
+    }
+    return colors[4];
+  } else {
+    if (depth === 1) {
+      return colors[1];
+    } else {
+      return colors[3];
+    }
+  }
+}
+
+function createLinks(nodes, parent) {
   const flattenedNodes = flatten(nodes, parent);
-  return flattenedNodes.map(({ id, parent }) => ({
+  return flattenedNodes.map(({ id, parent, depth }) => ({
     source: parent,
     target: id,
+    distance: calcDistance(depth),
+    color: pickColor("l", depth),
   }));
 }
+
+// 0 is main node, 1 is secondary, 3 is... etc
+const colors = [
+  "#2965CC",
+  "#29A634",
+  "#D99E0B",
+  "#D13913",
+  "#8F398F",
+  "#00B3A4",
+  "#DB2C6F",
+  "#9BBF30",
+  "#96622D",
+  "#7157D9",
+];
 
 function createHeader(subject) {
   return <h1>{subject.name}</h1>;
 }
 
 export function createMindMapStructure(tree, subject) {
-  const node = tree[0];
+  const node = tree.nodes[0];
   return {
+    currentId: "1",
     nodes: [
       {
-        content: createHeader(subject),
-        data: subject,
-        id: 0,
-        fx: 400,
-        fy: 50,
-        width: 100,
-        height: 100,
-        nodes: createNodes(node.childNodes),
+        jsx: createHeader(subject),
+        id: "0",
+        type: "subject",
+        depth: 0,
+        radius: 20,
+        color: colors[0],
       },
+      ...createNodes(node.childNodes || [], "1"),
     ],
-    connections: createConnections(node.childNodes, node.id),
+    links: createLinks(node.childNodes || [], "0"),
   };
 }

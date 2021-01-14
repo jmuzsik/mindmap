@@ -7,7 +7,6 @@ import CreateSubject from "./CreateSubject/CreateSubject";
 // import Options from "./Options/Options";
 
 import { SubjectLogo } from "./utils";
-import { goTo } from "../utils";
 
 import "./HorizontalNav.css";
 
@@ -24,7 +23,7 @@ export default function HorizontalNav(props) {
     <header className="horizontal-nav">
       <Navbar>
         <Navbar.Group>
-          <Navbar.Heading onClick={() => goTo("/", history)}>
+          <Navbar.Heading>
             {subject && (
               <SubjectLogo
                 {...{

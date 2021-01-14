@@ -31,6 +31,7 @@ function check(a, b) {
 }
 
 export default function Mindmap(props) {
+  const ref = props.svgRef;
   const [nodes, setNodes] = useState({
     data: props.nodes,
     jsx: createNodes(props.nodes),
@@ -53,7 +54,7 @@ export default function Mindmap(props) {
 
   return (
     <div className={`mindmap`}>
-      <svg viewBox="0 0 1000 1000" className="mindmap-svg">
+      <svg viewBox="0 0 1000 1000" className="mindmap-svg" ref={ref}>
         <g>{connections.jsx}</g>
         <g>{nodes.jsx}</g>
       </svg>

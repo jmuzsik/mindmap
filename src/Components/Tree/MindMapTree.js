@@ -8,6 +8,7 @@ export default class MindMapTree extends React.Component {
   state = { nodes: this.props.nodes };
 
   render() {
+    console.log(this.state.nodes)
     return (
       <Tree
         contents={this.state.nodes}
@@ -49,7 +50,7 @@ export default class MindMapTree extends React.Component {
       this.forEachNode(node.childNodes, callback);
     }
   }
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (JSON.stringify(prevProps.nodes) !== JSON.stringify(this.props.nodes)) {
       this.setState({ nodes: this.props.nodes });
     }

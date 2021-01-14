@@ -1,5 +1,6 @@
 import AuthClass from "../../TopLevel/Auth/Class";
 import createGetOptions from "../../Utils/FetchOptions/Get";
+import createPostOptions from "../../Utils/FetchOptions/Post";
 import { updateTreeMap, createTreeNode } from "./utils";
 
 export async function getNotes() {
@@ -62,19 +63,20 @@ export async function getMindMapTreeData() {
     tree = await tree.json();
   } catch (error) {
     console.log("within fetching tree by id, there is no tree!", error);
-    return [
-      {
-        label: "",
-        id: 0,
-        className: "folder",
-        icon: "folder-close",
-        hasCaret: true,
-        childNodes: [],
-      },
-    ];
+    return {
+      nodes: [
+        {
+          id: "0",
+          radius: 12,
+          depth: 0,
+          jsx: null,
+        },
+      ],
+      links: [],
+    };
   }
   if (!tree.error) {
-    return JSON.parse(tree.json);
+    return tree;
   }
 }
 
@@ -145,12 +147,21 @@ export async function updateFolder(treeData, hooks, type) {
   } else {
     imagesMap.childNodes.push(node);
   }
-  console.log({
-    ...treeData,
-    data: [notesMap, imagesMap],
-  })
   hooks.setTreeData({
     ...treeData,
     data: [notesMap, imagesMap],
   });
+}
+
+export async function updateTree(data, id) {
+  const url = `/api/tree/${id}`;
+  const options = createPostOptions(data, "PUT");
+  let tree;
+  try {
+    tree = await fetch(url, options);
+    tree = await tree.json();
+  } catch (error) {
+    console.log("error in trying to update the tree", error);
+  }
+  return tree;
 }

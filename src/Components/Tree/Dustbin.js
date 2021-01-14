@@ -18,9 +18,6 @@ export const Dustbin = ({ content, name }) => {
   } else if (canDrop) {
     backgroundColor = "rgba(191, 204, 214, 0.4)";
   }
-  if (isActive) {
-    // console.log(canDrop, isOver)
-  }
   return (
     <div ref={drop} className="map" style={{ backgroundColor }}>
       {content}

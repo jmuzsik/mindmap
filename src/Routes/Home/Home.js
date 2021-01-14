@@ -14,8 +14,6 @@ export default function Home(props) {
   const { treeData, setTreeData } = props;
   const [callout, setCallout] = useState(null);
 
-  // const smap = createSmap(note);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       const user = AuthClass.getUser();
@@ -32,7 +30,7 @@ export default function Home(props) {
       {/* <MindMap nodes={sMap.nodes} connections={sMap.connections} /> */}
       {callout}
       <DndProvider backend={HTML5Backend}>
-        <Inner treeData={treeData} setTreeData={setTreeData} />
+        <Inner treeData={treeData} />
       </DndProvider>
     </div>
   );
@@ -40,13 +38,11 @@ export default function Home(props) {
 
 function Inner(props) {
   const { structure, data } = props.treeData;
-  const setTreeData = props.setTreeData;
-
-  // const smap = createSmap(note);
+  console.log(structure)
   return (
     <TreeContainer>
       <DataTree nodes={data} />
-      <MindMapTree setMindMapTreeData={setTreeData} nodes={structure} />
+      <MindMapTree nodes={structure.nodes} />
     </TreeContainer>
   );
 }
