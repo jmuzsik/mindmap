@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { convertToRaw, EditorState } from "draft-js";
 import { Button, Classes } from "@blueprintjs/core";
-import RichEditor from "../../Components/Editor/Editor";
-import createPostOptions from "../../Utils/FetchOptions/Post";
-import AuthClass from "../../TopLevel/Auth/Class";
+import RichEditor from "../../../../Components/Editor/Editor";
+import createPostOptions from "../../../../Utils/FetchOptions/Post";
+import AuthClass from "../../../../TopLevel/Auth/Class";
 
 import "./Notes.css";
 
@@ -27,7 +27,7 @@ async function handleSubmit(
     setLoading(false);
     setDisabled(false);
     setEditorState(emptyEditor());
-    changeData({ newData: true, notes: true });
+    changeData({ newData: true, notes: true, id: res.note._id });
     setOpen(false);
   }
 }

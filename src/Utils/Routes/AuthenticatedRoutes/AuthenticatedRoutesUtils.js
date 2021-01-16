@@ -2,7 +2,7 @@ import React from "react";
 
 import NewSubjectForm from "../../../Routes/Forms/NewSubjectForm/NewSubjectForm";
 
-import Layout from "../../../Components/Layout/Layout";
+import Home from "../../../Routes/Home/Home";
 // const Home = lazy(() => import("../../../Routes/Home/Home"));
 
 export function handleFirstSubjectRoute({ location: { state }, history }) {
@@ -44,12 +44,12 @@ export function renderFunction(renderProps, props) {
   }
   switch (getLocation(properties)) {
     case "/":
-      return <Layout {...properties} />;
+      return <Home {...properties} />;
     // case "/notes":
     //   return <Notes {...properties} />;
     // case "/images":
     //   return <Images {...properties} />;
     default:
-      return <Layout {...properties} />;
+      return <Home {...properties} />;
   }
 }

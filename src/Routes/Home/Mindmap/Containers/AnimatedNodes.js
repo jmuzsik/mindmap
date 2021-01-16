@@ -30,7 +30,6 @@ const AnimatedNodes = ({
   nodes,
   color,
   borderWidth,
-  borderColor,
   // handleNodeHover,
   // handleNodeLeave,
 }) => {
@@ -63,7 +62,6 @@ const AnimatedNodes = ({
                 radius={Math.max(style.radius, 0)}
                 color={color(node)}
                 borderWidth={borderWidth}
-                borderColor={borderColor(node)}
                 scale={Math.max(style.scale, 0)}
                 // handleNodeHover={handleNodeHover}
                 // handleNodeLeave={handleNodeLeave}
@@ -80,7 +78,6 @@ AnimatedNodes.propTypes = {
   nodes: PropTypes.array.isRequired,
   color: PropTypes.func.isRequired,
   borderWidth: PropTypes.number.isRequired,
-  borderColor: PropTypes.func.isRequired,
 };
 
 export default memo(AnimatedNodes);

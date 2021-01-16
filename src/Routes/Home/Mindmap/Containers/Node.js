@@ -98,7 +98,6 @@ Node.propTypes = {
   radius: PropTypes.number.isRequired,
   color: PropTypes.string.isRequired,
   borderWidth: PropTypes.number.isRequired,
-  borderColor: PropTypes.string.isRequired,
   scale: PropTypes.number,
 };
 

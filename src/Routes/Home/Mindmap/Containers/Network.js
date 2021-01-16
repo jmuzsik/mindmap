@@ -15,12 +15,10 @@ import {
   useMotionConfig,
 } from "@nivo/core";
 import { useInheritedColor } from "@nivo/colors";
-import { NetworkPropTypes, NetworkDefaultProps } from "./props";
-import { useNetwork, useNodeColor, useLinkThickness } from "./hooks";
+import { NetworkPropTypes, NetworkDefaultProps } from "../props";
+import { useNetwork, useNodeColor, useLinkThickness } from "../hooks";
 import AnimatedNodes from "./AnimatedNodes";
-import StaticNodes from "./StaticNodes";
 import AnimatedLinks from "./AnimatedLinks";
-import StaticLinks from "./StaticLinks";
 
 const Network = (props) => {
   const {
@@ -41,7 +39,6 @@ const Network = (props) => {
 
     nodeColor,
     nodeBorderWidth,
-    nodeBorderColor,
 
     linkThickness,
     linkColor,
@@ -61,7 +58,6 @@ const Network = (props) => {
   const { animate } = useMotionConfig();
   const theme = useTheme();
   const getColor = useNodeColor(nodeColor);
-  const getBorderColor = useInheritedColor(nodeBorderColor, theme);
   const getLinkThickness = useLinkThickness(linkThickness);
   const getLinkColor = useInheritedColor(linkColor, theme);
   const [nodes, links] = useNetwork({
@@ -99,18 +95,17 @@ const Network = (props) => {
   //     hideTooltip()
   // }, [hideTooltip])
   const layerById = {
-    links: React.createElement(animate === true ? AnimatedLinks : StaticLinks, {
+    links: React.createElement(AnimatedLinks, {
       key: "links",
       links,
       linkThickness: getLinkThickness,
       linkColor: getLinkColor,
     }),
-    nodes: React.createElement(animate === true ? AnimatedNodes : StaticNodes, {
+    nodes: React.createElement(AnimatedNodes, {
       key: "nodes",
       nodes,
       color: getColor,
       borderWidth: nodeBorderWidth,
-      borderColor: getBorderColor,
     //   handleNodeHover: isInteractive ? handleNodeHover : undefined,
     //   handleNodeLeave: isInteractive ? handleNodeLeave : undefined,
     }),

@@ -9,32 +9,13 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
-import "./VerticalNav.css";
-import Home from "../../../Routes/Home/Home";
-import NewNote from "../../../Routes/Notes/NewNote";
-import NewImage from "../../../Routes/Images/NewImage";
+import DnDContainer from "./DnDContainer/DnDContainer";
+import NewNote from "../Components/Notes/NewNote";
+import NewImage from "../Components/Images/NewImage";
 
-function DialogWrapper(props) {
-  const { className, icon, hook, title, isOpen, children } = props;
-  return (
-    <Dialog
-      {...props}
-      className={className}
-      icon={icon}
-      onClose={() => hook(false)}
-      title={title}
-      autoFocus
-      canEscapeKeyClose
-      canOutsideClickClose={false}
-      enforceFocus
-      isOpen={isOpen}
-      usePortal
-      labelElement={<Icon icon={IconNames.SHARE} />}
-    >
-      {children}
-    </Dialog>
-  );
-}
+import { DialogWrapper } from "../utils";
+
+import "./VerticalNav.css";
 
 export default function VerticalNav(props) {
   const { isOpen, setOpen, changeData } = props;
@@ -61,7 +42,7 @@ export default function VerticalNav(props) {
         </div>
         <Menu className="content">
           <MenuDivider title="Edit" />
-          <Home {...{ ...props, setOpen }} />
+          <DnDContainer {...{ ...props, setOpen }} />
           <MenuItem
             icon={IconNames.ANNOTATION}
             text="New Note"

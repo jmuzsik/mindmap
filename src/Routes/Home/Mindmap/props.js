@@ -8,7 +8,6 @@
  */
 import PropTypes from 'prop-types'
 import { motionPropTypes } from '@nivo/core'
-import { inheritedColorPropType } from '@nivo/colors'
 
 const commonPropTypes = {
     nodes: PropTypes.arrayOf(
@@ -36,10 +35,8 @@ const commonPropTypes = {
 
     nodeColor: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
     nodeBorderWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.func]).isRequired,
-    nodeBorderColor: inheritedColorPropType.isRequired,
 
     linkThickness: PropTypes.oneOfType([PropTypes.number, PropTypes.func]).isRequired,
-    linkColor: inheritedColorPropType.isRequired,
 
     isInteractive: PropTypes.bool.isRequired,
 }
@@ -48,11 +45,6 @@ export const NetworkPropTypes = {
     ...commonPropTypes,
     role: PropTypes.string.isRequired,
     ...motionPropTypes,
-}
-
-export const NetworkCanvasPropTypes = {
-    pixelRatio: PropTypes.number.isRequired,
-    ...commonPropTypes,
 }
 
 const commonDefaultProps = {
@@ -65,7 +57,6 @@ const commonDefaultProps = {
     iterations: 90,
 
     nodeBorderWidth: 0,
-    nodeBorderColor: { from: 'color' },
 
     linkThickness: 1,
     linkColor: { from: 'source.color' },
@@ -79,10 +70,4 @@ export const NetworkDefaultProps = {
     motionStiffness: 90,
     motionDamping: 15,
     role: 'img',
-}
-
-export const NetworkCanvasDefaultProps = {
-    ...commonDefaultProps,
-    pixelRatio:
-        global.window && global.window.devicePixelRatio ? global.window.devicePixelRatio : 1,
 }

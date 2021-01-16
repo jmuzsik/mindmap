@@ -1,5 +1,6 @@
 import AuthClass from "../../TopLevel/Auth/Class";
 import createGetOptions from "../../Utils/FetchOptions/Get";
+import createPostOptions from "../../Utils/FetchOptions/Post";
 
 export async function getNotes() {
   const id = AuthClass.getUser()._id;
@@ -61,23 +62,24 @@ export async function getMindMapTreeData() {
     tree = await tree.json();
   } catch (error) {
     console.log("within fetching tree by id, there is no tree!", error);
-    return [
-      {
-        label: "",
-        id: 0,
-        className: "folder",
-        icon: "folder-close",
-        hasCaret: true,
-        childNodes: [],
-      },
-    ];
+    return {
+      nodes: [
+        {
+          id: "0",
+          radius: 12,
+          depth: 0,
+          jsx: null,
+        },
+      ],
+      links: [],
+    };
   }
   if (!tree.error) {
-    return JSON.parse(tree.json);
+    return tree;
   }
 }
 
-export async function getSubject(subjectId, setSubject) {
+export async function getSubject(subjectId) {
   const url = `/api/subject/${subjectId}`;
   const getOptions = createGetOptions();
   let subject;
@@ -91,5 +93,99 @@ export async function getSubject(subjectId, setSubject) {
   } catch (error) {
     console.log("within fetching subject by id, there is no subject!", error);
   }
-  setSubject(subject);
+  return subject;
+}
+
+export function organiseSubjects({ subjects, currentSubject }) {
+  const firstSubject = subjects.filter(({ _id }) => currentSubject === _id);
+  const otherSubjects = subjects.filter(({ _id }) => currentSubject !== _id);
+  const organisedSubjects = firstSubject.concat(otherSubjects);
+  return organisedSubjects;
+}
+
+export async function getSubjects(currentSubject, userId) {
+  const url = `/api/subject/user/${userId}`;
+  const getOptions = createGetOptions();
+  let subjects;
+  try {
+    subjects = await fetch(url, getOptions);
+    subjects = await subjects.json();
+  } catch (error) {
+    console.log("within fetching subjects", error);
+  }
+  const organisedSubjects = organiseSubjects({
+    subjects,
+    currentSubject,
+  });
+  return organisedSubjects;
+}
+
+export async function updateFolder(treeData, hooks, type) {
+  const t = type === "notes" ? "note" : "image";
+  let req;
+  let data;
+  if (type === "notes") {
+    req = await getNotes();
+    data = req[req.length - 1];
+  } else {
+    req = await getImages();
+    data = req[req.length - 1];
+  }
+  // const node = createTreeNode({
+  //   i: Math.random() * 10,
+  //   id: data._id || data.id,
+  //   idx: data._id || data.id,
+  //   data: data,
+  //   type: t,
+  //   hooks,
+  // });
+  let notesMap = treeData.data[0],
+    imagesMap = treeData.data[1];
+  // if (type === "notes") {
+  //   notesMap.childNodes.push(node);
+  // } else {
+  //   imagesMap.childNodes.push(node);
+  // }
+  hooks.setTreeData({
+    ...treeData,
+    data: [notesMap, imagesMap],
+  });
+}
+
+export async function getNote(id) {
+  const url = `/api/note/${id}`;
+  const options = createGetOptions();
+  let note;
+  try {
+    note = await fetch(url, options);
+    note = await note.json();
+  } catch (error) {
+    console.log("error in trying to get a note by id", error);
+  }
+  return note;
+}
+export async function getImage(id) {
+  const url = `/api/image/${id}`;
+  const options = createGetOptions();
+  let image;
+  try {
+    image = await fetch(url, options);
+    image = await image.json();
+  } catch (error) {
+    console.log("error in trying to get a image by id", error);
+  }
+  return image;
+}
+
+export async function updateTree(data, id) {
+  const url = `/api/tree/${id}`;
+  const options = createPostOptions(data, "PUT");
+  let tree;
+  try {
+    tree = await fetch(url, options);
+    tree = await tree.json();
+  } catch (error) {
+    console.log("error in trying to update the tree", error);
+  }
+  return tree;
 }

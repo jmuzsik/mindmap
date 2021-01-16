@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FileInput, Button, Classes } from "@blueprintjs/core";
 import axios from "axios";
 
-import AuthClass from "../../TopLevel/Auth/Class";
+import AuthClass from "../../../../TopLevel/Auth/Class";
 
 import "./Images.css";
 
@@ -37,7 +37,7 @@ async function submitImage(
     setDisabled(false);
     setOpen(false);
     setImage(null);
-    changeData({ newData: true, images: true });
+    changeData({ newData: true, images: true, id: res.image._id });
   }
 }
 

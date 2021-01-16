@@ -1,10 +1,9 @@
 import React from "react";
 import { useDrop } from "react-dnd";
-import { ItemTypes } from "./ItemTypes";
 
 export const Dustbin = ({ content, name }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
-    accept: ItemTypes.BOX,
+    accept: "box",
     drop: () => ({ name }),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
