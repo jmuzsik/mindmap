@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import React, { Fragment, useCallback } from "react";
+import React, { Fragment } from "react";
 import {
   withContainer,
   useDimensions,

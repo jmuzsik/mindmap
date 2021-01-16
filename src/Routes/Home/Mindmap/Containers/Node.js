@@ -7,42 +7,12 @@
  * file that was distributed with this source code.
  */
 import React, { memo, useState } from "react";
-import {
-  Dialog,
-  Popover,
-  Classes,
-  Position,
-  Button,
-  Icon,
-  Intent,
-} from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
+import { Popover, Classes, Position, Button, Intent } from "@blueprintjs/core";
 import PropTypes from "prop-types";
 
-function DialogWrapper(props) {
-  const { className, icon, hook, title, isOpen, children } = props;
-  return (
-    <Dialog
-      {...props}
-      className={className}
-      icon={icon}
-      onClose={() => hook(false)}
-      title={title}
-      autoFocus
-      canEscapeKeyClose
-      canOutsideClickClose={false}
-      enforceFocus
-      isOpen={isOpen}
-      usePortal
-      labelElement={<Icon icon={IconNames.SHARE} />}
-    >
-      {children}
-    </Dialog>
-  );
-}
+import Dialog from "../../../../Components/Dialog/Dialog";
 
 const Node = ({ x, node, y, radius, color, scale = 1 }) => {
-  const [isOpen, setOpen] = useState(false);
   const { type, depth, jsx, id } = node;
   const icon = type === "note" ? "annotation" : "image-rotate-left";
   return (
@@ -61,24 +31,15 @@ const Node = ({ x, node, y, radius, color, scale = 1 }) => {
             jsx
           ) : (
             <div className="node-dialog">
-              <Button
-                intent={Intent.PRIMARY}
-                minimal
-                onClick={() => setOpen(true)}
-              >
-                View
-              </Button>
-              <DialogWrapper
+              <Dialog
                 {...{
                   className: `node-dialog-${type}`,
                   icon,
-                  hook: setOpen,
                   title: type === "note" ? "Note " + id : "Image " + id,
-                  isOpen: isOpen,
                 }}
               >
                 {jsx}
-              </DialogWrapper>
+              </Dialog>
             </div>
           )
         }

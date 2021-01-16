@@ -5,14 +5,13 @@ import AuthClass from "../../../../TopLevel/Auth/Class";
 import DataTree from "./Tree/DataTree";
 import MindMapTree from "./Tree/MindMapTree.js";
 
-import { createCallout } from "./utils";
+import { createCallout, createTreeBoxes } from "./utils";
 
 const TreeContainer = memo(function TreeContainer(props) {
   return <div className="tree-map">{props.children}</div>;
 });
 
-
-export default function Home(props) {
+export default function DnDContainer(props) {
   const { treeData } = props;
   const [callout, setCallout] = useState(null);
 
@@ -28,14 +27,28 @@ export default function Home(props) {
   }, []);
 
   return (
-    <div>
+    <React.Fragment>
       {callout}
       <DndProvider backend={HTML5Backend}>
         <TreeContainer>
-          <DataTree nodes={treeData.data} />
-          <MindMapTree nodes={treeData.structure.nodes} />
+          <DataTree
+            nodes={createTreeBoxes({
+              data: treeData.data,
+              hooks: { changeData: props.changedata },
+            })}
+          />
+          <MindMapTree
+            data={treeData.data}
+            structure={treeData.structure}
+            subject={treeData.subject}
+            // nodes={createTreeDustbins({
+            //   data: treeData.data,
+            //   structure: treeData.structure,
+            //   subject: treeData.subject,
+            // })}
+          />
         </TreeContainer>
       </DndProvider>
-    </div>
+    </React.Fragment>
   );
 }

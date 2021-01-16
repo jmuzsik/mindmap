@@ -18,16 +18,6 @@ export default class DataTree extends React.Component {
     );
   }
 
-  // handleNodeClick = (nodeData, _nodePath, e) => {
-  //   const originallySelected = nodeData.isSelected;
-  //   if (!e.shiftKey) {
-  //     this.forEachNode(this.state.nodes, (n) => (n.isSelected = false));
-  //   }
-  //   nodeData.isSelected =
-  //     originallySelected == null ? true : !originallySelected;
-  //   this.setState(this.state);
-  // };
-
   handleNodeCollapse = (nodeData) => {
     nodeData.isExpanded = false;
     this.setState(this.state);

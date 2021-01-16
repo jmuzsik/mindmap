@@ -4,16 +4,14 @@ import {
   Menu,
   MenuItem,
   Button,
-  Dialog,
-  Icon,
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
-import DnDContainer from "./DnDContainer/DnDContainer";
+import DnDContainer from "./DnD/DnD";
 import NewNote from "../Components/Notes/NewNote";
 import NewImage from "../Components/Images/NewImage";
 
-import { DialogWrapper } from "../utils";
+import Dialog from "../../../Components/Dialog/Dialog";
 
 import "./VerticalNav.css";
 
@@ -42,7 +40,11 @@ export default function VerticalNav(props) {
         </div>
         <Menu className="content">
           <MenuDivider title="Edit" />
+          {/* This is the important part */}
+          {/* This is the important part */}
           <DnDContainer {...{ ...props, setOpen }} />
+          {/* This is the important part */}
+          {/* This is the important part */}
           <MenuItem
             icon={IconNames.ANNOTATION}
             text="New Note"
@@ -55,7 +57,7 @@ export default function VerticalNav(props) {
           />
         </Menu>
       </div>
-      <DialogWrapper
+      <Dialog
         {...{
           className: "new-note-dialog",
           icon: IconNames.ANNOTATION,
@@ -65,8 +67,8 @@ export default function VerticalNav(props) {
         }}
       >
         <NewNote {...props} setOpen={setNoteOpen} changeData={changeData} />
-      </DialogWrapper>
-      <DialogWrapper
+      </Dialog>
+      <Dialog
         {...{
           className: "new-image-dialog",
           icon: IconNames.IMAGE_ROTATE_LEFT,
@@ -76,7 +78,7 @@ export default function VerticalNav(props) {
         }}
       >
         <NewImage {...props} setOpen={setImageOpen} changeData={changeData} />
-      </DialogWrapper>
+      </Dialog>
     </div>
   );
 }

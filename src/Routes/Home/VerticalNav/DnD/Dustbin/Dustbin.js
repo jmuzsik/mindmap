@@ -18,7 +18,7 @@ export const Dustbin = ({ content, name }) => {
     backgroundColor = "rgba(191, 204, 214, 0.4)";
   }
   return (
-    <div ref={drop} className="map" style={{ backgroundColor }}>
+    <div ref={drop} style={{ backgroundColor }}>
       {content}
     </div>
   );

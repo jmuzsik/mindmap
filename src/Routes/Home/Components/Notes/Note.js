@@ -42,7 +42,7 @@ async function handleDelete({ changeData, setOpen, id }) {
 }
 
 export default function Note(props) {
-  const { note, changeData, setOpen, idx } = props;
+  const { note, changeData, setOpen } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,6 @@ export default function Note(props) {
               await handleDelete({
                 changeData,
                 setOpen,
-                idx,
                 id: note._id,
               });
               // TODO: Handle error
@@ -112,7 +111,6 @@ export default function Note(props) {
                     setDisabled,
                     setEditable,
                     id: note._id,
-                    idx,
                     changeData,
                   }
                 );

@@ -2,9 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 
 import HorizontalNav from "./HorizontalNav/HorizontalNav";
 import VerticalNav from "./VerticalNav/VerticalNav";
-
-import "./Home.css";
-
 import { useDeepEffect } from "../../Utils/utils";
 import AuthClass from "../../TopLevel/Auth/Class";
 import Network from "./Mindmap/Network";
@@ -28,20 +25,25 @@ import {
   getImage,
 } from "./requests";
 
+import "./Home.css";
+
 // [[notes],[images]]
 const DEF_TREE_DATA = [[], []];
 
 const DEF_STRUCTURE_DATA = [
   {
     id: null,
-    // image or note
-    type: "",
-    nodes: [],
+    // subject
+    type: "subject",
+    name: "",
+    childNodes: [
+      // image or note with id, type, nodes
+    ],
   },
 ];
 
-const DEF_SUBJECT_DATA = { name: "" };
-const DEF_SUBJECTS_DATA = [{ name: "" }];
+const DEF_SUBJECT_DATA = { name: "", _id: "" };
+const DEF_SUBJECTS_DATA = [{ name: "", _id: "" }];
 
 const DEF_DATA_CHANGE = {
   structureId: null,
@@ -93,32 +95,33 @@ export default function Home(props) {
   const handleFetchItems = useCallback(() => {
     (async () => {
       const user = AuthClass.getUser();
-
       const currentSubject = user.currentSubject;
-      const notes = await getNotes();
-      const images = await getImages();
+      // const notes = await getNotes();
+      // const images = await getImages();
       const subject = await getSubject(currentSubject);
       const subjects = await getSubjects(currentSubject, user._id);
-      // const notes = tempNotes;
-      // const images = tempImages;
-      const tree = await getMindMapTreeData({
-        state: { images, notes },
-      });
-      const structure = JSON.parse(tree.json);
-      // const structure = createMindMapTreeData(treeJSON, subject);
-      // const mindMapStructure = createMindMapStructure(treeJSON, subject);
-      structure.id = tree._id;
+      // // const notes = tempNotes;
+      // // const images = tempImages;
+      // const tree = await getMindMapTreeData({
+      //   state: { images, notes },
+      // });
+      // const structure = JSON.parse(tree.json);
+      // // const structure = createMindMapTreeData(treeJSON, subject);
+      // // const mindMapStructure = createMindMapStructure(treeJSON, subject);
+      // structure.id = tree._id;
+      // console.log(notes, images, subject, subjects, tree, structure)
       setTreeData({
+        ...treeData,
         subject,
         subjects,
-        structure,
-        // mindMapStructure,
-        data: createTreeMap({
-          images,
-          notes,
-          hooks: { changeData, setTreeData },
-        }),
-        dimensions: getDim(svgRef, isOpen),
+        // structure,
+        // // mindMapStructure,
+        // data: createTreeMap({
+        //   images,
+        //   notes,
+        //   hooks: { changeData, setTreeData },
+        // }),
+        // dimensions: getDim(svgRef, isOpen),
       });
     })();
   }, []);
