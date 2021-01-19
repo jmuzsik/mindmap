@@ -33,7 +33,8 @@ async function handleOnChange({ subject }, { changeData }) {
   } catch (error) {
     console.log("within fetching subjects", error);
   }
-  changeData({ updateSubject: true, currentSubject: subject._id });
+  console.log(subject)
+  changeData({ updateSubject: true, currentSubject: subject });
 }
 
 export default function ChangeSubject({ changeData, subjects }) {

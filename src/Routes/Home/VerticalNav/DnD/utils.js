@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { convertFromRaw, EditorState } from "draft-js";
-import { Intent, Callout } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
 import Note from "../../Components/Notes/Note";
@@ -51,12 +51,16 @@ function TreeNodeContent(props) {
       <Popover {...{ type, id }}>
         <InnerContent {...{ type, data, id }} />
       </Popover>
+      <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>
+        View
+      </Button>
       <Dialog
         {...{
           className: aORb(type, "edit-note-dialog", "edit-image-dialog"),
           icon: aORb(type, IconNames.ANNOTATION, IconNames.IMAGE_ROTATE_LEFT),
           title: aORb(type, "Edit Note", "Edit Image"),
           isOpen,
+          setOpen,
         }}
       >
         {aORb(
@@ -100,7 +104,9 @@ function InnerContent({ type, id, data }) {
 
 export function createTreeNode(props) {
   const { id, data, type, hooks, inTree } = props;
+
   const content = <TreeNodeContent {...props} />;
+  console.log(inTree ? content : <Box hooks={hooks} name={id} content={content} />)
   return {
     label: inTree ? content : <Box hooks={hooks} name={id} content={content} />,
     id,
@@ -208,7 +214,7 @@ export function createTreeDustbins({ data, structure, subject }) {
         type: "subject",
         label: subject.name,
         id: subject._id,
-        // data: subject,
+        data: subject,
       },
       childNodes: [],
     }),
@@ -272,10 +278,3 @@ export function createTreeBoxes({ hooks, data: [notes, images] }) {
   }
   return treeNodes;
 }
-
-// Something extra
-export const createCallout = () => (
-  <Callout intent={Intent.WARNING} title="You have no subject!">
-    Please create a subject by clicking the Create Subject button above!
-  </Callout>
-);

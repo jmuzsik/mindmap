@@ -1,11 +1,8 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { memo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import AuthClass from "../../../../TopLevel/Auth/Class";
 import DataTree from "./Tree/DataTree";
 import MindMapTree from "./Tree/MindMapTree.js";
-
-import { createCallout, createTreeBoxes } from "./utils";
 
 const TreeContainer = memo(function TreeContainer(props) {
   return <div className="tree-map">{props.children}</div>;
@@ -13,39 +10,22 @@ const TreeContainer = memo(function TreeContainer(props) {
 
 export default function DnDContainer(props) {
   const { treeData } = props;
-  const [callout, setCallout] = useState(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const user = AuthClass.getUser();
-      const currentSubject = user.currentSubject;
-      if (currentSubject.length === 0) {
-        setCallout(createCallout());
-      }
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <React.Fragment>
-      {callout}
       <DndProvider backend={HTML5Backend}>
         <TreeContainer>
           <DataTree
-            nodes={createTreeBoxes({
-              data: treeData.data,
-              hooks: { changeData: props.changedata },
-            })}
+            data={treeData.data}
+            hooks={{ changeData: props.changeData }}
+            // nodes={createTreeBoxes({
+            //   data: treeData.data,
+            //   hooks: { changeData: props.changedata },
+            // })}
           />
           <MindMapTree
             data={treeData.data}
             structure={treeData.structure}
             subject={treeData.subject}
-            // nodes={createTreeDustbins({
-            //   data: treeData.data,
-            //   structure: treeData.structure,
-            //   subject: treeData.subject,
-            // })}
           />
         </TreeContainer>
       </DndProvider>

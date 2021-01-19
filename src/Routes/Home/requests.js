@@ -63,7 +63,7 @@ export async function getMindMapTreeData() {
   } catch (error) {
     console.log("within fetching tree by id, there is no tree!", error);
     return {
-      nodes: [
+      chi: [
         {
           id: "0",
           radius: 12,
@@ -92,6 +92,7 @@ export async function getSubject(subjectId) {
     subject = await subject.json();
   } catch (error) {
     console.log("within fetching subject by id, there is no subject!", error);
+    return { name: "", _id: null };
   }
   return subject;
 }

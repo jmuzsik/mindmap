@@ -10,16 +10,17 @@ export default class MindMapTree extends React.Component {
     data: this.props.data,
     structure: this.props.structure,
     subject: this.props.subject,
+    contents: createTreeDustbins({
+      data: this.props.data,
+      structure: this.props.structure,
+      subject: this.props.subject,
+    }),
   };
 
   render() {
     return (
       <Tree
-        contents={createTreeDustbins({
-          data: this.state.data,
-          structure: this.state.structure,
-          subject: this.state.subject,
-        })}
+        contents={this.state.contents}
         onNodeClick={this.handleNodeClick}
         onNodeCollapse={this.handleNodeCollapse}
         onNodeExpand={this.handleNodeExpand}
@@ -39,11 +40,13 @@ export default class MindMapTree extends React.Component {
   };
 
   handleNodeCollapse = (nodeData) => {
+    console.log(nodeData);
     nodeData.isExpanded = false;
     this.setState(this.state);
   };
 
   handleNodeExpand = (nodeData) => {
+    console.log(nodeData);
     nodeData.isExpanded = true;
     this.setState(this.state);
   };
@@ -61,17 +64,15 @@ export default class MindMapTree extends React.Component {
   componentDidUpdate(prevProps) {
     if (
       JSON.stringify(prevProps.structure) !==
-      JSON.stringify(this.props.structure)
-    ) {
-      this.setState({ nodes: this.props.structure, data: this.props.data });
-    }
-    if (
+        JSON.stringify(this.props.structure) ||
       JSON.stringify(prevProps.subject) !== JSON.stringify(this.props.subject)
     ) {
       this.setState({
-        data: this.props.data,
-        structure: this.props.structure,
-        subject: this.props.subject,
+        contents: createTreeDustbins({
+          data: this.props.data,
+          structure: this.props.structure,
+          subject: this.props.subject,
+        }),
       });
     }
   }

@@ -19,6 +19,7 @@ export const Box = ({ name, content, hooks: { changeData } }) => {
     }),
   });
   const opacity = isDragging ? 0.4 : 1;
+
   return (
     <div ref={drag} className="box" style={{ opacity }}>
       {content}

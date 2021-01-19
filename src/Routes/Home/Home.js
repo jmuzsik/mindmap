@@ -42,8 +42,8 @@ const DEF_STRUCTURE_DATA = [
   },
 ];
 
-const DEF_SUBJECT_DATA = { name: "", _id: "" };
-const DEF_SUBJECTS_DATA = [{ name: "", _id: "" }];
+const DEF_SUBJECT_DATA = { name: "", _id: null };
+const DEF_SUBJECTS_DATA = [];
 
 const DEF_DATA_CHANGE = {
   structureId: null,
@@ -96,32 +96,31 @@ export default function Home(props) {
     (async () => {
       const user = AuthClass.getUser();
       const currentSubject = user.currentSubject;
-      // const notes = await getNotes();
-      // const images = await getImages();
+      const notes = await getNotes();
+      const images = await getImages();
       const subject = await getSubject(currentSubject);
       const subjects = await getSubjects(currentSubject, user._id);
-      // // const notes = tempNotes;
-      // // const images = tempImages;
-      // const tree = await getMindMapTreeData({
-      //   state: { images, notes },
-      // });
-      // const structure = JSON.parse(tree.json);
+      const tree = await getMindMapTreeData({
+        state: { images, notes },
+      });
+      const structure = JSON.parse(tree.structure);
       // // const structure = createMindMapTreeData(treeJSON, subject);
       // // const mindMapStructure = createMindMapStructure(treeJSON, subject);
-      // structure.id = tree._id;
+      structure.id = tree._id;
       // console.log(notes, images, subject, subjects, tree, structure)
       setTreeData({
         ...treeData,
+        data: [notes, images],
         subject,
         subjects,
-        // structure,
+        // structure: [structure],
+        dimensions: getDim(svgRef, isOpen),
         // // mindMapStructure,
         // data: createTreeMap({
         //   images,
         //   notes,
         //   hooks: { changeData, setTreeData },
         // }),
-        // dimensions: getDim(svgRef, isOpen),
       });
     })();
   }, []);
@@ -134,17 +133,18 @@ export default function Home(props) {
   }, [handleFetchItems]);
 
   useDeepEffect(async () => {
+    // TODO: Make this a switch statement - perhaps utilise a reducer!
     // Handle insertion
     if (dataChange.newData === true) {
       // All i want to do here is alter the state for the corresponding data
-      const data = [];
+      console.log(dataChange)
+      const data = JSON.parse(JSON.stringify(treeData.data))
       if (dataChange.notes === true) {
-        data[0] = treeData.data[0].push(await getNote(dataChange.id));
-        data[1] = treeData.data[1];
+        data[0].push(dataChange.note);
       } else {
-        data[0] = treeData.data[0];
-        data[1] = treeData.data[1].push(await getImage(dataChange.id));
+        data[1].push(dataChange.image);
       }
+
       setTreeData({ ...treeData, data });
     }
     if (!!dataChange.dataId && !!dataChange.structureId) {
@@ -152,15 +152,30 @@ export default function Home(props) {
     }
     // Handle deletion and edit
     if (dataChange.update === true) {
-      handleFetchItems();
+      // handleFetchItems();
     }
     // Subject change
+
+    if (dataChange.newSubject === true) {
+      AuthClass.setUser({
+        ...AuthClass.getUser(),
+        currentSubject: dataChange.currentSubject._id,
+      });
+      treeData.subjects.push(dataChange.currentSubject);
+      setTreeData({
+        ...treeData,
+        subject: dataChange.currentSubject,
+      });
+    }
     if (dataChange.updateSubject === true) {
       AuthClass.setUser({
         ...AuthClass.getUser(),
-        currentSubject: dataChange.currentSubject,
+        currentSubject: dataChange.currentSubject._id,
       });
-      handleFetchItems();
+      setTreeData({
+        ...treeData,
+        subject: dataChange.currentSubject,
+      });
     }
     if (dataChange.updateTree) {
       treeUpdate();

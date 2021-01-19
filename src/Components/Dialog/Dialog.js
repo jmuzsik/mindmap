@@ -1,37 +1,25 @@
-import React, { useState } from "react";
-import { Dialog, Icon, Button, Intent } from "@blueprintjs/core";
+import React from "react";
+import { Dialog, Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
 export default function DialogWrapper(props) {
-  const { className, icon, hook, title, children } = props;
-  const customOpen = props.isOpen;
-  const customHook = props.hook;
-  const [isOpen, setOpen] = useState(false);
+  const { className, icon, setOpen, title, children, isOpen } = props;
   return (
-    <React.Fragment>
-      <Button
-        intent={Intent.PRIMARY}
-        minimal
-        onClick={() => (customHook ? customHook(true) : setOpen(true))}
-      >
-        Edit
-      </Button>
-      <Dialog
-        {...props}
-        className={className}
-        icon={icon}
-        onClose={() => hook(false)}
-        title={title}
-        autoFocus
-        canEscapeKeyClose
-        canOutsideClickClose={false}
-        enforceFocus
-        isOpen={customOpen ? customOpen : isOpen}
-        usePortal
-        labelElement={<Icon icon={IconNames.SHARE} />}
-      >
-        {children}
-      </Dialog>
-    </React.Fragment>
+    <Dialog
+      {...props}
+      className={className}
+      icon={icon}
+      onClose={() => setOpen(false)}
+      title={title}
+      autoFocus
+      canEscapeKeyClose
+      canOutsideClickClose={false}
+      enforceFocus
+      isOpen={isOpen}
+      usePortal
+      labelElement={<Icon icon={IconNames.SHARE} />}
+    >
+      {children}
+    </Dialog>
   );
 }

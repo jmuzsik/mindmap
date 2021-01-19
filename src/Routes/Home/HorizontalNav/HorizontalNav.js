@@ -15,7 +15,6 @@ import "./HorizontalNav.css";
 export default function HorizontalNav(props) {
   const {
     subjectsData: { subjects, subject },
-    history,
     changeData,
   } = props;
 

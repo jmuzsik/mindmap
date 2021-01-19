@@ -50,11 +50,10 @@ export async function handleSubmit(
     return;
   }
   const newSubject = response.subject;
-  changeData({ updateSubject: true, currentSubject: newSubject._id });
+  changeData({ newSubject: true, currentSubject: newSubject });
   isSubmitting(false);
   handleChange("");
   finishedSubmitting(true);
-  setTimeout(() => finishedSubmitting(false), 5000);
 }
 
 export default function CreateSubject({ changeData }) {

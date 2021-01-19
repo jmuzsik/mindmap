@@ -3,7 +3,7 @@
 .home main {
   display: grid;
   gap: 0 15px;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 4fr 4fr;
 }
 .home .content-wrapper {
 }
@@ -28,7 +28,7 @@
   width: 100%;
 }
 .layout.open main {
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 4fr 4fr;
 }
 .layout aside {
   margin-right: 15px;
@@ -44,7 +44,7 @@
   width: 0;
 }
 .vertical-nav.open {
-  width: 20vw;
+  width: 100%;
 }
 .vertical-nav .sidebar {
   transition: transform 0.4s;

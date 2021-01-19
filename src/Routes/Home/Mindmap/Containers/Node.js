@@ -13,6 +13,7 @@ import PropTypes from "prop-types";
 import Dialog from "../../../../Components/Dialog/Dialog";
 
 const Node = ({ x, node, y, radius, color, scale = 1 }) => {
+  const [isOpen, setOpen] = useState(false);
   const { type, depth, jsx, id } = node;
   const icon = type === "note" ? "annotation" : "image-rotate-left";
   return (
@@ -31,11 +32,20 @@ const Node = ({ x, node, y, radius, color, scale = 1 }) => {
             jsx
           ) : (
             <div className="node-dialog">
+              <Button
+                intent={Intent.PRIMARY}
+                minimal
+                onClick={() => setOpen(true)}
+              >
+                View
+              </Button>
               <Dialog
                 {...{
                   className: `node-dialog-${type}`,
                   icon,
                   title: type === "note" ? "Note " + id : "Image " + id,
+                  isOpen,
+                  setOpen,
                 }}
               >
                 {jsx}
