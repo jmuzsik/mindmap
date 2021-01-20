@@ -1,14 +1,13 @@
 import React from "react";
-import {
-  Popover,
-  Button,
-  Menu,
-  MenuItem,
-  Intent,
-} from "@blueprintjs/core";
+import { Popover, Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
 
 import AuthClass from "../../../../TopLevel/Auth/Class";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
+import {
+  getImages,
+  getMindMapTreeData,
+  getNotes,
+} from "../../requests";
 
 function createMenu({ subjects }, { changeData }) {
   return (
@@ -33,8 +32,21 @@ async function handleOnChange({ subject }, { changeData }) {
   } catch (error) {
     console.log("within fetching subjects", error);
   }
-  console.log(subject)
-  changeData({ updateSubject: true, currentSubject: subject });
+  AuthClass.setUser({
+    ...AuthClass.getUser(),
+    currentSubject: subject._id,
+  });
+  const notes = await getNotes();
+  const images = await getImages();
+  const tree = await getMindMapTreeData({
+    state: { images, notes },
+  });
+  const structure = JSON.parse(tree.structure);
+  changeData({
+    updateSubject: true,
+    currentSubject: subject,
+    data: { data: [notes, images], structure },
+  });
 }
 
 export default function ChangeSubject({ changeData, subjects }) {

@@ -24,7 +24,7 @@ async function handleEditSave(
     setLoading(false);
     setDisabled(false);
     setEditable(false);
-    changeData({ update: true });
+    changeData({ edit: true, note: editedNote, type: "note" });
   }
 }
 
@@ -37,7 +37,7 @@ async function handleDelete({ changeData, setOpen, id }) {
   res = await res.json();
   if (!res.error) {
     setOpen(false);
-    changeData({ update: true });
+    changeData({ delete: true, type: "note", id });
   }
 }
 

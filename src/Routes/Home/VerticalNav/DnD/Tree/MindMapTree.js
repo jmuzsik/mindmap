@@ -1,20 +1,11 @@
 import React from "react";
 import { Classes, Tree } from "@blueprintjs/core";
 
-import { createTreeDustbins } from "../utils";
-
 // use Component so it re-renders everytime: `nodes` are not a primitive type
 // and therefore aren't included in shallow prop comparison
 export default class MindMapTree extends React.Component {
   state = {
-    data: this.props.data,
-    structure: this.props.structure,
-    subject: this.props.subject,
-    contents: createTreeDustbins({
-      data: this.props.data,
-      structure: this.props.structure,
-      subject: this.props.subject,
-    }),
+    contents: this.props.contents,
   };
 
   render() {
@@ -63,16 +54,10 @@ export default class MindMapTree extends React.Component {
   }
   componentDidUpdate(prevProps) {
     if (
-      JSON.stringify(prevProps.structure) !==
-        JSON.stringify(this.props.structure) ||
-      JSON.stringify(prevProps.subject) !== JSON.stringify(this.props.subject)
+      JSON.stringify(prevProps.update) !== JSON.stringify(this.props.update)
     ) {
       this.setState({
-        contents: createTreeDustbins({
-          data: this.props.data,
-          structure: this.props.structure,
-          subject: this.props.subject,
-        }),
+        contents: this.props.contents,
       });
     }
   }

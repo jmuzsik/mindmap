@@ -4,6 +4,7 @@ import { IconNames } from "@blueprintjs/icons";
 
 export default function DialogWrapper(props) {
   const { className, icon, setOpen, title, children, isOpen } = props;
+
   return (
     <Dialog
       {...props}

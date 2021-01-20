@@ -1,7 +1,7 @@
 export function handleDataChange(
   {
     treeData: { structure, data, subject, subjects, dimensions },
-    dataChange: { structureId, dataId },
+    dataChange: { parentId, dataId },
   },
   { setTreeData, changeData }
 ) {
@@ -28,7 +28,7 @@ export function handleDataChange(
   // Get insertion point
   // [0] as that is the top level node (it is array solely for the blueprint library)
   // TODO: no good reason to be array
-  // const [mindMapTreeNode, depth] = findNode(structureId, structure.nodes[0]);
+  // const [mindMapTreeNode, depth] = findNode(parentId, structure.nodes[0]);
 
   // Update node for mind tree (ie. box becomes dustbin) (max depth of 2)
   let treeObj;
@@ -80,5 +80,5 @@ export function handleDataChange(
   //   mindMapStructure,
   // });
 
-  changeData({ structureId: null, dataId: null, updateTree: true });
+  changeData({ parentId: null, dataId: null, updateTree: true });
 }

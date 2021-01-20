@@ -11,6 +11,8 @@ import RichEditor from "../../../../Components/Editor/Editor";
 import { Box } from "./Box/Box";
 import { Dustbin } from "./Dustbin/Dustbin";
 
+import { removeFromTree } from "../../requests";
+
 const truncate = (s = "") => s.slice(0, 9);
 
 function aORb(type, a, b, c = null) {
@@ -27,7 +29,7 @@ function handleStringCreation(label, data) {
 }
 
 function createContent(props) {
-  const { type, id, data, label } = props;
+  const { type, id, data, label, changeData } = props;
   return (
     <React.Fragment>
       <span className="treenode-id">{handleStringCreation(label, data)}</span>
@@ -36,13 +38,16 @@ function createContent(props) {
           <InnerContent {...{ id, data, type }} />
         </Popover>
       )}
+      {type !== "subject" && (
+        <Button onClick={() => removeFromTree(id, changeData)}>Remove</Button>
+      )}
     </React.Fragment>
   );
 }
 
 // This and below corresponds to the notes/images of the tree
 function TreeNodeContent(props) {
-  const { i, id, data, type, hooks } = props;
+  const { i, id, data, type, changeData } = props;
   const [isOpen, setOpen] = useState(false);
 
   return (
@@ -52,7 +57,7 @@ function TreeNodeContent(props) {
         <InnerContent {...{ type, data, id }} />
       </Popover>
       <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>
-        View
+        Edit
       </Button>
       <Dialog
         {...{
@@ -68,13 +73,13 @@ function TreeNodeContent(props) {
           <Note
             note={data}
             idx={i}
-            changeData={hooks.changeData}
+            changeData={changeData}
             setOpen={setOpen}
           />,
           <Image
             key={id}
             image={data}
-            changeData={hooks.changeData}
+            changeData={changeData}
             setOpen={setOpen}
             idx={i}
           />
@@ -103,12 +108,16 @@ function InnerContent({ type, id, data }) {
 }
 
 export function createTreeNode(props) {
-  const { id, data, type, hooks, inTree } = props;
+  const { id, data, type, changeData, inTree } = props;
 
   const content = <TreeNodeContent {...props} />;
-  console.log(inTree ? content : <Box hooks={hooks} name={id} content={content} />)
+
   return {
-    label: inTree ? content : <Box hooks={hooks} name={id} content={content} />,
+    label: inTree ? (
+      content
+    ) : (
+      <Box hooks={{ changeData }} name={id} content={content} />
+    ),
     id,
     hasCaret: false,
     childNodes: [],
@@ -117,40 +126,9 @@ export function createTreeNode(props) {
   };
 }
 
-// https://stackoverflow.com/questions/22222599/javascript-recursive-search-in-json-object
-function findNode(id, currentNode, depth = 1) {
-  let i, currentChild, result;
-  if (
-    // note
-    String(id) === String(currentNode?.data?._id) ||
-    // image
-    String(id) === String(currentNode?.data?.id) ||
-    //  subject
-    String(id) === String(currentNode.id)
-  ) {
-    return [currentNode, depth];
-  } else {
-    // Use a for loop instead of forEach to avoid nested functions
-    // Otherwise "return" will not work properly
-    for (i = 0; i < currentNode.childNodes.length; i += 1) {
-      currentChild = currentNode.childNodes[i];
-
-      // Search in the current child
-      [result, depth] = findNode(id, currentChild, depth + 1);
-
-      // Return the result if the node has been found
-      if (result !== false) {
-        return [result, depth];
-      }
-    }
-
-    // The node has not been found and we have no more options
-    return [false, false];
-  }
-}
-function createDustbinObj({ state, childNodes }) {
+function createDustbinObj({ state, childNodes, changeData }) {
   return {
-    label: createDustbin(state),
+    label: createDustbin(state, changeData),
     id: state.id,
     hasCaret: true,
     isExpanded: true,
@@ -165,49 +143,83 @@ function createDustbinObj({ state, childNodes }) {
   };
 }
 
-function createDustbin({ type, id, data, label, additionalProps = {} }) {
+function createDustbin(
+  { type, id, data, label, additionalProps = {} },
+  changeData
+) {
+  const l = type === "subject" ? label : id;
   return (
     <Dustbin
       {...additionalProps}
       name={id}
-      content={createContent({ type, id, data, label })}
+      content={createContent({ type, id, data, label: l, changeData })}
     />
   );
 }
 
-function recurseNested(cur, data) {
-  if (!cur) return;
-  for (let i = 0; i < cur.childNodes.length; i++) {
-    const elem = cur.childNodes[i];
-    const id = elem._id;
+function recurseNested(cur, data, depth = 1, changeData) {
+  for (let i = 0; i < cur.length; i++) {
+    const elem = cur[i];
+    const id = elem.id;
     let noteOrImage, node;
     // Find the node in image or note array
     for (let j = 0; j < data.length; j++) {
-      node = data[j].find((el) => el.id === id);
+      node = data[j].find((el) => el._id === id);
       if (node) {
         noteOrImage = j;
         break;
       }
     }
-
     if (node) {
+      console.log(node);
       const type = noteOrImage === 0 ? "note" : "image";
-      const obj = createDustbinObj({
-        state: {
-          type,
-          id: node.id,
-          data: node.data,
-          label: node.id,
-        },
-        childNodes: recurseNested(elem.childNodes, data),
-      });
-      cur.childNodes.push(obj);
+      // atm I only want to handle a depth of 2 in the mind map
+      let jsxObj;
+      if (depth === 2) {
+        jsxObj = {
+          label: createContent({
+            type,
+            id: node._id,
+            data: node,
+            label: node._id,
+            changeData,
+          }),
+          id: node._id,
+          hasCaret: true,
+          isExpanded: true,
+          data: node || {},
+          childNodes: [],
+          icon: aORb(
+            type,
+            IconNames.DOCUMENT,
+            IconNames.MEDIA,
+            IconNames.FOLDER_CLOSE
+          ),
+        };
+      } else {
+        jsxObj = createDustbinObj({
+          state: {
+            type,
+            id: node._id,
+            data: node,
+            label: node._id,
+          },
+          changeData,
+          childNodes: recurseNested(
+            elem.childNodes,
+            data,
+            depth + 1,
+            changeData
+          ),
+        });
+      }
+      cur[i] = jsxObj;
     }
   }
   return cur;
 }
 
-export function createTreeDustbins({ data, structure, subject }) {
+export function createTreeDustbins({ data, structure, subject, changeData }) {
   const nodes = [
     createDustbinObj({
       state: {
@@ -216,15 +228,18 @@ export function createTreeDustbins({ data, structure, subject }) {
         id: subject._id,
         data: subject,
       },
+      changeData,
       childNodes: [],
     }),
   ];
-  const result = recurseNested(structure[0].childNodes[0], data);
-  if (result) nodes[0].childNodes.push(result);
+  const stuctureCopy = JSON.parse(JSON.stringify(structure));
+  const result = recurseNested(stuctureCopy[0].childNodes, data, 1, changeData);
+  if (result) nodes[0].childNodes = result;
+
   return nodes;
 }
 
-export function createTreeBoxes({ hooks, data: [notes, images] }) {
+export function createTreeBoxes({ changeData, data: [notes, images] }) {
   let id = 0;
   const treeNodes = [
     {
@@ -256,7 +271,7 @@ export function createTreeBoxes({ hooks, data: [notes, images] }) {
         idx: id++,
         data: note,
         type: "note",
-        hooks,
+        changeData,
         inTree: note.inTree,
       })
     );
@@ -267,11 +282,11 @@ export function createTreeBoxes({ hooks, data: [notes, images] }) {
     imagesFolder.childNodes.push(
       createTreeNode({
         i,
-        id: image.id,
+        id: image._id,
         idx: id++,
         data: image,
         type: "image",
-        hooks,
+        changeData,
         inTree: image.inTree,
       })
     );

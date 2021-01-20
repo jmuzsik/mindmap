@@ -1,16 +1,12 @@
 import React from "react";
 
 import { Classes, Tree } from "@blueprintjs/core";
-import { createTreeBoxes } from "../utils";
 
 // use Component so it re-renders everytime: `nodes` are not a primitive type
 // and therefore aren't included in shallow prop comparison
 export default class DataTree extends React.Component {
   state = {
-    contents: createTreeBoxes({
-      data: this.props.data,
-      hooks: this.props.hooks,
-    }),
+    contents: this.props.contents,
   };
 
   render() {
@@ -45,13 +41,11 @@ export default class DataTree extends React.Component {
     }
   }
   componentDidUpdate(prevProps) {
-    console.log(prevProps.data, this.props.data)
-    if (JSON.stringify(prevProps.data) !== JSON.stringify(this.props.data)) {
+    if (
+      JSON.stringify(prevProps.update) !== JSON.stringify(this.props.update)
+    ) {
       this.setState({
-        contents: createTreeBoxes({
-          data: this.props.data,
-          hooks: this.props.hooks,
-        }),
+        contents: this.props.contents,
       });
     }
   }

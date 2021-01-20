@@ -10,6 +10,7 @@ import { IconNames } from "@blueprintjs/icons";
 
 import AuthClass from "../../../../TopLevel/Auth/Class";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
+import { getImages, getMindMapTreeData, getNotes } from "../../requests";
 
 async function apiCall(data) {
   let result;
@@ -50,10 +51,27 @@ export async function handleSubmit(
     return;
   }
   const newSubject = response.subject;
-  changeData({ newSubject: true, currentSubject: newSubject });
+  AuthClass.setUser({
+    ...AuthClass.getUser(),
+    currentSubject: newSubject._id,
+  });
+  const notes = await getNotes();
+  const images = await getImages();
+  const tree = await getMindMapTreeData();
+  const structure = JSON.parse(tree.structure);
+
+  changeData({
+    newSubject: true,
+    currentSubject: newSubject,
+    data: [notes, images],
+    structure,
+  });
   isSubmitting(false);
   handleChange("");
   finishedSubmitting(true);
+  setTimeout(() => {
+    finishedSubmitting(false);
+  }, 4000);
 }
 
 export default function CreateSubject({ changeData }) {

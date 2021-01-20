@@ -20,7 +20,6 @@ export default function VerticalNav(props) {
   const [callout, setCallout] = useState(null);
   let leftOpen = isOpen ? "open" : "closed";
 
-  
   useEffect(() => {
     const timer = setTimeout(() => {
       if (props.treeData.subject._id === null) {
@@ -28,7 +27,7 @@ export default function VerticalNav(props) {
       } else {
         setCallout(null);
       }
-    }, 1000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, [props.treeData.subject._id]);
 

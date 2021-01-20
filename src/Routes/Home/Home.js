@@ -32,7 +32,7 @@ const DEF_TREE_DATA = [[], []];
 
 const DEF_STRUCTURE_DATA = [
   {
-    id: null,
+    id: 0,
     // subject
     type: "subject",
     name: "",
@@ -46,7 +46,7 @@ const DEF_SUBJECT_DATA = { name: "", _id: null };
 const DEF_SUBJECTS_DATA = [];
 
 const DEF_DATA_CHANGE = {
-  structureId: null,
+  parentId: null,
   dataId: null,
   update: null,
   newData: null,
@@ -78,6 +78,7 @@ export default function Home(props) {
   //   the svg
   const svgRef = useRef();
   const [treeData, setTreeData] = useState({
+    // [[], []]
     data: DEF_TREE_DATA,
     structure: DEF_STRUCTURE_DATA,
     subject: DEF_SUBJECT_DATA,
@@ -95,32 +96,22 @@ export default function Home(props) {
   const handleFetchItems = useCallback(() => {
     (async () => {
       const user = AuthClass.getUser();
+      console.log(user);
       const currentSubject = user.currentSubject;
+      const subjects = await getSubjects(currentSubject, user._id);
       const notes = await getNotes();
       const images = await getImages();
       const subject = await getSubject(currentSubject);
-      const subjects = await getSubjects(currentSubject, user._id);
-      const tree = await getMindMapTreeData({
-        state: { images, notes },
-      });
+      const tree = await getMindMapTreeData();
       const structure = JSON.parse(tree.structure);
-      // // const structure = createMindMapTreeData(treeJSON, subject);
-      // // const mindMapStructure = createMindMapStructure(treeJSON, subject);
-      structure.id = tree._id;
-      // console.log(notes, images, subject, subjects, tree, structure)
+
       setTreeData({
         ...treeData,
         data: [notes, images],
         subject,
         subjects,
-        // structure: [structure],
+        structure,
         dimensions: getDim(svgRef, isOpen),
-        // // mindMapStructure,
-        // data: createTreeMap({
-        //   images,
-        //   notes,
-        //   hooks: { changeData, setTreeData },
-        // }),
       });
     })();
   }, []);
@@ -137,8 +128,7 @@ export default function Home(props) {
     // Handle insertion
     if (dataChange.newData === true) {
       // All i want to do here is alter the state for the corresponding data
-      console.log(dataChange)
-      const data = JSON.parse(JSON.stringify(treeData.data))
+      const data = JSON.parse(JSON.stringify(treeData.data));
       if (dataChange.notes === true) {
         data[0].push(dataChange.note);
       } else {
@@ -147,24 +137,36 @@ export default function Home(props) {
 
       setTreeData({ ...treeData, data });
     }
-    if (!!dataChange.dataId && !!dataChange.structureId) {
+    if (!!dataChange.dataId && !!dataChange.parentId) {
       handleDataChange({ treeData, dataChange }, { setTreeData, changeData });
     }
-    // Handle deletion and edit
-    if (dataChange.update === true) {
-      // handleFetchItems();
+
+    if (dataChange.delete === true) {
+      const data = JSON.parse(JSON.stringify(treeData.data));
+      const noteOrImage = dataChange.type === "note" ? 0 : 1;
+      data[noteOrImage] = data[noteOrImage].filter(
+        ({ _id }) => _id !== dataChange.id
+      );
+      setTreeData({ ...treeData, data });
+    }
+    if (dataChange.edit === true) {
+      // can only edit notes atm which are at index 0
+      const data = JSON.parse(JSON.stringify(treeData.data));
+      const idx = data[0].findIndex(({ _id }) => _id === dataChange.note._id);
+      data[0][idx] = dataChange.note;
+      setTreeData({ ...treeData, data });
     }
     // Subject change
 
     if (dataChange.newSubject === true) {
-      AuthClass.setUser({
-        ...AuthClass.getUser(),
-        currentSubject: dataChange.currentSubject._id,
-      });
-      treeData.subjects.push(dataChange.currentSubject);
+      const subjects = JSON.parse(JSON.stringify(treeData.subjects));
+      subjects.push(dataChange.currentSubject);
       setTreeData({
         ...treeData,
+        subjects,
         subject: dataChange.currentSubject,
+        data: dataChange.data,
+        structure: dataChange.structure,
       });
     }
     if (dataChange.updateSubject === true) {
@@ -174,11 +176,22 @@ export default function Home(props) {
       });
       setTreeData({
         ...treeData,
-        subject: dataChange.currentSubject,
+        ...dataChange.data,
       });
     }
     if (dataChange.updateTree) {
-      treeUpdate();
+      const data = JSON.parse(JSON.stringify(treeData.data));
+      for (let i = 0; i < dataChange.data.length; i++) {
+        const [d, t] = dataChange.data[i];
+        const noteOrImage = t === "note" ? 0 : 1;
+        const idx = data[noteOrImage].findIndex(({ _id }) => _id === d._id);
+        data[noteOrImage][idx] = d;
+      }
+      setTreeData({
+        ...treeData,
+        data,
+        structure: dataChange.structure,
+      });
     }
   }, [dataChange]);
 
@@ -193,7 +206,7 @@ export default function Home(props) {
   }, [isOpen]);
 
   const { history } = props;
-
+  console.log(treeData);
   return (
     <section className={`layout ${open}`}>
       <HorizontalNav

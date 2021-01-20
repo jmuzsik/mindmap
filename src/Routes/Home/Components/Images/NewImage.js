@@ -37,8 +37,7 @@ async function submitImage(
     setDisabled(false);
     setOpen(false);
     setImage(null);
-    console.log(res.image)
-    changeData({ newData: true, images: true, image: res.image });
+    changeData({ newData: true, images: true, image: res.data.image });
   }
 }
 

@@ -42,9 +42,10 @@ export async function getImages() {
     image = URL.createObjectURL(image);
     finalArray.push({
       src: image,
-      id: idx,
+      _id: idx,
       width: currentImg.width,
       height: currentImg.height,
+      inTree: currentImg.inTree,
     });
   }
   return finalArray;
@@ -178,15 +179,87 @@ export async function getImage(id) {
   return image;
 }
 
-export async function updateTree(data, id) {
-  const url = `/api/tree/${id}`;
-  const options = createPostOptions(data, "PUT");
-  let tree;
+async function updateData(type, id, inTree) {
+  const obj = { inTree };
+  const url = `/api/${type}/tree/${id}`;
+  const options = createPostOptions(obj, "PUT");
+  let data;
   try {
-    tree = await fetch(url, options);
-    tree = await tree.json();
+    data = await fetch(url, options);
+    data = await data.json();
   } catch (error) {
-    console.log("error in trying to update the tree", error);
+    console.log(`error in trying to get a ${type} by id`, error);
   }
-  return tree;
+  return data;
+}
+
+// https://stackoverflow.com/questions/22222599/javascript-recursive-search-in-json-object
+export function findNode(id, currentNode, parent = {}, returnParent = false) {
+  let i, currentChild, result;
+  console.log(id, currentNode)
+  if (id === currentNode.id) {
+    if (returnParent) return parent;
+    return currentNode;
+  } else {
+    // Use a for loop instead of forEach to avoid nested functions
+    // Otherwise "return" will not work properly
+    for (i = 0; i < currentNode.childNodes.length; i++) {
+      currentChild = currentNode.childNodes[i];
+      // Search in the current child
+      result = findNode(id, currentChild, currentNode, returnParent);
+
+      // Return the result if the node has been found
+      if (result !== false) {
+        return result;
+      }
+    }
+
+    // The node has not been found and we have no more options
+    return false;
+  }
+}
+
+export async function updateTree(tree, id) {
+  const url = `/api/tree/${id}`;
+  const options = createPostOptions(tree, "PUT");
+  let data;
+  try {
+    data = await fetch(url, options);
+    data = await data.json();
+  } catch (error) {
+    console.log(`error in trying to get a tree by id and update it`, error);
+  }
+  return JSON.parse(data.structure);
+}
+
+export async function updateInTree(id, inTree) {
+  let data, type;
+  data = await updateData("note", id, inTree);
+  if (data.error) {
+    type = "image";
+    data = await updateData("image", id, inTree);
+  } else type = "note";
+  return [data, type];
+}
+
+export async function removeFromTree(id, changeData) {
+  // First get tree and update tree structure (remove node or nodes)
+  const tree = await getMindMapTreeData();
+  const structure = JSON.parse(tree.structure);
+  
+  const node = findNode(id, structure[0], {}, true);
+  console.log(node)
+  const removedNode = node.childNodes.find(n => n.id === id);
+  const data = [];
+  // Update node and its children (if it has children) (inTree -> false)
+  // update possible children
+  for (let i = 0; i < removedNode.childNodes.length; i++) {
+    const n = removedNode.childNodes[i];
+    data.push(await updateInTree(n.id, false));
+  }
+  // update definite node
+  data.push(await updateInTree(removedNode.id, false))
+  node.childNodes = node.childNodes.filter(n => n.id !== id);
+  const updatedStructure = await updateTree(structure, tree._id);
+  changeData({ updateTree: true, data, structure: updatedStructure });
 }

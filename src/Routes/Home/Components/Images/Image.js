@@ -12,17 +12,12 @@ async function handleDelete({ id, changeData, setOpen }) {
   res = await res.json();
   if (!res.error) {
     setOpen(false);
-    changeData({ update: true });
+    changeData({ delete: true, type: "image", id });
   }
 }
 
 export default function Image(props) {
-  const {
-    image,
-    idx,
-    changeData,
-    setOpen,
-  } = props;
+  const { image, idx, changeData, setOpen } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
