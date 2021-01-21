@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { convertFromRaw, EditorState } from "draft-js";
 import { Button, Intent } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
@@ -7,26 +6,13 @@ import Note from "../../Components/Notes/Note";
 import Image from "../../Components/Images/Image";
 import Dialog from "../../../../Components/Dialog/Dialog";
 import Popover from "../../../../Components/Popover/Popover";
-import RichEditor from "../../../../Components/Editor/Editor";
 import { Box } from "./Box/Box";
 import { Dustbin } from "./Dustbin/Dustbin";
 
 import { removeFromTree } from "../../requests";
+import { handleStringCreation, InnerContent, aORb } from "../../utils";
 
 const truncate = (s = "") => s.slice(0, 9);
-
-function aORb(type, a, b, c = null) {
-  return type === "note" ? a : type === "image" ? b : c;
-}
-
-function handleStringCreation(label, data) {
-  if (typeof label === "string") {
-    return truncate(label);
-  } else if (data._id) {
-    return truncate(data._id);
-  }
-  return label;
-}
 
 function createContent(props) {
   const { type, id, data, label, changeData } = props;
@@ -89,24 +75,6 @@ function TreeNodeContent(props) {
   );
 }
 
-function InnerContent({ type, id, data }) {
-  return aORb(
-    type,
-    <RichEditor
-      id={id}
-      minimal
-      controls={false}
-      editorState={EditorState.createWithContent(
-        convertFromRaw(JSON.parse(data.raw))
-      )}
-      contentEditable={false}
-      readOnly={true}
-      onChange={() => null}
-    />,
-    <img src={data.src} alt={id} width={data.width} height={data.height} />
-  );
-}
-
 export function createTreeNode(props) {
   const { id, data, type, changeData, inTree } = props;
 
@@ -160,7 +128,7 @@ function createDustbin(
 function recurseNested(cur, data, depth = 1, changeData) {
   for (let i = 0; i < cur.length; i++) {
     const elem = cur[i];
-    const id = elem.id;
+    const id = elem._id;
     let noteOrImage, node;
     // Find the node in image or note array
     for (let j = 0; j < data.length; j++) {
@@ -171,7 +139,6 @@ function recurseNested(cur, data, depth = 1, changeData) {
       }
     }
     if (node) {
-      console.log(node);
       const type = noteOrImage === 0 ? "note" : "image";
       // atm I only want to handle a depth of 2 in the mind map
       let jsxObj;
@@ -232,8 +199,8 @@ export function createTreeDustbins({ data, structure, subject, changeData }) {
       childNodes: [],
     }),
   ];
-  const stuctureCopy = JSON.parse(JSON.stringify(structure));
-  const result = recurseNested(stuctureCopy[0].childNodes, data, 1, changeData);
+  const structureCopy = JSON.parse(JSON.stringify(structure));
+  const result = recurseNested(structureCopy[0].childNodes, data, 1, changeData);
   if (result) nodes[0].childNodes = result;
 
   return nodes;

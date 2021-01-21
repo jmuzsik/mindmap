@@ -61,7 +61,7 @@ export async function handleSubmit(
   const structure = JSON.parse(tree.structure);
 
   changeData({
-    newSubject: true,
+    update: "newSubject",
     currentSubject: newSubject,
     data: [notes, images],
     structure,

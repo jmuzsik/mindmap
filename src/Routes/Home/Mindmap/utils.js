@@ -1,5 +1,7 @@
 import React from "react";
 
+import { InnerContent, handleStringCreation } from "../utils";
+
 // 0 is main node, 1 is secondary, 3 is... etc
 const colors = [
   "#2965CC",
@@ -34,26 +36,14 @@ const pickColor = (type, depth) => {
 
 const createRadius = (depth) => (depth === 1 ? 10 : 5);
 
-function createNodes(nodes, parent) {
-  // use icon to distinguish - media for image
-  const flattenedNodes = flatten(nodes, parent);
-  return flattenedNodes.map(({ data, id, parent, icon, depth }) => {
-    const type = icon === "media" ? "image" : "note";
-    return {
-      jsx: createInnerNodeContent({
-        type,
-        id,
-        data,
-      }),
-      depth,
-      type,
-      id,
-      parent,
-      color: pickColor("n", depth),
-      radius: createRadius(depth),
-      group: 0,
-    };
-  });
+function createContent(props) {
+  const { type, id, data, label } = props;
+  return (
+    <React.Fragment>
+      <span className="treenode-id">{handleStringCreation(label, data)}</span>
+      <InnerContent {...{ id, data, type }} />
+    </React.Fragment>
+  );
 }
 
 // https://stackoverflow.com/questions/35272533/flattening-deeply-nested-array-of-objects
@@ -70,6 +60,7 @@ function flatten(array) {
       // i is either incremented from 0 (ie. 1, ...) (depth 1) or a key corresponding to
       // the parent (ie. 1.1, ..., 1.10, ...) - only 2 layers of depth
       if (d === 1) {
+        // create id for mind map
         n.id = String(i);
         i++;
       } else {
@@ -94,9 +85,32 @@ function flatten(array) {
   return result;
 }
 
-function createLinks(nodes, parent) {
-  const flattenedNodes = flatten(nodes, parent);
-  return flattenedNodes.map(({ id, parent, depth }) => ({
+function createNodes(nodes, data) {
+  const nodesWithData = nodes.map((n) => {
+    const noteOrImage = n.type === "note" ? 0 : 1;
+    const d = data[noteOrImage].find(({ _id }) => _id === n._id);
+    return { ...n, data: d };
+  });
+  return nodesWithData.map(({ data, id, parent, depth, type }) => {
+    return {
+      jsx: createContent({
+        type,
+        id,
+        data,
+      }),
+      depth,
+      type,
+      id,
+      parent,
+      color: pickColor("n", depth),
+      radius: createRadius(depth),
+      group: 0,
+    };
+  });
+}
+
+function createLinks(nodes) {
+  return nodes.map(({ id, parent, depth }) => ({
     source: parent,
     target: id,
     distance: calcDistance(depth),
@@ -104,10 +118,9 @@ function createLinks(nodes, parent) {
   }));
 }
 
-export function createMindMapStructure(tree, subject) {
-  const node = tree.nodes[0];
+export function createData(tree, subject, data) {
+  const nodes = flatten(tree[0].childNodes);
   return {
-    currentId: "1",
     nodes: [
       {
         jsx: <h1>{subject.name}</h1>,
@@ -117,41 +130,8 @@ export function createMindMapStructure(tree, subject) {
         radius: 20,
         color: colors[0],
       },
-      ...createNodes(node.childNodes || [], "1"),
+      ...createNodes(nodes, data),
     ],
-    links: createLinks(node.childNodes || [], "0"),
-  };
-}
-
-function recurseNodes(nodes, subject) {
-  return nodes.map((node) => {
-    return createDustbinObj(
-      node,
-      subject,
-      node.childNodes ? recurseNodes(node.childNodes, subject) : []
-    );
-  });
-}
-
-export function createMindMapTreeData(mindMapTreeData, subject) {
-  const mainNode = mindMapTreeData.nodes[0];
-
-  let nodes;
-  if (mainNode.childNodes) {
-    nodes = [
-      createDustbinObj(
-        mainNode,
-        subject,
-        recurseNodes(mainNode.childNodes, subject, []),
-        true
-      ),
-    ];
-  } else {
-    nodes = [createDustbinObj(mainNode, subject, [], true)];
-  }
-
-  return {
-    nodes,
-    links: mindMapTreeData.links,
+    links: createLinks(nodes, data),
   };
 }

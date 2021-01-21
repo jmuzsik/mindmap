@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { FileInput, Button, Classes } from "@blueprintjs/core";
 import axios from "axios";
 
+import createGetOptions from "../../../../Utils/FetchOptions/Get";
+
 import AuthClass from "../../../../TopLevel/Auth/Class";
 
 import "./Images.css";
@@ -25,19 +27,39 @@ async function submitImage(
   data,
   { setLoading, setDisabled, setOpen, setImage, changeData }
 ) {
+  // First create image - main image object and the file
   const id = AuthClass.getUser()._id;
-  const url = `/api/image/${id}`;
+  let url = `/api/image/${id}`;
+  // TODO: should use a react reference instead
   const elem = document.querySelector(".selected-image");
   const height = elem.clientHeight;
   const width = elem.clientWidth;
   data.append("dimensions", JSON.stringify({ height, width }));
   let res = await axios.post(url, data);
+  // Only main image object is so far returned, also need the blob to display the image
+  const options = createGetOptions(null, "blob");
+  let image = res.data;
+  const imgId = image.imgId;
+  url = `/api/image/user/${imgId}`;
+  let src;
+  try {
+    src = await fetch(url, options);
+  } catch (error) {
+    // TODO: handle errorrrrrr
+  }
+  src = await src.blob();
+  src = URL.createObjectURL(src);
+  image = {
+    ...image,
+    src,
+  };
   if (!res.error) {
     setLoading(false);
     setDisabled(false);
     setOpen(false);
     setImage(null);
-    changeData({ newData: true, images: true, image: res.data.image });
+
+    changeData({ update: "newData", images: true, image });
   }
 }
 

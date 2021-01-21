@@ -1,84 +1,39 @@
-export function handleDataChange(
-  {
-    treeData: { structure, data, subject, subjects, dimensions },
-    dataChange: { parentId, dataId },
-  },
-  { setTreeData, changeData }
-) {
-  // image or note?
-  const noteOrImage =
-    data[0].childNodes.filter((n) => n.id === dataId).length === 1 ? 0 : 1;
-  // Get node from tree map
-  const node = data[noteOrImage].childNodes.filter((n) => n.id === dataId)[0];
-  // Remove node from tree map
-  // TODO: turn this into something undraggable but have view/edit functionality
-  // ie. get rid of box jsx but keep other jsx
-  // { i, id, data, type, hooks }
-  const noteOrImageStr = noteOrImage === 0 ? "note" : "image";
-  // node.label = (
-  //   <Content
-  //     {...{
-  //       id: node.id,
-  //       data: node.data,
-  //       hooks: { changeData },
-  //       type: noteOrImageStr,
-  //     }}
-  //   />
-  // );
-  // Get insertion point
-  // [0] as that is the top level node (it is array solely for the blueprint library)
-  // TODO: no good reason to be array
-  // const [mindMapTreeNode, depth] = findNode(parentId, structure.nodes[0]);
+import React from "react";
+import { convertFromRaw, EditorState } from "draft-js";
 
-  // Update node for mind tree (ie. box becomes dustbin) (max depth of 2)
-  let treeObj;
-  // Right now I only support a depth of 2: 0 -> 1 -> 1.1
-  // if (depth === 2) {
-  //   treeObj = {
-  //     id: node.id,
-  //     hasCaret: false,
-  //     isExpanded: false,
-  //     data: node.data,
-  //     childNodes: [],
-  //     icon:
-  //       noteOrImageStr === "note"
-  //         ? IconNames.DOCUMENT
-  //         : noteOrImageStr === "image"
-  //         ? IconNames.MEDIA
-  //         : IconNames.FOLDER_CLOSE,
-  //     label: createContent({
-  //       type: noteOrImageStr,
-  //       id: node.id,
-  //       data: node.data,
-  //       label: node.id,
-  //     }),
-  //   };
-  // } else {
-  //   treeObj = createDustbinObj({
-  //     type: noteOrImageStr,
-  //     id: node.id,
-  //     label: node.id,
-  //     data: node.data,
-  //     additionalProps: {
-  //       hasCaret: true,
-  //       isExpanded: true,
-  //       icon: "folder-close",
-  //     },
-  //   }
-  // );
-  // }
-  // push updated
-  // mindMapTreeNode.childNodes.push(treeObj);
+import RichEditor from "../../Components/Editor/Editor";
 
-  // const mindMapStructure = createMindMapStructure(structure, subject);
-  // setTreeData({
-  //   subject,
-  //   subjects,
-  //   data,
-  //   structure,
-  //   dimensions,
-  //   mindMapStructure,
-  // });
+const truncate = (s = "") => s.slice(0, 9);
 
-  changeData({ parentId: null, dataId: null, updateTree: true });
+export function handleStringCreation(label, data) {
+  if (typeof label === "string") {
+    return truncate(label);
+  } else if (data._id) {
+    return truncate(data._id);
+  }
+  return label;
+}
+
+export function aORb(type, a, b, c = null) {
+  return type === "note" ? a : type === "image" ? b : c;
+}
+
+export function InnerContent({ type, id, data }) {
+  return aORb(
+    type,
+    <RichEditor
+      id={id}
+      minimal
+      controls={false}
+      editorState={
+        data.raw
+          ? EditorState.createWithContent(convertFromRaw(JSON.parse(data.raw)))
+          : null
+      }
+      contentEditable={false}
+      readOnly={true}
+      onChange={() => null}
+    />,
+    <img src={data.src} alt={id} width={data.width} height={data.height} />
+  );
 }

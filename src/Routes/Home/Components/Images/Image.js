@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { Button, ButtonGroup, Classes } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
+import { removeFromTree } from "../../requests";
 
-async function handleDelete({ id, changeData, setOpen }) {
-  const url = `/api/image/${id}`;
+async function handleDelete({ imgId, id, changeData, setOpen }) {
+  const treeRemoval = await removeFromTree(id, null, true);
+
+  const url = `/api/image/${imgId}`;
   const options = createPostOptions({}, "DELETE");
   let res = await fetch(url, options);
 
@@ -12,7 +15,17 @@ async function handleDelete({ id, changeData, setOpen }) {
   res = await res.json();
   if (!res.error) {
     setOpen(false);
-    changeData({ delete: true, type: "image", id });
+    if (treeRemoval === null) {
+      changeData({ update: "delete", type: "image", id });
+    } else {
+      changeData({
+        update: "deleteAndRemove",
+        type: "image",
+        id,
+        structure: treeRemoval.updatedStructure,
+        data: treeRemoval.data,
+      });
+    }
   }
 }
 
@@ -37,7 +50,8 @@ export default function Image(props) {
               setDisabled(true);
               await handleDelete({
                 idx,
-                id: image.id,
+                imgId: image.imgId,
+                id: image._id,
                 changeData,
                 setOpen,
               });

@@ -31,13 +31,11 @@ export default class MindMapTree extends React.Component {
   };
 
   handleNodeCollapse = (nodeData) => {
-    console.log(nodeData);
     nodeData.isExpanded = false;
     this.setState(this.state);
   };
 
   handleNodeExpand = (nodeData) => {
-    console.log(nodeData);
     nodeData.isExpanded = true;
     this.setState(this.state);
   };

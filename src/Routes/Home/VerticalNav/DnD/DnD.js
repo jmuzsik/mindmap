@@ -10,6 +10,7 @@ const TreeContainer = memo(function TreeContainer(props) {
     treeData: { data, structure, subject },
     changeData,
   } = props;
+  console.log('first this happens')
   let [dataContents, mindMapContents] = [
     createTreeBoxes({
       data,
@@ -23,7 +24,7 @@ const TreeContainer = memo(function TreeContainer(props) {
     }),
   ];
   const update = { subject, structure, data };
-  console.log(dataContents, mindMapContents)
+
   return (
     <div className="tree-map">
       <DataTree update={update} contents={dataContents} />

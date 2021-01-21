@@ -10,20 +10,19 @@ import {
 
 async function handleBackendUpdate({ parentId, dataId }, changeData) {
   // First find the data object with dataId
-  const data = [await updateInTree(dataId, true)];
+  const data = [await updateInTree(dataId, null, true)];
   // Then get the tree of current subject and update the tree with data
   const tree = await getMindMapTreeData();
   const structure = JSON.parse(tree.structure);
 
-  const node = findNode(parentId, structure[0], {}, false);
+  const [node, path] = findNode(parentId, structure[0], {}, false);
   node.childNodes.push({
-    id: data[0][0]._id,
+    _id: data[0][0]._id,
     type: data[0][1],
     childNodes: [],
   });
   const updatedStructure = await updateTree(structure, tree._id);
-  console.log(data, updatedStructure)
-  changeData({ updateTree: true, data, structure: updatedStructure });
+  changeData({ update: "updateTree", data, structure: updatedStructure });
 }
 
 export const Box = ({ name, content, hooks: { changeData } }) => {

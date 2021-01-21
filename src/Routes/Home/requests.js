@@ -16,6 +16,7 @@ export async function getNotes() {
 
 export async function getImages() {
   const id = AuthClass.getUser()._id;
+  console.log(AuthClass.getUser())
   let url = `/api/image/${id}`;
   let options = createGetOptions();
   let images;
@@ -25,12 +26,11 @@ export async function getImages() {
     // TODO: handle this
   }
   images = await images.json();
-
   const finalArray = [];
   options = createGetOptions(null, "blob");
   for (let i = 0; i < images.length; i++) {
     const currentImg = images[i];
-    const idx = images[i].imgId;
+    const idx = currentImg.imgId;
     url = `/api/image/user/${idx}`;
     let image;
     try {
@@ -40,12 +40,10 @@ export async function getImages() {
     }
     image = await image.blob();
     image = URL.createObjectURL(image);
+
     finalArray.push({
       src: image,
-      _id: idx,
-      width: currentImg.width,
-      height: currentImg.height,
-      inTree: currentImg.inTree,
+      ...currentImg,
     });
   }
   return finalArray;
@@ -64,7 +62,7 @@ export async function getMindMapTreeData() {
   } catch (error) {
     console.log("within fetching tree by id, there is no tree!", error);
     return {
-      chi: [
+      childNodes: [
         {
           id: "0",
           radius: 12,
@@ -194,19 +192,28 @@ async function updateData(type, id, inTree) {
 }
 
 // https://stackoverflow.com/questions/22222599/javascript-recursive-search-in-json-object
-export function findNode(id, currentNode, parent = {}, returnParent = false) {
+export function findNode(
+  id,
+  currentNode,
+  parent = {},
+  returnParent = false,
+  path = ""
+) {
   let i, currentChild, result;
-  console.log(id, currentNode)
-  if (id === currentNode.id) {
-    if (returnParent) return parent;
-    return currentNode;
+
+  // TODO: fix this annoying id _id thing
+  if (id === currentNode.id || id === currentNode._id) {
+    if (returnParent) return [parent, path];
+    return [currentNode, path];
   } else {
     // Use a for loop instead of forEach to avoid nested functions
     // Otherwise "return" will not work properly
+    if (currentNode.type !== "subject") path += "childNodes.";
     for (i = 0; i < currentNode.childNodes.length; i++) {
+      path += String(i) + ".";
       currentChild = currentNode.childNodes[i];
       // Search in the current child
-      result = findNode(id, currentChild, currentNode, returnParent);
+      result = findNode(id, currentChild, currentNode, returnParent, path);
 
       // Return the result if the node has been found
       if (result !== false) {
@@ -232,8 +239,12 @@ export async function updateTree(tree, id) {
   return JSON.parse(data.structure);
 }
 
-export async function updateInTree(id, inTree) {
-  let data, type;
+export async function updateInTree(id, type, inTree) {
+  let data;
+  // This is called with and without type known
+  if (type) {
+    return [await updateData(type, id, inTree), type];
+  }
   data = await updateData("note", id, inTree);
   if (data.error) {
     type = "image";
@@ -242,24 +253,55 @@ export async function updateInTree(id, inTree) {
   return [data, type];
 }
 
-export async function removeFromTree(id, changeData) {
+export async function removeFromTree(id, changeData, deletion) {
   // First get tree and update tree structure (remove node or nodes)
   const tree = await getMindMapTreeData();
-  const structure = JSON.parse(tree.structure);
-  
-  const node = findNode(id, structure[0], {}, true);
-  console.log(node)
-  const removedNode = node.childNodes.find(n => n.id === id);
+  const structure = JSON.parse(tree.structure)[0];
+
+  // Set the property inTree to false for each piece of data
   const data = [];
-  // Update node and its children (if it has children) (inTree -> false)
-  // update possible children
-  for (let i = 0; i < removedNode.childNodes.length; i++) {
-    const n = removedNode.childNodes[i];
-    data.push(await updateInTree(n.id, false));
+
+  // Remove from structure
+  // Either nested one down the heirarchy
+
+  for (let i = 0; i < structure.childNodes.length; i++) {
+    const elem = structure.childNodes[i];
+    let inner;
+    if (elem._id === id) {
+      // Go through and update each data within if there are elements
+      for (let j = 0; j < elem.childNodes.length; j++) {
+        inner = elem.childNodes[j];
+        data.push(await updateInTree(inner._id, inner.type, false));
+      }
+      // removal
+      structure.childNodes = structure.childNodes.filter((n) => n._id !== id);
+      data.push(await updateInTree(elem._id, elem.type, false));
+      break;
+    }
+    // Otherwise check if inner node is what has the id
+    if (elem.childNodes.length > 0) {
+      // or two down the heirarchy
+      for (let j = 0; j < elem.childNodes.length; j++) {
+        inner = elem.childNodes[j];
+        if (inner._id === id) {
+          structure.childNodes[i].childNodes = structure.childNodes[
+            i
+          ].childNodes.filter((n) => n._id !== id);
+          data.push(await updateInTree(inner._id, inner.type, false));
+          break;
+        }
+      }
+    }
   }
-  // update definite node
-  data.push(await updateInTree(removedNode.id, false))
-  node.childNodes = node.childNodes.filter(n => n.id !== id);
-  const updatedStructure = await updateTree(structure, tree._id);
-  changeData({ updateTree: true, data, structure: updatedStructure });
+
+  // If what is deleted is not within the tree structure
+  if (data.length === 0) return null;
+
+  // should be an array... this is off to do
+  const updatedStructure = await updateTree([structure], tree._id);
+  if (deletion) {
+    return { data, updatedStructure };
+  } else {
+    changeData({ update: "updateTree", data, structure: updatedStructure });
+  }
 }

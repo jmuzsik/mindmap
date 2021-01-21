@@ -4,6 +4,7 @@ import { Button, ButtonGroup, Classes } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import RichEditor from "../../../../Components/Editor/Editor";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
+import { removeFromTree } from "../../requests";
 
 async function handleEditSave(
   data,
@@ -24,11 +25,12 @@ async function handleEditSave(
     setLoading(false);
     setDisabled(false);
     setEditable(false);
-    changeData({ edit: true, note: editedNote, type: "note" });
+    changeData({ update: "edit", note: editedNote, type: "note" });
   }
 }
 
 async function handleDelete({ changeData, setOpen, id }) {
+  const treeRemoval = await removeFromTree(id, null, true);
   const url = `/api/note/${id}`;
   const options = createPostOptions({}, "DELETE");
   let res = await fetch(url, options);
@@ -37,7 +39,17 @@ async function handleDelete({ changeData, setOpen, id }) {
   res = await res.json();
   if (!res.error) {
     setOpen(false);
-    changeData({ delete: true, type: "note", id });
+    if (treeRemoval === null) {
+      changeData({ update: "delete", type: "note", id });
+    } else {
+      changeData({
+        update: "deleteAndRemove",
+        type: "note",
+        id,
+        structure: treeRemoval.updatedStructure,
+        data: treeRemoval.data,
+      });
+    }
   }
 }
 

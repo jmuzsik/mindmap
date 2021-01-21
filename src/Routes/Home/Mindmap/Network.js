@@ -4,7 +4,7 @@ import ResponsiveNetwork from "./Containers/ResponsiveNetwork";
 
 // TODO: needs to be changed to this for updated node module
 
-export default function Network({ data: { nodes, links }, history }) {
+export default function Network({ data: { nodes, links } }) {
   return (
     <ResponsiveNetwork
       nodes={nodes}

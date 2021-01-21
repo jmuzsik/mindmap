@@ -4,14 +4,7 @@ import HorizontalNav from "./HorizontalNav/HorizontalNav";
 import VerticalNav from "./VerticalNav/VerticalNav";
 import { useDeepEffect } from "../../Utils/utils";
 import AuthClass from "../../TopLevel/Auth/Class";
-import Network from "./Mindmap/Network";
-
-import {
-  createTreeMap,
-  createMindMapTreeData,
-  handleDataChange,
-  createMindMapStructure,
-} from "./utils";
+import NetworkContainer from "./Mindmap/NetworkContainer";
 
 import {
   getImages,
@@ -19,10 +12,6 @@ import {
   getNotes,
   getSubjects,
   getSubject,
-  updateFolder,
-  updateTree,
-  getNote,
-  getImage,
 } from "./requests";
 
 import "./Home.css";
@@ -33,6 +22,7 @@ const DEF_TREE_DATA = [[], []];
 const DEF_STRUCTURE_DATA = [
   {
     id: 0,
+    _id: null,
     // subject
     type: "subject",
     name: "",
@@ -46,10 +36,7 @@ const DEF_SUBJECT_DATA = { name: "", _id: null };
 const DEF_SUBJECTS_DATA = [];
 
 const DEF_DATA_CHANGE = {
-  parentId: null,
-  dataId: null,
-  update: null,
-  newData: null,
+  update: "",
 };
 
 const DEF_DIMENSIONS = { width: null, height: null };
@@ -87,16 +74,9 @@ export default function Home(props) {
   });
   const [dataChange, changeData] = useState(DEF_DATA_CHANGE);
 
-  const treeUpdate = async () => {
-    // const tree = await updateTree(treeData.structure, treeData.structure.id);
-    // const data = JSON.parse(tree.json);
-    // setTreeData({ ...treeData, structure: { ...data, id: tree._id } });
-  };
-
   const handleFetchItems = useCallback(() => {
     (async () => {
       const user = AuthClass.getUser();
-      console.log(user);
       const currentSubject = user.currentSubject;
       const subjects = await getSubjects(currentSubject, user._id);
       const notes = await getNotes();
@@ -123,75 +103,90 @@ export default function Home(props) {
     };
   }, [handleFetchItems]);
 
-  useDeepEffect(async () => {
-    // TODO: Make this a switch statement - perhaps utilise a reducer!
-    // Handle insertion
-    if (dataChange.newData === true) {
-      // All i want to do here is alter the state for the corresponding data
-      const data = JSON.parse(JSON.stringify(treeData.data));
-      if (dataChange.notes === true) {
-        data[0].push(dataChange.note);
-      } else {
-        data[1].push(dataChange.image);
-      }
-
-      setTreeData({ ...treeData, data });
-    }
-    if (!!dataChange.dataId && !!dataChange.parentId) {
-      handleDataChange({ treeData, dataChange }, { setTreeData, changeData });
-    }
-
-    if (dataChange.delete === true) {
-      const data = JSON.parse(JSON.stringify(treeData.data));
-      const noteOrImage = dataChange.type === "note" ? 0 : 1;
-      data[noteOrImage] = data[noteOrImage].filter(
-        ({ _id }) => _id !== dataChange.id
-      );
-      setTreeData({ ...treeData, data });
-    }
-    if (dataChange.edit === true) {
-      // can only edit notes atm which are at index 0
-      const data = JSON.parse(JSON.stringify(treeData.data));
-      const idx = data[0].findIndex(({ _id }) => _id === dataChange.note._id);
-      data[0][idx] = dataChange.note;
-      setTreeData({ ...treeData, data });
-    }
-    // Subject change
-
-    if (dataChange.newSubject === true) {
-      const subjects = JSON.parse(JSON.stringify(treeData.subjects));
-      subjects.push(dataChange.currentSubject);
-      setTreeData({
-        ...treeData,
-        subjects,
-        subject: dataChange.currentSubject,
-        data: dataChange.data,
-        structure: dataChange.structure,
-      });
-    }
-    if (dataChange.updateSubject === true) {
-      AuthClass.setUser({
-        ...AuthClass.getUser(),
-        currentSubject: dataChange.currentSubject._id,
-      });
-      setTreeData({
-        ...treeData,
-        ...dataChange.data,
-      });
-    }
-    if (dataChange.updateTree) {
-      const data = JSON.parse(JSON.stringify(treeData.data));
-      for (let i = 0; i < dataChange.data.length; i++) {
-        const [d, t] = dataChange.data[i];
-        const noteOrImage = t === "note" ? 0 : 1;
-        const idx = data[noteOrImage].findIndex(({ _id }) => _id === d._id);
-        data[noteOrImage][idx] = d;
-      }
-      setTreeData({
-        ...treeData,
-        data,
-        structure: dataChange.structure,
-      });
+  useDeepEffect(() => {
+    let data;
+    switch (dataChange.update) {
+      case "newData":
+        // Handle insertion
+        data = JSON.parse(JSON.stringify(treeData.data));
+        if (dataChange.notes === true) {
+          data[0].push(dataChange.note);
+        } else {
+          data[1].push(dataChange.image);
+        }
+        setTreeData({ ...treeData, data });
+        break;
+      case "delete":
+        data = JSON.parse(JSON.stringify(treeData.data));
+        const noteOrImage = dataChange.type === "note" ? 0 : 1;
+        data[noteOrImage] = data[noteOrImage].filter(
+          ({ _id }) => _id !== dataChange.id
+        );
+        setTreeData({ ...treeData, data });
+        break;
+      case "edit":
+        // can only edit notes atm which are at index 0
+        data = JSON.parse(JSON.stringify(treeData.data));
+        const idx = data[0].findIndex(({ _id }) => _id === dataChange.note._id);
+        data[0][idx] = dataChange.note;
+        setTreeData({ ...treeData, data });
+        break;
+      case "newSubject":
+        const subjects = JSON.parse(JSON.stringify(treeData.subjects));
+        subjects.push(dataChange.currentSubject);
+        setTreeData({
+          ...treeData,
+          subjects,
+          subject: dataChange.currentSubject,
+          data: dataChange.data,
+          structure: dataChange.structure,
+        });
+        break;
+      case "updateSubject":
+        AuthClass.setUser({
+          ...AuthClass.getUser(),
+          currentSubject: dataChange.currentSubject._id,
+        });
+        setTreeData({
+          ...treeData,
+          ...dataChange.data,
+        });
+        break;
+      case "updateTree":
+        data = JSON.parse(JSON.stringify(treeData.data));
+        for (let i = 0; i < dataChange.data.length; i++) {
+          const [d, t] = dataChange.data[i];
+          const noteOrImage = t === "note" ? 0 : 1;
+          const idx = data[noteOrImage].findIndex(({ _id }) => _id === d._id);
+          // I need to keep blob from image
+          data[noteOrImage][idx] = {...data[noteOrImage][idx], inTree: d.inTree}
+        }
+        setTreeData({
+          ...treeData,
+          data,
+          structure: dataChange.structure,
+        });
+        break;
+      case "deleteAndRemove":
+        const c = (t) => t === "note" ? 0 : 1;
+        data = JSON.parse(JSON.stringify(treeData.data));
+        data[c(dataChange.type)] = data[c(dataChange.type)].filter(
+          ({ _id }) => _id !== dataChange.id
+        );
+        for (let i = 0; i < dataChange.data.length; i++) {
+          const [d, t] = dataChange.data[i];
+          const noteOrImage = t === "note" ? 0 : 1;
+          const idx = data[noteOrImage].findIndex(({ _id }) => _id === d._id);
+          data[noteOrImage][idx] = {...data[noteOrImage][idx], inTree: d.inTree}
+        }
+        setTreeData({
+          ...treeData,
+          data,
+          structure: dataChange.structure,
+        });
+        break;
+      default:
+        return null;
     }
   }, [dataChange]);
 
@@ -223,15 +218,7 @@ export default function Home(props) {
         <VerticalNav
           {...{ history, isOpen, setOpen, treeData, changeData, setTreeData }}
         />
-        {/* <div
-          className="network-container"
-          style={{
-            height: treeData.dimensions.height,
-            width: treeData.dimensions.width,
-          }}
-        >
-          <Network history={history} data={treeData.mindMapStructure} />
-        </div> */}
+        <NetworkContainer treeData={treeData} />
       </main>
     </section>
   );

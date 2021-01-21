@@ -43,7 +43,7 @@ async function handleOnChange({ subject }, { changeData }) {
   });
   const structure = JSON.parse(tree.structure);
   changeData({
-    updateSubject: true,
+    update: "updateSubject",
     currentSubject: subject,
     data: { data: [notes, images], structure },
   });
