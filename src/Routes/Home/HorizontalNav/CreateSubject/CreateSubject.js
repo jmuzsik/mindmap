@@ -8,63 +8,47 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
-import AuthClass from "../../../../TopLevel/Auth/Class";
-import createPostOptions from "../../../../Utils/FetchOptions/Post";
-import { getImages, getMindMapTreeData, getNotes } from "../../requests";
-
-async function apiCall(data) {
-  let result;
-  let url = "/api/subject";
-
-  const options = createPostOptions(data);
-
-  try {
-    result = await fetch(url, options);
-  } catch (err) {
-    console.log("this should not happen", err);
-    return { error: "server" };
-  }
-  result = await result.json();
-
-  if (result.error) {
-    return { error: "server" };
-  }
-  return result;
-}
+import db from "../../../../db";
 
 export async function handleSubmit(
   { name },
-  { changeData, setError, isSubmitting, handleChange, finishedSubmitting }
+  { changeData, isSubmitting, handleChange, finishedSubmitting }
 ) {
-  const user = AuthClass.getUser();
-  const userId = user._id;
-  let response;
-  try {
-    response = await apiCall({ name, userId });
-  } catch (error) {
-    isSubmitting(false);
-    setError(true);
-  }
-  if (response.error) {
-    isSubmitting(false);
-    setError(true);
-    return;
-  }
-  const newSubject = response.subject;
-  AuthClass.setUser({
-    ...AuthClass.getUser(),
-    currentSubject: newSubject._id,
+  const users = await db.user.toArray();
+  const user = users[0];
+  const subjectObj = {
+    createdAt: +new Date(),
+    name,
+    // TODO: option to change the icon
+    // arbitrary selection
+    icon: "clean",
+  };
+  const subjectId = await db.subjects.add(subjectObj);
+  const subject = await db.subjects.get(subjectId);
+  // update user as well but no need to hold onto this data
+  await db.user.update(user.id, {
+    currentSubject: subjectId,
   });
-  const notes = await getNotes();
-  const images = await getImages();
-  const tree = await getMindMapTreeData();
-  const structure = JSON.parse(tree.structure);
 
   changeData({
     update: "newSubject",
-    currentSubject: newSubject,
-    data: [notes, images],
-    structure,
+    subject,
+    // New subject has no associated data
+    data: [[], []],
+    structure: {
+      id: 0,
+      subjectId: 0,
+      structure: {
+        id: 0,
+        _id: null,
+        // subject
+        type: "subject",
+        name: "",
+        childNodes: [
+          // image or note with id, type, nodes
+        ],
+      },
+    },
   });
   isSubmitting(false);
   handleChange("");
@@ -77,7 +61,6 @@ export async function handleSubmit(
 export default function CreateSubject({ changeData }) {
   const [submitting, isSubmitting] = useState(false);
   const [submitted, finishedSubmitting] = useState(false);
-  const [error, setError] = useState(false);
   const [name, handleChange] = useState("");
 
   return (
@@ -100,7 +83,6 @@ export default function CreateSubject({ changeData }) {
                 { name },
                 {
                   changeData,
-                  setError,
                   isSubmitting,
                   handleChange,
                   finishedSubmitting,
@@ -133,11 +115,8 @@ export default function CreateSubject({ changeData }) {
             </Button>
           </form>
         ) : (
-          <Callout
-            icon={error ? IconNames.ERROR : IconNames.TICK_CIRCLE}
-            intent={error ? Intent.DANGER : Intent.SUCCESS}
-          >
-            {error ? "Something went wrong..." : "All good here!"}
+          <Callout icon={IconNames.TICK_CIRCLE} intent={Intent.SUCCESS}>
+            All good here!
           </Callout>
         )}
       </Popover>

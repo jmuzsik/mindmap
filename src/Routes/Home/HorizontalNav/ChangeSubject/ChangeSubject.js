@@ -1,13 +1,7 @@
 import React from "react";
 import { Popover, Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
 
-import AuthClass from "../../../../TopLevel/Auth/Class";
-import createPostOptions from "../../../../Utils/FetchOptions/Post";
-import {
-  getImages,
-  getMindMapTreeData,
-  getNotes,
-} from "../../requests";
+import db from "../../../../db";
 
 function createMenu({ subjects }, { changeData }) {
   return (
@@ -16,7 +10,7 @@ function createMenu({ subjects }, { changeData }) {
         <MenuItem
           onClick={() => handleOnChange({ subjects, subject }, { changeData })}
           text={subject.name}
-          key={subject._id || i}
+          key={subject.id || i}
         />
       ))}
     </Menu>
@@ -24,28 +18,19 @@ function createMenu({ subjects }, { changeData }) {
 }
 
 async function handleOnChange({ subject }, { changeData }) {
-  const userId = AuthClass.getUser()._id;
-  const url = `/api/users/update-subject/${userId}`;
-  const postOptions = createPostOptions({ id: subject._id });
-  try {
-    await fetch(url, postOptions);
-  } catch (error) {
-    console.log("within fetching subjects", error);
-  }
-  AuthClass.setUser({
-    ...AuthClass.getUser(),
-    currentSubject: subject._id,
+  const users = await db.user.toArray();
+  const user = users[0];
+  const subjectId = user.currentSubject;
+  const notes = (await db.notes.where({ subjectId })).toArray() || [];
+  const images = (await db.images.where({ subjectId })).toArray() || [];
+  await db.user.update(user.id, {
+    currentSubject: subject.id,
   });
-  const notes = await getNotes();
-  const images = await getImages();
-  const tree = await getMindMapTreeData({
-    state: { images, notes },
-  });
-  const structure = JSON.parse(tree.structure);
+
   changeData({
     update: "updateSubject",
     currentSubject: subject,
-    data: { data: [notes, images], structure },
+    data: [notes, images],
   });
 }
 

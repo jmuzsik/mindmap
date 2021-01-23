@@ -22,7 +22,6 @@ const Node = ({ x, node, y, radius, color, scale = 1 }) => {
       transform={`translate(${x - radius},${y - radius}) scale(${scale})`}
       width={radius * 2}
       height={radius * 2}
-      onClick={() => console.log("oi")}
       fill={color}
       style={{ background: color }}
     >

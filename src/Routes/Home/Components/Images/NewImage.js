@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { FileInput, Button, Classes } from "@blueprintjs/core";
 import axios from "axios";
 
-import createGetOptions from "../../../../Utils/FetchOptions/Get";
-
-import AuthClass from "../../../../TopLevel/Auth/Class";
+import db from "../../../../db";
 
 import "./Images.css";
 
@@ -15,11 +13,9 @@ let blobUrl = (blob) => {
   return blob.url;
 };
 
-function handleFileChosen(file, { setImage, setFormData, setDisabled }) {
-  const formData = new FormData();
-  formData.append("file", file);
+function handleFileChosen(file, { setImage, setImageData, setDisabled }) {
   setImage(file && blobUrl(file));
-  setFormData(formData);
+  setImageData(file);
   setDisabled(false);
 }
 
@@ -28,39 +24,39 @@ async function submitImage(
   { setLoading, setDisabled, setOpen, setImage, changeData }
 ) {
   // First create image - main image object and the file
-  const id = AuthClass.getUser()._id;
-  let url = `/api/image/${id}`;
+  let users = await db.user.toArray();
+  const user = users[0];
   // TODO: should use a react reference instead
   const elem = document.querySelector(".selected-image");
   const height = elem.clientHeight;
   const width = elem.clientWidth;
-  data.append("dimensions", JSON.stringify({ height, width }));
-  let res = await axios.post(url, data);
-  // Only main image object is so far returned, also need the blob to display the image
-  const options = createGetOptions(null, "blob");
-  let image = res.data;
-  const imgId = image.imgId;
-  url = `/api/image/user/${imgId}`;
-  let src;
-  try {
-    src = await fetch(url, options);
-  } catch (error) {
-    // TODO: handle errorrrrrr
-  }
-  src = await src.blob();
-  src = URL.createObjectURL(src);
-  image = {
-    ...image,
-    src,
-  };
-  if (!res.error) {
-    setLoading(false);
-    setDisabled(false);
-    setOpen(false);
-    setImage(null);
 
-    changeData({ update: "newData", images: true, image });
-  }
+  // Only main image object is so far returned, also need the blob to display the image
+
+  const imgId = await db.images.add({
+    createdAt: +new Date(),
+    file: data,
+    subjectId: user.currentSubject,
+    height,
+    width,
+    inTree: false,
+  });
+  const image = await db.images.get(imgId);
+
+  // url = `/api/image/user/${imgId}`;
+  // let src;
+  // src = await src.blob();
+  // src = URL.createObjectURL(src);
+  // image = {
+  //   ...image,
+  //   src,
+  // };
+  setLoading(false);
+  setDisabled(false);
+  setOpen(false);
+  setImage(null);
+
+  changeData({ update: "newData", images: true, item: image });
 }
 
 export default function NewImage(props) {
@@ -68,7 +64,7 @@ export default function NewImage(props) {
   const changeData = props.changeData;
 
   const [image, setImage] = useState(null);
-  const [formData, setFormData] = useState(null);
+  const [imageData, setImageData] = useState(null);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -80,7 +76,7 @@ export default function NewImage(props) {
           onInputChange={(e) =>
             handleFileChosen(e.target.files[0], {
               setImage,
-              setFormData,
+              setImageData,
               setDisabled,
             })
           }
@@ -98,7 +94,7 @@ export default function NewImage(props) {
                 e.preventDefault();
                 setLoading(true);
                 setDisabled(true);
-                await submitImage(formData, {
+                await submitImage(imageData, {
                   setLoading,
                   setDisabled,
                   setOpen,

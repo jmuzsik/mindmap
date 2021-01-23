@@ -1,17 +1,13 @@
 import React, { useState } from "react";
-import { useDeepEffect } from "../../../Utils/utils";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { Button } from "@blueprintjs/core";
 
+import DnDContainer from "./DnD/Container";
 import Network from "./Network";
 
-import { createData } from "./utils";
-
-export default function NetworkContainer({ treeData, history }) {
-  const [data, setData] = useState([]);
-
-  // with ref
-  useDeepEffect(() => {
-    setData(createData(treeData.structure, treeData.subject, treeData.data));
-  }, [treeData.structure, treeData.subject, treeData.data]);
+export default function NetworkContainer({ treeData }) {
+  const [networkOrDnD, setNetworkOrDnD] = useState("dnd");
 
   return (
     <div
@@ -21,7 +17,20 @@ export default function NetworkContainer({ treeData, history }) {
         width: treeData.dimensions.width,
       }}
     >
-      <Network history={history} data={data} />
+      <Button
+        onClick={() =>
+          setNetworkOrDnD(networkOrDnD === "network" ? "dnd" : "network")
+        }
+      >
+        Toggle
+      </Button>
+      {networkOrDnD === "network" ? (
+        <Network treeData={treeData} />
+      ) : (
+        <DndProvider backend={HTML5Backend}>
+          <DnDContainer treeData={treeData} />
+        </DndProvider>
+      )}
     </div>
   );
 }

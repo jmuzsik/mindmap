@@ -4,6 +4,13 @@ import { IconNames } from "@blueprintjs/icons";
 import createPostOptions from "../../../../Utils/FetchOptions/Post";
 import { removeFromTree } from "../../requests";
 
+let blobUrl = (blob) => {
+  if (!blob.url) {
+    blob.url = URL.createObjectURL(blob);
+  }
+  return blob.url;
+};
+
 async function handleDelete({ imgId, id, changeData, setOpen }) {
   const treeRemoval = await removeFromTree(id, null, true);
 
@@ -61,7 +68,7 @@ export default function Image(props) {
             Delete
           </Button>
         </ButtonGroup>
-        <img src={image.src} alt="unknown" />
+        <img src={image.file ? blobUrl(image.file) : ""} alt="unknown" />
         {/* TODO: someway to add an alt/name to this data */}
       </div>
     </form>

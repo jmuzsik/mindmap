@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDeepEffect } from "../../../Utils/utils";
 
 import ResponsiveNetwork from "./Containers/ResponsiveNetwork";
+import { createData } from "./utils";
 
 // TODO: needs to be changed to this for updated node module
 
-export default function Network({ data: { nodes, links } }) {
+export default function Network({ treeData }) {
+  const [data, setData] = useState([]);
+
+  useDeepEffect(() => {
+    setData(createData(treeData.structure, treeData.subject, treeData.data));
+  }, [treeData.structure, treeData.subject, treeData.data]);
+
   return (
     <ResponsiveNetwork
-      nodes={nodes}
-      links={links}
+      nodes={data.nodes}
+      links={data.links}
       nodeColor={function (e) {
         return e.color;
       }}

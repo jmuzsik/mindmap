@@ -10,7 +10,7 @@ const TreeContainer = memo(function TreeContainer(props) {
     treeData: { data, structure, subject },
     changeData,
   } = props;
-  console.log('first this happens')
+
   let [dataContents, mindMapContents] = [
     createTreeBoxes({
       data,

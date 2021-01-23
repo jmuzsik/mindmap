@@ -42,8 +42,6 @@ const Network = (props) => {
 
     linkThickness,
     linkColor,
-    tooltip,
-    isInteractive,
     role,
   } = props;
 
@@ -55,7 +53,6 @@ const Network = (props) => {
     outerHeight,
   } = useDimensions(width, height, partialMargin);
 
-  const { animate } = useMotionConfig();
   const theme = useTheme();
   const getColor = useNodeColor(nodeColor);
   const getLinkThickness = useLinkThickness(linkThickness);
@@ -71,29 +68,6 @@ const Network = (props) => {
     center: [innerWidth / 2, innerHeight / 2],
   });
 
-  // const { showTooltipFromEvent, hideTooltip } = useTooltip()
-
-  // const handleNodeHover = useCallback(
-  //     (node, event) => {
-  //         showTooltipFromEvent(<NetworkNodeTooltip node={node} tooltip={tooltip} />, event)
-  //     },
-  //     [showTooltipFromEvent, tooltip]
-  // )
-
-  // const handleNodeLeave = useCallback(() => {
-  //     hideTooltip()
-  // }, [hideTooltip])
-  
-  // const handleNodeHover = useCallback(
-  //     (node, event) => {
-  //         showTooltipFromEvent(<NetworkNodeTooltip node={node} tooltip={tooltip} />, event)
-  //     },
-  //     [showTooltipFromEvent, tooltip]
-  // )
-
-  // const handleNodeLeave = useCallback(() => {
-  //     hideTooltip()
-  // }, [hideTooltip])
   const layerById = {
     links: React.createElement(AnimatedLinks, {
       key: "links",

@@ -12,8 +12,6 @@ import { Dustbin } from "./Dustbin/Dustbin";
 import { removeFromTree } from "../../requests";
 import { handleStringCreation, InnerContent, aORb } from "../../utils";
 
-const truncate = (s = "") => s.slice(0, 9);
-
 function createContent(props) {
   const { type, id, data, label, changeData } = props;
   return (
@@ -35,10 +33,9 @@ function createContent(props) {
 function TreeNodeContent(props) {
   const { i, id, data, type, changeData } = props;
   const [isOpen, setOpen] = useState(false);
-
   return (
     <div className="data-content">
-      <span className="treenode-id">{truncate(id)}</span>
+      <span className="treenode-id">{id}</span>
       <Popover {...{ type, id }}>
         <InnerContent {...{ type, data, id }} />
       </Popover>
@@ -200,7 +197,10 @@ export function createTreeDustbins({ data, structure, subject, changeData }) {
     }),
   ];
   const structureCopy = JSON.parse(JSON.stringify(structure));
-  const result = recurseNested(structureCopy[0].childNodes, data, 1, changeData);
+  let result;
+  if (structureCopy[0]) {
+    result = recurseNested(structureCopy[0].childNodes, data, 1, changeData);
+  }
   if (result) nodes[0].childNodes = result;
 
   return nodes;
@@ -234,7 +234,7 @@ export function createTreeBoxes({ changeData, data: [notes, images] }) {
     notesFolder.childNodes.push(
       createTreeNode({
         i,
-        id: note._id,
+        id: note.id,
         idx: id++,
         data: note,
         type: "note",
@@ -249,7 +249,7 @@ export function createTreeBoxes({ changeData, data: [notes, images] }) {
     imagesFolder.childNodes.push(
       createTreeNode({
         i,
-        id: image._id,
+        id: image.id,
         idx: id++,
         data: image,
         type: "image",

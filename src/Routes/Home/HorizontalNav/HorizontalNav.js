@@ -4,7 +4,6 @@ import { Navbar, Divider } from "@blueprintjs/core";
 
 import ChangeSubject from "./ChangeSubject/ChangeSubject";
 import CreateSubject from "./CreateSubject/CreateSubject";
-// import Options from "./Options/Options";
 
 import { SubjectLogo } from "./utils";
 

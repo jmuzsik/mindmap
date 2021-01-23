@@ -30,11 +30,8 @@ const AnimatedNodes = ({
   nodes,
   color,
   borderWidth,
-  // handleNodeHover,
-  // handleNodeLeave,
 }) => {
   const { springConfig } = useMotionConfig();
-
   return (
     <TransitionMotion
       willEnter={willEnter}

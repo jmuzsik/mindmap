@@ -40,6 +40,14 @@ export async function handleSubmit({
     return;
   }
 
+  const url = `/api/users/update-subject/${userId}`;
+  const postOptions = createPostOptions({ id: response.subject._id });
+  try {
+    await fetch(url, postOptions);
+  } catch (error) {
+    console.log("within fetching subjects", error);
+  }
+
   toggleSubmitLoading(false);
   setAuthInfo({ ...authInfo, user: response.user, updateUser: true });
 

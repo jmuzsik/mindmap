@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Box } from "./DnD/Box";
+
 import { InnerContent, handleStringCreation } from "../utils";
 
 // 0 is main node, 1 is secondary, 3 is... etc
@@ -37,12 +39,12 @@ const pickColor = (type, depth) => {
 const createRadius = (depth) => (depth === 1 ? 10 : 5);
 
 function createContent(props) {
-  const { type, id, data, label } = props;
+  const { type, id, data, label, boxData } = props;
   return (
-    <React.Fragment>
+    <Box>
       <span className="treenode-id">{handleStringCreation(label, data)}</span>
       <InnerContent {...{ id, data, type }} />
-    </React.Fragment>
+    </Box>
   );
 }
 
@@ -85,7 +87,7 @@ function flatten(array) {
   return result;
 }
 
-function createNodes(nodes, data) {
+function createNodes(nodes, data, boxData) {
   const nodesWithData = nodes.map((n) => {
     const noteOrImage = n.type === "note" ? 0 : 1;
     const d = data[noteOrImage].find(({ _id }) => _id === n._id);
@@ -97,6 +99,7 @@ function createNodes(nodes, data) {
         type,
         id,
         data,
+        boxData,
       }),
       depth,
       type,
@@ -118,7 +121,7 @@ function createLinks(nodes) {
   }));
 }
 
-export function createData(tree, subject, data) {
+export function createData(tree, subject, data, boxData) {
   const nodes = flatten(tree[0].childNodes);
   return {
     nodes: [
@@ -130,7 +133,7 @@ export function createData(tree, subject, data) {
         radius: 20,
         color: colors[0],
       },
-      ...createNodes(nodes, data),
+      ...createNodes(nodes, data, boxData),
     ],
     links: createLinks(nodes, data),
   };

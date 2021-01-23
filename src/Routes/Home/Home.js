@@ -1,38 +1,30 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import update from "immutability-helper";
 
 import HorizontalNav from "./HorizontalNav/HorizontalNav";
 import VerticalNav from "./VerticalNav/VerticalNav";
 import { useDeepEffect } from "../../Utils/utils";
-import AuthClass from "../../TopLevel/Auth/Class";
 import NetworkContainer from "./Mindmap/NetworkContainer";
 
-import {
-  getImages,
-  getMindMapTreeData,
-  getNotes,
-  getSubjects,
-  getSubject,
-} from "./requests";
+import db from "../../db";
 
 import "./Home.css";
 
 // [[notes],[images]]
 const DEF_TREE_DATA = [[], []];
 
-const DEF_STRUCTURE_DATA = [
-  {
-    id: 0,
-    _id: null,
-    // subject
-    type: "subject",
-    name: "",
-    childNodes: [
-      // image or note with id, type, nodes
-    ],
-  },
-];
+const DEF_STRUCTURE_DATA = {
+  id: 0,
+  _id: null,
+  // subject
+  type: "subject",
+  name: "",
+  childNodes: [
+    // image or note with id, type, nodes
+  ],
+};
 
-const DEF_SUBJECT_DATA = { name: "", _id: null };
+const DEF_SUBJECT_DATA = { name: "", _id: 0, id: 0 };
 const DEF_SUBJECTS_DATA = [];
 
 const DEF_DATA_CHANGE = {
@@ -76,23 +68,27 @@ export default function Home(props) {
 
   const handleFetchItems = useCallback(() => {
     (async () => {
-      const user = AuthClass.getUser();
-      const currentSubject = user.currentSubject;
-      const subjects = await getSubjects(currentSubject, user._id);
-      const notes = await getNotes();
-      const images = await getImages();
-      const subject = await getSubject(currentSubject);
-      const tree = await getMindMapTreeData();
-      const structure = JSON.parse(tree.structure);
-
-      setTreeData({
-        ...treeData,
-        data: [notes, images],
-        subject,
-        subjects,
-        structure,
-        dimensions: getDim(svgRef, isOpen),
+      // TODO: Input this within classes
+      let users = await db.user.toArray();
+      const user = users[0];
+      const subject =
+        (await db.subjects.get({ id: user.currentSubject })) ||
+        DEF_SUBJECT_DATA;
+      const subjects = (await db.subjects.toArray()) || [];
+      const notes =
+        (await db.notes.where({ subjectId: subject.id }).toArray()) || [];
+      const images =
+        (await db.images.where({ subjectId: subject.id }).toArray()) || [];
+      const tree = await db.trees.get({ subjectId: subject.id });
+      const structure = tree?.structure || DEF_STRUCTURE_DATA;
+      const dataObj = update(treeData, {
+        data: { $set: [notes, images] },
+        subject: { $set: subject },
+        subjects: { $set: subjects },
+        structure: { $set: structure },
+        dimensions: { $set: getDim(svgRef, isOpen) },
       });
+      setTreeData(dataObj);
     })();
   }, []);
 
@@ -105,20 +101,20 @@ export default function Home(props) {
 
   useDeepEffect(() => {
     let data;
+    let noteOrImage;
+    let dataObj;
     switch (dataChange.update) {
       case "newData":
         // Handle insertion
-        data = JSON.parse(JSON.stringify(treeData.data));
-        if (dataChange.notes === true) {
-          data[0].push(dataChange.note);
-        } else {
-          data[1].push(dataChange.image);
-        }
-        setTreeData({ ...treeData, data });
+        noteOrImage = dataChange.notes === true ? 0 : 1;
+        dataObj = update(treeData, {
+          data: { [noteOrImage]: { $push: [dataChange.item] } },
+        });
+        setTreeData(dataObj);
         break;
       case "delete":
         data = JSON.parse(JSON.stringify(treeData.data));
-        const noteOrImage = dataChange.type === "note" ? 0 : 1;
+        noteOrImage = dataChange.type === "note" ? 0 : 1;
         data[noteOrImage] = data[noteOrImage].filter(
           ({ _id }) => _id !== dataChange.id
         );
@@ -132,25 +128,22 @@ export default function Home(props) {
         setTreeData({ ...treeData, data });
         break;
       case "newSubject":
-        const subjects = JSON.parse(JSON.stringify(treeData.subjects));
-        subjects.push(dataChange.currentSubject);
-        setTreeData({
-          ...treeData,
-          subjects,
-          subject: dataChange.currentSubject,
-          data: dataChange.data,
-          structure: dataChange.structure,
+        dataObj = update(treeData, {
+          subjects: {
+            $push: [dataChange.subject],
+          },
+          subject: { $set: dataChange.subject },
+          data: { $set: dataChange.data },
+          structure: { $set: dataChange.structure },
         });
+        setTreeData(dataObj);
         break;
       case "updateSubject":
-        AuthClass.setUser({
-          ...AuthClass.getUser(),
-          currentSubject: dataChange.currentSubject._id,
+        dataObj = update(treeData, {
+          subject: { $set: dataChange.currentSubject },
+          data: { $set: dataChange.data },
         });
-        setTreeData({
-          ...treeData,
-          ...dataChange.data,
-        });
+        setTreeData(dataObj);
         break;
       case "updateTree":
         data = JSON.parse(JSON.stringify(treeData.data));
@@ -159,7 +152,10 @@ export default function Home(props) {
           const noteOrImage = t === "note" ? 0 : 1;
           const idx = data[noteOrImage].findIndex(({ _id }) => _id === d._id);
           // I need to keep blob from image
-          data[noteOrImage][idx] = {...data[noteOrImage][idx], inTree: d.inTree}
+          data[noteOrImage][idx] = {
+            ...data[noteOrImage][idx],
+            inTree: d.inTree,
+          };
         }
         setTreeData({
           ...treeData,
@@ -168,7 +164,7 @@ export default function Home(props) {
         });
         break;
       case "deleteAndRemove":
-        const c = (t) => t === "note" ? 0 : 1;
+        const c = (t) => (t === "note" ? 0 : 1);
         data = JSON.parse(JSON.stringify(treeData.data));
         data[c(dataChange.type)] = data[c(dataChange.type)].filter(
           ({ _id }) => _id !== dataChange.id
@@ -177,7 +173,10 @@ export default function Home(props) {
           const [d, t] = dataChange.data[i];
           const noteOrImage = t === "note" ? 0 : 1;
           const idx = data[noteOrImage].findIndex(({ _id }) => _id === d._id);
-          data[noteOrImage][idx] = {...data[noteOrImage][idx], inTree: d.inTree}
+          data[noteOrImage][idx] = {
+            ...data[noteOrImage][idx],
+            inTree: d.inTree,
+          };
         }
         setTreeData({
           ...treeData,
@@ -201,7 +200,7 @@ export default function Home(props) {
   }, [isOpen]);
 
   const { history } = props;
-  console.log(treeData);
+
   return (
     <section className={`layout ${open}`}>
       <HorizontalNav
@@ -218,7 +217,7 @@ export default function Home(props) {
         <VerticalNav
           {...{ history, isOpen, setOpen, treeData, changeData, setTreeData }}
         />
-        <NetworkContainer treeData={treeData} />
+        {/* <NetworkContainer treeData={treeData} /> */}
       </main>
     </section>
   );

@@ -1,5 +1,4 @@
 import Login from "../../Requests/Login";
-import AuthClass from "../../../../TopLevel/Auth/Class";
 
 /** Handles login through email or google */
 export async function handleSubmit(e, type, options) {
@@ -40,11 +39,11 @@ export async function handleSubmit(e, type, options) {
   const { user, token, refreshToken } = result;
   console.log(token, refreshToken);
   if (token && refreshToken) {
-    AuthClass.setUser(user);
-    AuthClass.setTokens({
-      token,
-      refreshToken,
-    });
+    // AuthClass.setUser(user);
+    // AuthClass.setTokens({
+    //   token,
+    //   refreshToken,
+    // });
     setAuthInfo({ authenticated: true, token, refreshToken, user });
   }
   // This is a top parent function call (roots from App.js)

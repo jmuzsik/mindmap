@@ -3,13 +3,19 @@ import { convertFromRaw, EditorState } from "draft-js";
 
 import RichEditor from "../../Components/Editor/Editor";
 
-const truncate = (s = "") => s.slice(0, 9);
+let blobUrl = (blob) => {
+  if (!blob.url) {
+    blob.url = URL.createObjectURL(blob);
+  }
+  return blob.url;
+};
+
 
 export function handleStringCreation(label, data) {
   if (typeof label === "string") {
-    return truncate(label);
-  } else if (data._id) {
-    return truncate(data._id);
+    return label;
+  } else if (data.id) {
+    return data.id;
   }
   return label;
 }
@@ -34,6 +40,6 @@ export function InnerContent({ type, id, data }) {
       readOnly={true}
       onChange={() => null}
     />,
-    <img src={data.src} alt={id} width={data.width} height={data.height} />
+    <img src={data.file ? blobUrl(data.file) : ""} alt={id} width={data.width} height={data.height} />
   );
 }
