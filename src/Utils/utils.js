@@ -17,5 +17,5 @@ export function useDeepEffect(fn, deps) {
     if (isFirstEffect || !isSame) {
       return fn();
     }
-  }, deps);
+  }, [deps, fn]);
 }

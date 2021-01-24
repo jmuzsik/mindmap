@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { Router } from "react-router-dom";
 import * as history from "history";
 
-import App from "./TopLevel/App";
+import App from "./App";
 
 import "./index.css";
 

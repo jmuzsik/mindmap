@@ -1,0 +1,92 @@
+.home {
+}
+.home main {
+  display: grid;
+  gap: 0 15px;
+  grid-template-columns: 4fr 4fr;
+}
+.home .content-wrapper {
+}
+.draggable-tree {
+  padding: 0 20px;
+}
+.draggable-container {
+  margin: 10px 30px;
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  border: 1px solid #ccc;
+}
+.hidden {
+  display: none;
+}
+.drawer-open {
+}
+.layout main {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+}
+.layout.open main {
+  grid-template-columns: 4fr 4fr;
+}
+.layout aside {
+  margin-right: 15px;
+}
+.layout aside section {
+  margin-right: 15px;
+}
+.mindmap {
+  flex-grow: 1;
+}
+.vertical-nav {
+  transition: width 0.4s;
+  width: 0;
+}
+.vertical-nav.open {
+  width: 100%;
+}
+.vertical-nav .sidebar {
+  transition: transform 0.4s;
+}
+.vertical-nav .sidebar .bp3-tree-node-label {
+  overflow-x: scroll;
+}
+.open .vertical-nav .sidebar-open {
+  display: none;
+}
+.vertical-nav .sidebar-open {
+  position: fixed;
+  z-index: 10;
+}
+.vertical-nav .header {
+  display: flex;
+  justify-content: flex-end;
+}
+.network-container {
+  width: 100%;
+  height: calc(100vh - 60px);
+}
+.network-container-inner {
+  height: 100%;
+  width: 100%;
+}
+.network-container svg foreignObject {
+  cursor: pointer;
+  border-radius: 50%;
+}
+.network-container svg .depth-0:hover {
+  fill: #d13913;
+}
+.network-container svg foreignObject:hover {
+  fill: #d13913;
+}
+.network-container svg foreignObject {
+  filter: brightness(90%);
+}
+.network-container .node-circle {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
