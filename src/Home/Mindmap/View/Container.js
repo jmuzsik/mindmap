@@ -1,15 +1,24 @@
 import React, { useState } from "react";
 import { useDrop } from "react-dnd";
-import { Box } from "./Box";
 import update from "immutability-helper";
+
+import { Box } from "./Box";
+
 const styles = {
   border: "1px solid black",
   position: "relative",
 };
 
+function calculateLocation(node, center) {
+  if (center) {
+    return;
+  }
+}
+
 export default function Container({ treeData }) {
   const [boxes, setBoxes] = useState({
-    a: { top: 20, left: 80, title: "Drag me around" },
+    // TODO: This must be changed 
+    a: { left: "50%", top: "50%", transform: "translateX(-50%) translateY(-50%)", title: "Drag me around" },
     b: { top: 180, left: 20, title: "Drag me too" },
   });
   const [, drop] = useDrop({
@@ -31,6 +40,7 @@ export default function Container({ treeData }) {
       })
     );
   };
+
   return (
     <div
       className="dnd-container"
@@ -42,13 +52,15 @@ export default function Container({ treeData }) {
       ref={drop}
     >
       {Object.keys(boxes).map((key) => {
-        const { left, top, title } = boxes[key];
+        const { left, top, transform, title } = boxes[key];
         return (
           <Box
             key={key}
             id={key}
             left={left}
             top={top}
+            transform={transform}
+            hideSourceOnDrag={true}
           >
             {title}
           </Box>

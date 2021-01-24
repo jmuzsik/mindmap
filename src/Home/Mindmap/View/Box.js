@@ -7,8 +7,9 @@ const style = {
   backgroundColor: "white",
   padding: "0.5rem 1rem",
   cursor: "move",
+  margin: "auto",
 };
-export const Box = ({ id, left, top, hideSourceOnDrag, children }) => {
+export const Box = ({ id, left, top, transform, hideSourceOnDrag, children }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { id, left, top, type: "drag" },
     collect: (monitor) => ({
@@ -19,7 +20,7 @@ export const Box = ({ id, left, top, hideSourceOnDrag, children }) => {
     return <div ref={drag} />;
   }
   return (
-    <div ref={drag} style={{ ...style, left, top }}>
+    <div ref={drag} style={{ ...style, left, top, transform }}>
       {children}
     </div>
   );

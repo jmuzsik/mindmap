@@ -16,7 +16,7 @@ import {
 import { useInheritedColor } from "@nivo/colors";
 import { NetworkPropTypes, NetworkDefaultProps } from "../props";
 import { useNetwork, useNodeColor, useLinkThickness } from "../hooks";
-import AnimatedNodes from "./AnimatedNodes";
+import AnimatedNodes from "../AnimatedNodes";
 import AnimatedLinks from "./AnimatedLinks";
 
 const Network = (props) => {

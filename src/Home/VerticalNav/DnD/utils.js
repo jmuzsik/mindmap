@@ -6,8 +6,8 @@ import Note from "../../Components/Notes/Note";
 import Image from "../../Components/Images/Image";
 import Dialog from "../../../Components/Dialog/Dialog";
 import Popover from "../../../Components/Popover/Popover";
-import { Box } from "./Box/Box";
-import { Dustbin } from "./Dustbin/Dustbin";
+import { Box } from "./Box"
+import { Dustbin } from "./Dustbin"
 
 import { removeFromTree } from "../../requests";
 import { handleStringCreation, InnerContent, aORb } from "../../utils";

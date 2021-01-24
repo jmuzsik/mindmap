@@ -4,7 +4,7 @@ import update from "immutability-helper";
 import HorizontalNav from "./HorizontalNav/HorizontalNav";
 import VerticalNav from "./VerticalNav/VerticalNav";
 import { useDeepEffect } from "../Utils/utils";
-import NetworkContainer from "./Mindmap/NetworkContainer";
+import MindMapContainer from "./Mindmap/Container";
 
 import db from "../db";
 
@@ -15,7 +15,6 @@ const DEF_TREE_DATA = [[], []];
 
 const DEF_STRUCTURE_DATA = {
   id: 0,
-  id: null,
   // subject
   type: "subject",
   name: "",
@@ -98,7 +97,7 @@ export default function Home(props) {
 
   useDeepEffect(() => {
     let data, noteOrImage, dataObj, idx;
-    console.log(dataChange)
+    console.log(dataChange);
     switch (dataChange.update) {
       case "newData":
         // Handle insertion
@@ -156,10 +155,10 @@ export default function Home(props) {
             [noteOrImage]: {
               [idx]: {
                 inTree: {
-                  $set: dataChange.item.inTree
-                }
-              }
-            }
+                  $set: dataChange.item.inTree,
+                },
+              },
+            },
           },
           structure: {
             $set: dataChange.structure,
@@ -243,7 +242,7 @@ export default function Home(props) {
         <VerticalNav
           {...{ history, isOpen, setOpen, treeData, changeData, setTreeData }}
         />
-        <NetworkContainer treeData={treeData} />
+        <MindMapContainer treeData={treeData} />
       </main>
     </section>
   );

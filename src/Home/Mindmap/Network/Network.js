@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDeepEffect } from "../../Utils/utils";
+import { useDeepEffect } from "../../../Utils/utils";
 
 import ResponsiveNetwork from "./Containers/ResponsiveNetwork";
 import { createData } from "./utils";

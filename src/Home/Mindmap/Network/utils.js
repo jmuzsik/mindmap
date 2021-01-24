@@ -1,8 +1,6 @@
 import React from "react";
 
-import { Box } from "./DnD/Box";
-
-import { InnerContent, handleStringCreation } from "../utils";
+import { InnerContent } from "../../utils";
 
 // 0 is main node, 1 is secondary, 3 is... etc
 const colors = [

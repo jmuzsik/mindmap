@@ -10,7 +10,7 @@ import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { TransitionMotion, spring } from "react-motion";
 import { useMotionConfig } from "@nivo/core";
-import Node from "./Node";
+import Node from "./Containers/Node";
 
 const willEnter = ({ style }) => ({
   x: style.x.val,
