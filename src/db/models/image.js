@@ -1,4 +1,4 @@
-export default "++id,createdAt,file,subjectId,height,width,inTree";
+export default "++id,createdAt,file,subjectId,height,width,inTree,x,y";
 
 // userId: mongoose.Schema.ObjectId,
 // createdAt: {

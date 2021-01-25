@@ -25,6 +25,8 @@ async function handleSubmit(
     height,
     width,
     inTree: false,
+    x: 'calc',
+    y: 'calc',
   });
   const note = await db.notes.get(noteId);
   setLoading(false);

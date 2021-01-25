@@ -93,7 +93,7 @@ function createNodes(nodes, data) {
   });
   return nodesWithData.map(({ data, id, parent, depth, type }) => {
     return {
-      jsx: createContent({
+    jsx: createContent({
         type,
         id,
         data,

@@ -31,7 +31,6 @@ async function submitImage(
 
   // Only main image object is so far returned, also need the blob to display the image
 
-  console.log(data);
   const imgId = await db.images.add({
     createdAt: +new Date(),
     file: data,
@@ -39,6 +38,8 @@ async function submitImage(
     height,
     width,
     inTree: false,
+    x: 'calc',
+    y: 'calc',
   });
   const image = await db.images.get(imgId);
     console.log(image)

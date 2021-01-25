@@ -27,7 +27,8 @@ async function handleEditSave(
 }
 
 async function handleDelete({ changeData, setOpen, id }) {
-  const treeRemoval = await removeFromTree(id, null, true);
+  // i do this string as i need to avoid id replications btw images and notes
+  const treeRemoval = await removeFromTree(`note-${id}`, null, true);
 
   // undefined or rejection
   await db.notes.delete(id);
@@ -55,7 +56,7 @@ export default function Note(props) {
     EditorState.createWithContent(convertFromRaw(note.raw))
   );
   const [editable, setEditable] = useState(false);
-
+    console.log(note)
   return (
     <form className="note">
       <div className={Classes.DIALOG_BODY}>

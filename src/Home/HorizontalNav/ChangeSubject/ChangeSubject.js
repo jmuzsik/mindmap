@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import {
-  Popover,
-  Button,
-  Menu,
-  MenuItem,
-  Intent,
-  Alert,
-} from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
+import React from "react";
+import { Popover, Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
 
 import db from "../../../db";
 
@@ -26,18 +18,21 @@ function createMenu({ subjects }, { changeData }) {
 }
 
 async function handleOnChange({ subject }, { changeData }) {
+  const subjectId = subject.id;
+  const notes = (await db.notes.where({ subjectId }).toArray()) || [];
+  const images = (await db.images.where({ subjectId }).toArray()) || [];
+  const tree = await db.trees.get({ subjectId });
+  const structure = tree.structure;
   const user = await db.user.toCollection().first();
-  const subjectId = user.currentSubject;
-  const notes = (await db.notes.where({ subjectId })).toArray() || [];
-  const images = (await db.images.where({ subjectId })).toArray() || [];
   await db.user.update(user.id, {
-    currentSubject: subject.id,
+    currentSubject: subjectId
   });
 
   changeData({
     update: "updateSubject",
     currentSubject: subject,
     data: [notes, images],
+    structure,
   });
 }
 

@@ -3,11 +3,25 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { Button } from "@blueprintjs/core";
 
-import View from "./View/Container";
+import View from "./View/DnDContainer";
 import Network from "./Network/Network";
+import { createBoxesContent } from "./View/utils";
 
-export default function NetworkContainer({ treeData }) {
+function ViewContainer({ children }) {
+  return <DndProvider backend={HTML5Backend}>{children}</DndProvider>;
+}
+
+export default function NetworkContainer({ treeData, changeData }) {
   const [networkOrDnD, setNetworkOrDnD] = useState("dnd");
+
+  const boxesContent = createBoxesContent({
+    data: treeData.data,
+    structure: treeData.structure,
+    subject: treeData.subject,
+    changeData,
+    dimensions: treeData.dimensions,
+  });
+
   return (
     <div
       className="network-container"
@@ -27,9 +41,9 @@ export default function NetworkContainer({ treeData }) {
       {networkOrDnD === "network" ? (
         <Network treeData={treeData} />
       ) : (
-        <DndProvider backend={HTML5Backend}>
-          <View treeData={treeData} />
-        </DndProvider>
+        <ViewContainer>
+          <View boxesContent={boxesContent} dimensions={treeData.dimensions} />
+        </ViewContainer>
       )}
     </div>
   );

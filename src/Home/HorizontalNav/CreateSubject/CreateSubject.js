@@ -21,6 +21,8 @@ export async function handleSubmit(
     // TODO: option to change the icon
     // arbitrary selection
     icon: "clean",
+    x: 'center',
+    y: 'center',
   };
   const subjectId = await db.subjects.add(subjectObj);
   const subject = await db.subjects.get(subjectId);
@@ -30,7 +32,7 @@ export async function handleSubmit(
     structure: {
       id: subjectId,
       type: "subject",
-      name: "",
+      name: subject.name,
       childNodes: [],
     },
   };

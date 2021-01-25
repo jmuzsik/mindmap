@@ -56,7 +56,6 @@ export default function Home(props) {
   //   the svg
   const svgRef = useRef();
   const [treeData, setTreeData] = useState({
-    // [[], []]
     data: DEF_TREE_DATA,
     structure: DEF_STRUCTURE_DATA,
     subject: DEF_SUBJECT_DATA,
@@ -65,27 +64,40 @@ export default function Home(props) {
   });
   const [dataChange, changeData] = useState(DEF_DATA_CHANGE);
 
-  const handleFetchItems = useCallback(() => {
-    (async () => {
-      // TODO: Input this within classes
-      const user = await db.user.toCollection().first();
-      const subjectId = user.currentSubject;
-      const subject =
-        (await db.subjects.get({ id: subjectId })) || DEF_SUBJECT_DATA;
-      const subjects = (await db.subjects.toArray()) || [];
-      const notes = (await db.notes.where({ subjectId }).toArray()) || [];
-      const images = (await db.images.where({ subjectId }).toArray()) || [];
-      const tree = await db.trees.get({ subjectId });
-      const structure = tree?.structure || DEF_STRUCTURE_DATA;
-      const dataObj = update(treeData, {
-        data: { $set: [notes, images] },
-        subject: { $set: subject },
-        subjects: { $set: subjects },
-        structure: { $set: structure },
-        dimensions: { $set: getDim(svgRef, isOpen) },
-      });
-      setTreeData(dataObj);
-    })();
+  // const [data, setData] = useState(null);
+  // const [] = useState(null);
+  // const [] = useState(null);
+  // const [] = useState(null);
+
+  // const handleUpdate = (newData) => {
+  //   setData(newData)
+  //   setData(newData)
+  //   setData(newData)
+  //   setData(newData)
+  //   setData(newData)
+  // }
+
+  const handleFetchItems = useCallback(async () => {
+    // TODO: Input this within classes
+    const user = await db.user.toCollection().first();
+    const subjectId = user.currentSubject;
+    const subject =
+      (await db.subjects.get({ id: subjectId })) || DEF_SUBJECT_DATA;
+    const subjects = (await db.subjects.toArray()) || [];
+    const notes = (await db.notes.where({ subjectId }).toArray()) || [];
+    const images = (await db.images.where({ subjectId }).toArray()) || [];
+    const tree = await db.trees.get({ subjectId });
+    const structure = tree?.structure || DEF_STRUCTURE_DATA;
+
+    const dataObj = update(treeData, {
+      data: { $set: [notes, images] },
+      subject: { $set: subject },
+      subjects: { $set: subjects },
+      structure: { $set: structure },
+      dimensions: { $set: getDim(svgRef, isOpen) },
+    });
+
+    setTreeData(dataObj);
   }, []);
 
   useEffect(() => {
@@ -97,10 +109,9 @@ export default function Home(props) {
 
   useDeepEffect(() => {
     let data, noteOrImage, dataObj, idx;
-    console.log(dataChange);
+
     switch (dataChange.update) {
       case "newData":
-        // Handle insertion
         noteOrImage = dataChange.notes === true ? 0 : 1;
         dataObj = update(treeData, {
           data: { [noteOrImage]: { $push: [dataChange.item] } },
@@ -118,12 +129,10 @@ export default function Home(props) {
         setTreeData(dataObj);
         break;
       case "edit":
-        // can only edit notes atm which are at index 0
         idx = treeData.data[0].findIndex(({ id }) => id === dataChange.note.id);
         dataObj = update(treeData, {
           data: { 0: { [idx]: { $set: dataChange.note } } },
         });
-        data[0][idx] = dataChange.note;
         setTreeData(dataObj);
         break;
       case "newSubject":
@@ -141,11 +150,11 @@ export default function Home(props) {
         dataObj = update(treeData, {
           subject: { $set: dataChange.currentSubject },
           data: { $set: dataChange.data },
+          structure: { $set: dataChange.structure },
         });
         setTreeData(dataObj);
         break;
       case "updateTreeSingular":
-        // Can i use immutability helper rather than a deep copy?
         noteOrImage = dataChange.type === "note" ? 0 : 1;
         idx = treeData.data[noteOrImage].findIndex(
           ({ id }) => id === dataChange.item.id
@@ -167,47 +176,56 @@ export default function Home(props) {
         setTreeData(dataObj);
         break;
       case "updateTree":
-        data = JSON.parse(JSON.stringify(treeData.data));
         for (let i = 0; i < dataChange.data.length; i++) {
           const [d, t] = dataChange.data[i];
           noteOrImage = t === "note" ? 0 : 1;
-          const idx = data[noteOrImage].findIndex(({ id }) => id === d.id);
-          // I need to keep blob from image
-          data[noteOrImage][idx] = {
-            ...data[noteOrImage][idx],
-            inTree: d.inTree,
-          };
+          const idx = treeData.data[noteOrImage].findIndex(
+            ({ id }) => id === d.id
+          );
+          // I do this as I need to update treedata.Data multiple times occasionally
+          data = update(data ? data : treeData.data, {
+            [noteOrImage]: {
+              [idx]: {
+                inTree: {
+                  $set: d.inTree,
+                },
+              },
+            },
+          });
         }
         dataObj = update(treeData, {
           data: { $set: data },
           structure: { $set: dataChange.structure },
         });
-        setTreeData({
-          ...treeData,
-          data,
-          structure: dataChange.structure,
-        });
+        setTreeData(dataObj);
         break;
       case "deleteAndRemove":
         const c = (t) => (t === "note" ? 0 : 1);
-        data = JSON.parse(JSON.stringify(treeData.data));
-        data[c(dataChange.type)] = data[c(dataChange.type)].filter(
-          ({ id }) => id !== dataChange.id
-        );
         for (let i = 0; i < dataChange.data.length; i++) {
           const [d, t] = dataChange.data[i];
-          noteOrImage = t === "note" ? 0 : 1;
-          const idx = data[noteOrImage].findIndex(({ id }) => id === d.id);
-          data[noteOrImage][idx] = {
-            ...data[noteOrImage][idx],
-            inTree: d.inTree,
-          };
+          noteOrImage = c(t);
+          const idx = treeData.data[noteOrImage].findIndex(
+            ({ id }) => id === d.id
+          );
+          data = update(data ? data : treeData.data, {
+            [noteOrImage]: {
+              [idx]: {
+                inTree: {
+                  $set: d.inTree,
+                },
+              },
+            },
+          });
         }
-        setTreeData({
-          ...treeData,
-          data,
-          structure: dataChange.structure,
+        data = update(data ? data : treeData.data, {
+          [c(dataChange.type)]: (arr) =>
+            arr.filter((item) => item.id !== dataChange.id),
         });
+        dataObj = update(treeData, {
+          data: { $set: data },
+          structure: { $set: dataChange.structure },
+        });
+        setTreeData(dataObj);
         break;
       default:
         return null;
@@ -216,11 +234,10 @@ export default function Home(props) {
 
   useEffect(() => {
     if (treeData.dimensions.width && treeData.dimensions.height) {
-      setTreeData({
-        // TODO: i need to update the tree data here
-        ...treeData,
-        dimensions: getDim(svgRef, isOpen),
+      const dataObj = update(treeData, {
+        dimensions: { $set: getDim(svgRef, isOpen) },
       });
+      setTreeData(dataObj);
     }
   }, [isOpen]);
 
@@ -240,9 +257,9 @@ export default function Home(props) {
       />
       <main ref={svgRef}>
         <VerticalNav
-          {...{ history, isOpen, setOpen, treeData, changeData, setTreeData }}
+          {...{ history, isOpen, setOpen, treeData, changeData }}
         />
-        <MindMapContainer treeData={treeData} />
+        <MindMapContainer treeData={treeData} changeData={changeData} />
       </main>
     </section>
   );

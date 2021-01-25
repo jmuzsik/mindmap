@@ -24,7 +24,6 @@ export function aORb(type, a, b, c = null) {
 }
 
 export function InnerContent({ type, id, data }) {
-  console.log(data)
   return aORb(
     type,
     <RichEditor

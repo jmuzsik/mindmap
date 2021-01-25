@@ -12,7 +12,8 @@ let blobUrl = (blob) => {
 };
 
 async function handleDelete({ id, changeData, setOpen }) {
-  const treeRemoval = await removeFromTree(id, null, true);
+  // i do this string as i need to avoid id replications btw images and notes
+  const treeRemoval = await removeFromTree(`image-${id}`, null, true);
 
   // undefined or rejection
   await db.images.delete(id);

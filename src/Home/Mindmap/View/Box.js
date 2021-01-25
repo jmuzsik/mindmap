@@ -9,9 +9,15 @@ const style = {
   cursor: "move",
   margin: "auto",
 };
-export const Box = ({ id, left, top, transform, hideSourceOnDrag, children }) => {
+export const Box = ({ id, nodeId, styles, hideSourceOnDrag, children }) => {
   const [{ isDragging }, drag] = useDrag({
-    item: { id, left, top, type: "drag" },
+    item: {
+      id,
+      left: styles.left,
+      top: styles.top,
+      nodeId,
+      type: "drag",
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -20,7 +26,7 @@ export const Box = ({ id, left, top, transform, hideSourceOnDrag, children }) =>
     return <div ref={drag} />;
   }
   return (
-    <div ref={drag} style={{ ...style, left, top, transform }}>
+    <div ref={drag} style={{ ...style, ...styles }} className="box-go">
       {children}
     </div>
   );

@@ -6,8 +6,8 @@ import Note from "../../Components/Notes/Note";
 import Image from "../../Components/Images/Image";
 import Dialog from "../../../Components/Dialog/Dialog";
 import Popover from "../../../Components/Popover/Popover";
-import { Box } from "./Box"
-import { Dustbin } from "./Dustbin"
+import { Box } from "./Box";
+import { Dustbin } from "./Dustbin";
 
 import { removeFromTree } from "../../requests";
 import { handleStringCreation, InnerContent, aORb } from "../../utils";
@@ -17,7 +17,7 @@ function createContent(props) {
   return (
     <React.Fragment>
       <span className="treenode-id">{handleStringCreation(label, data)}</span>
-      {type === "subject" ? null : (
+      {type !== "subject" && (
         <Popover {...{ type, id }}>
           <InnerContent {...{ id, data, type }} />
         </Popover>
@@ -81,7 +81,7 @@ export function createTreeNode(props) {
     label: inTree ? (
       content
     ) : (
-      <Box hooks={{ changeData }} name={type + "," + id} content={content} />
+      <Box hooks={{ changeData }} name={`${type}-${id}`} content={content} />
     ),
     id,
     hasCaret: false,
@@ -112,12 +112,11 @@ function createDustbin(
   { type, id, data, label, additionalProps = {} },
   changeData
 ) {
-  const l = type === "subject" ? label : id;
   return (
     <Dustbin
       {...additionalProps}
-      name={type + "," + id}
-      content={createContent({ type, id, data, label: l, changeData })}
+      name={id}
+      content={createContent({ type, id, data, label, changeData })}
     />
   );
 }
@@ -125,48 +124,43 @@ function createDustbin(
 function recurseNested(cur, data, depth = 1, changeData) {
   for (let i = 0; i < cur.length; i++) {
     const elem = cur[i];
-    const id = elem.id;
-    let noteOrImage, node;
+    const noteOrImage = elem.type === "note" ? 0 : 1;
+    const node = data[noteOrImage].find((el) => el.id === elem.id);
+    const id = `${elem.type}-${node.id}`;
     // Find the node in image or note array
-    for (let j = 0; j < data.length; j++) {
-      node = data[j].find((el) => el.id === id);
-      if (node) {
-        noteOrImage = j;
-        break;
-      }
-    }
-    if (node) {
-      const type = noteOrImage === 0 ? "note" : "image";
-      // atm I only want to handle a depth of 2 in the mind map
-      let jsxObj;
-      if (depth === 2) {
-        jsxObj = {
-          label: createContent({
-            type,
-            id: node.id,
-            data: node,
-            label: node.id,
-            changeData,
-          }),
-          id: node.id,
-          hasCaret: true,
-          isExpanded: true,
-          data: node || {},
-          childNodes: [],
-          icon: aORb(
-            type,
-            IconNames.DOCUMENT,
-            IconNames.MEDIA,
-            IconNames.FOLDER_CLOSE
-          ),
-        };
-      } else {
+    // atm I only want to handle a depth of 2 in the mind map
+    let jsxObj;
+    if (depth === 2) {
+      // No children allowed atm for children of depth 2
+      jsxObj = {
+        label: createContent({
+          type: elem.type,
+          id,
+          data: node,
+          label: elem.id,
+          changeData,
+        }),
+        id,
+        hasCaret: true,
+        isExpanded: true,
+        data: node || {},
+        childNodes: [],
+        icon: aORb(
+          elem.type,
+          IconNames.DOCUMENT,
+          IconNames.MEDIA,
+          IconNames.FOLDER_CLOSE
+        ),
+      };
+    } else {
+      // Max of 4 children for depth of 1
+      if (elem.childNodes.length < 4) {
         jsxObj = createDustbinObj({
           state: {
-            type,
-            id: node.id,
+            type: elem.type,
+            id,
             data: node,
-            label: node.id,
+            label: elem.id,
           },
           changeData,
           childNodes: recurseNested(
@@ -176,27 +170,74 @@ function recurseNested(cur, data, depth = 1, changeData) {
             changeData
           ),
         });
+      } else {
+        jsxObj = {
+          label: createContent({
+            type: elem.type,
+            id,
+            data: node,
+            label: elem.id,
+            changeData,
+          }),
+          id: elem.id,
+          hasCaret: true,
+          isExpanded: true,
+          data: elem.data ? elem.data : {},
+          childNodes: recurseNested(
+            elem.childNodes,
+            data,
+            depth + 1,
+            changeData
+          ),
+          icon: aORb(
+            elem.type,
+            IconNames.DOCUMENT,
+            IconNames.MEDIA,
+            IconNames.FOLDER_CLOSE
+          ),
+        };
       }
-      cur[i] = jsxObj;
     }
+    cur[i] = jsxObj;
   }
   return cur;
 }
 
 export function createTreeDustbins({ data, structure, subject, changeData }) {
-  const nodes = [
-    createDustbinObj({
-      state: {
-        type: "subject",
-        label: subject.name,
-        id: subject.id,
-        data: subject,
-      },
-      changeData,
-      childNodes: [],
-    }),
-  ];
+  // Max of 8 children
   const structureCopy = JSON.parse(JSON.stringify(structure));
+  let nodes;
+  if (structureCopy.childNodes.length < 8) {
+    nodes = [
+      createDustbinObj({
+        state: {
+          type: "subject",
+          label: subject.name,
+          id: `subject-${subject.id}`,
+          data: subject,
+        },
+        changeData,
+        childNodes: [],
+      }),
+    ];
+  } else {
+    nodes = [
+      {
+        label: <span className="treenode-id">{subject.name}</span>,
+        id: subject.id,
+        hasCaret: true,
+        isExpanded: true,
+        data: subject,
+        childNodes: [],
+        icon: aORb(
+          "subject",
+          IconNames.DOCUMENT,
+          IconNames.MEDIA,
+          IconNames.FOLDER_CLOSE
+        ),
+      },
+    ];
+  }
   let result;
   if (structureCopy) {
     result = recurseNested(structureCopy.childNodes, data, 1, changeData);
