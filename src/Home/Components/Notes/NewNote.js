@@ -15,9 +15,10 @@ async function handleSubmit(
   { setLoading, setDisabled, setOpen, setEditorState, changeData }
 ) {
   const user = await db.user.toCollection().first();
-  const elem = document.querySelector('[data-contents="true"');
+  const elem = document.querySelector('.new-note-dialog [data-contents="true"');
   const height = elem.clientHeight;
   const width = elem.clientWidth;
+  console.log(height, width);
   const noteId = await db.notes.add({
     createdAt: +new Date(),
     raw: data,
@@ -25,8 +26,8 @@ async function handleSubmit(
     height,
     width,
     inTree: false,
-    x: 'calc',
-    y: 'calc',
+    x: "calc",
+    y: "calc",
   });
   const note = await db.notes.get(noteId);
   setLoading(false);
@@ -63,6 +64,8 @@ export default function NewNote(props) {
         }}
       >
         <RichEditor
+          // editorRef={editorRef}
+          width={300}
           controls={true}
           editorState={editorState}
           onChange={setEditorState}

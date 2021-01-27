@@ -5,65 +5,65 @@ import { InnerContent } from "../../utils";
 function createContent(props) {
   const { type, id, data } = props;
   return (
-    <div className="treenode-content">
+    <div className={`dnd-content ${type}-content`}>
       <InnerContent {...{ id, data, type }} />
     </div>
   );
 }
 
 function getLocationOfParent(id, dimensions) {
-  // start at center
   let left = 0.5,
-    top = 0.5;
+    top = 0;
   switch (id) {
     case "1":
-      left = 0.25;
+      left = 0.05;
       break;
     case "2":
       left = 0.75;
       break;
     case "3":
-      top = 0.25;
+      left = 0.25;
       break;
     case "4":
-      top = 0.75;
+      left = 0.5;
       break;
     case "5":
-      left = 0.375;
-      top = 0.375;
+      left = 0;
+      top = 0.25;
       break;
     case "6":
-      left = 0.625;
-      top = 0.375;
+      left = 0.75;
+      top = 0.25;
       break;
     case "7":
-      left = 0.375;
-      top = 0.625;
+      left = 0.25;
+      top = 0.25;
       break;
     case "8":
-      left = 0.625;
-      top = 0.625;
+      left = 0.5;
+      top = 0.25;
       break;
     default:
       console.warn("should never reach here");
-    // should never be reached
-    // left = "25%";
-    // top = "50%";
   }
   return { left: left * dimensions.width, top: top * dimensions.height };
 }
 
 // Max of 4 children
 function getLocationFromParent(parent, count) {
+  let top;
+  if (parent.top === 0) {
+    top = 125;
+  } else top = parent.top;
   switch (count) {
     case "0":
-      return { left: parent.left / 2, top: parent.top };
+      return { left: parent.left * 0.2, top: top * 1.5 };
     case "1":
-      return { left: parent.left, top: parent.top / 2 };
+      return { left: parent.left * 2.5, top: top * 1.5 };
     case "2":
-      return { left: parent.left * 1.5, top: parent.top };
+      return { left: parent.left * 4.5, top: top * 1.5 };
     case "3":
-      return { left: parent.left, top: parent.top * 1.5 };
+      return { left: parent.left * 6, top: top * 1.5 };
     default:
       console.warn("should never be here", parent, count);
   }
@@ -77,30 +77,31 @@ function getLocationFromParent(parent, count) {
  */
 function calcLocation(data, depth, parent, id, dimensions) {
   let left, top, zIndex;
-  // start at center, gradually decrease z-index for increasing depth
-  let transform = "translateX(-50%) translateY(-50%)";
   // Two options here (either centered or necessary to manually calculate)
   // ie. data.x/data.y equals 'center' or 'calc'
   // They are either set to these strings or a number (when data.x is a string, so is data.y)
   if (depth === 0 && data.x === "center") {
-    zIndex = 100;
+    zIndex = 10;
     left = 0.5 * dimensions.width;
     top = 0.5 * dimensions.height;
-    return { transform, left, top, zIndex };
+    return { left, top, zIndex };
   }
   if (depth === 1 && data.x === "calc") {
-    zIndex = 50;
+    zIndex = 9;
     const res = getLocationOfParent(id, dimensions);
-    return { transform, left: res.left, top: res.top, zIndex };
+    return { left: res.left, top: res.top, zIndex };
   } else if (depth === 2 && data.x === "calc") {
-    zIndex = 25;
+    zIndex = 8;
     // ex. 1.2 -> 2
     const count = id.split(".")[1];
     const parentLocations = getLocationOfParent(parent, dimensions);
     const res = getLocationFromParent(parentLocations, count);
-    return { transform, left: res.left, top: res.top, zIndex };
+    return { left: res.left, top: res.top, zIndex };
   }
-  return;
+  zIndex = depth === 0 ? 10 : depth === 1 ? 9 : 8;
+  left = data.x;
+  top = data.y;
+  return { left, top, zIndex };
 }
 
 // https://stackoverflow.com/questions/35272533/flattening-deeply-nested-array-of-objects
@@ -147,7 +148,6 @@ export function createBoxesContent({
   data,
   structure,
   subject,
-  changeData,
   dimensions,
 }) {
   const structureCopy = JSON.parse(JSON.stringify(structure));
@@ -155,7 +155,7 @@ export function createBoxesContent({
   const nodesWithDataAndContent = nodes.reduce((obj, n) => {
     const noteOrImage = n.type === "note" ? 0 : 1;
     const d = data[noteOrImage].find(({ id }) => id === n.dataId);
-    obj[`${n.type}-${n.id}`] = {
+    obj[n.nodeId] = {
       ...n,
       data: d,
       ...calcLocation(d, n.depth, n.parent, n.id, dimensions),
@@ -170,6 +170,8 @@ export function createBoxesContent({
       [`subject-${subject.id}`]: {
         content: <h1>{subject.name}</h1>,
         id: subject.id,
+        nodeId: `subject-${subject.id}`,
+        data: subject,
         type: "subject",
         depth: 0,
         ...calcLocation(subject, 0, null, subject.id, dimensions),

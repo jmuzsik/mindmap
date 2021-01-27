@@ -11,6 +11,7 @@
     "dexie": "^3.1.0-alpha.6",
     "draft-js": "^0.11.7",
     "immutability-helper": "^3.1.1",
+    "re-resizable": "^6.9.0",
     "react": "*",
     "react-dnd": "^11.1.3",
     "react-dnd-html5-backend": "^11.1.3",

@@ -6,6 +6,7 @@ import { IconNames } from "@blueprintjs/icons";
 import "./Editor.css";
 
 export default class RichEditor extends React.Component {
+  state = { alignment: "left" };
   onChange = (editorState) => {
     this.props.onChange(editorState);
   };
@@ -27,6 +28,7 @@ export default class RichEditor extends React.Component {
     }
     return false;
   };
+  setAlignment = (alignment) => this.setState({ alignment });
   toggleBlockType = (blockType) => {
     this.onChange(RichUtils.toggleBlockType(this.props.editorState, blockType));
   };
@@ -61,7 +63,7 @@ export default class RichEditor extends React.Component {
             <Divider />
             <Controls
               editorState={editorState}
-              onToggle={this.toggleBlockType}
+              onToggle={this.setAlignment}
               name="Block"
               styles={ALIGNMENT_TYPES}
             />
@@ -74,11 +76,15 @@ export default class RichEditor extends React.Component {
             />
           </ButtonGroup>
         )}
-        <div className={className}>
+        <div
+          className={className}
+          style={{ width: this.props.width + 30 }}
+        >
           <Editor
             blockStyleFn={getBlockStyle}
             customStyleMap={styleMap}
             editorState={editorState}
+            textAlignment={this.state.alignment}
             handleKeyCommand={this.handleKeyCommand}
             onChange={this.onChange}
             ref={this.setEditorRef}
@@ -103,12 +109,6 @@ function getBlockStyle(block) {
   switch (block.getType()) {
     case "blockquote":
       return "RichEditor-blockquote";
-    case "align-left":
-      return "align-left";
-    case "align-center":
-      return "align-center";
-    case "align-right":
-      return "align-right";
     default:
       return null;
   }
@@ -145,10 +145,10 @@ const BLOCK_TYPES = [
   { label: IconNames.CODE, style: "code-block" },
 ];
 const ALIGNMENT_TYPES = [
-  { label: IconNames.ALIGN_LEFT, style: "align-left" },
-  { label: IconNames.ALIGN_CENTER, style: "align-center" },
-  { label: IconNames.ALIGN_RIGHT, style: "align-right" },
-  { label: IconNames.ALIGN_JUSTIFY, style: "align-justify" },
+  { label: IconNames.ALIGN_LEFT, style: "left" },
+  { label: IconNames.ALIGN_CENTER, style: "center" },
+  { label: IconNames.ALIGN_RIGHT, style: "right" },
+  { label: IconNames.ALIGN_JUSTIFY, style: "justify" },
 ];
 var INLINE_STYLES = [
   { label: IconNames.BOLD, style: "BOLD" },

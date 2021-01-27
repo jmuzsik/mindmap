@@ -90,6 +90,7 @@ export default function Note(props) {
           </Button>
         </ButtonGroup>
         <RichEditor
+          width={300}
           id={note.id}
           minimal={true}
           controls={editable}

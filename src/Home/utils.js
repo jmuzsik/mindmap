@@ -27,6 +27,7 @@ export function InnerContent({ type, id, data }) {
   return aORb(
     type,
     <RichEditor
+      width={data.width}
       id={id}
       minimal
       controls={false}

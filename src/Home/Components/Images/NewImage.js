@@ -35,14 +35,15 @@ async function submitImage(
     createdAt: +new Date(),
     file: data,
     subjectId: user.currentSubject,
-    height,
-    width,
+    // Width of 250 is max at the beginning, so need to fix aspect ratio for height
+    height: width > 250 ? height / (width / 250) : height,
+    width: width > 250 ? 250 : width,
     inTree: false,
-    x: 'calc',
-    y: 'calc',
+    x: "calc",
+    y: "calc",
   });
   const image = await db.images.get(imgId);
-    console.log(image)
+  console.log(image);
   setLoading(false);
   setDisabled(false);
   setOpen(false);

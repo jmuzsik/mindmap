@@ -1,11 +1,10 @@
-.DraftEditor-root {
-  height: 270px;
-}
 .minimal .DraftEditor-root {
   height: auto;
 }
-.minimal .RichEditor-editor {
+.RichEditor-editor {
   height: auto;
+  width: 300px;
+  margin: auto;
 }
 .public-DraftEditor-content {
   overflow: scroll;
@@ -21,7 +20,6 @@
 }
 
 .RichEditor-editor {
-  height: 300px;
   padding: 15px;
   border: none;
   border-radius: 3px;
@@ -65,4 +63,10 @@
 }
 .RichEditor-root .align-left div {
   text-align: left;
+}
+.RichEditor-editor [data-contents="true"] {
+  width: -moz-fit-content;
+  width: fit-content;
+  block-size: fit-content;
+  max-width: 275px;
 }
