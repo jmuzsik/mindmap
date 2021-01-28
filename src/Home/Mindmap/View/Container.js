@@ -2,24 +2,47 @@ import React, { useCallback, useState } from "react";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "./ItemTypes";
 import { DraggableBox } from "./DraggableBox";
-import { snapToGrid as doSnapToGrid } from "./snapToGrid";
 import update from "immutability-helper";
-import { useDeepEffect } from "../../../Utils/utils";
+import { createBoxesContent } from "./utils";
+
+import { useDeepEffect } from "../../../Utils";
 import db from "../../../db";
 
 const styles = {
   border: "1px solid black",
   position: "relative",
 };
-function renderBox(item, key, state) {
-  return <DraggableBox key={key} id={key} {...item} />;
+function renderBox(item, key, border) {
+  return <DraggableBox key={key} id={key} {...item} border={border} />;
 }
-export const Container = ({ snapToGrid, boxesContent, dimensions }) => {
-  const [boxes, setBoxes] = useState(boxesContent);
+export const Container = ({ treeData, changeData, border }) => {
+  const [boxes, setBoxes] = useState(
+    createBoxesContent({
+      data: treeData.data,
+      structure: treeData.structure,
+      subject: treeData.subject,
+      changeData,
+      dimensions: treeData.dimensions,
+    })
+  );
 
   useDeepEffect(() => {
-    setBoxes(boxesContent);
-  }, [boxesContent]);
+    setBoxes(
+      createBoxesContent({
+        data: treeData.data,
+        structure: treeData.structure,
+        subject: treeData.subject,
+        changeData,
+        dimensions: treeData.dimensions,
+      })
+    );
+  }, [
+    treeData.data,
+    treeData.structure,
+    treeData.subject,
+    changeData,
+    treeData.dimensions,
+  ]);
 
   const moveBox = useCallback(
     (id, left, top) => {
@@ -45,9 +68,6 @@ export const Container = ({ snapToGrid, boxesContent, dimensions }) => {
         x: left,
         y: top,
       });
-      if (snapToGrid) {
-        [left, top] = doSnapToGrid(left, top);
-      }
 
       moveBox(item.nodeId, left, top);
       return undefined;
@@ -58,11 +78,11 @@ export const Container = ({ snapToGrid, boxesContent, dimensions }) => {
       ref={drop}
       style={{
         ...styles,
-        height: dimensions.height,
-        width: dimensions.width,
+        height: treeData.dimensions.height,
+        width: treeData.dimensions.width,
       }}
     >
-      {Object.keys(boxes).map((key) => renderBox(boxes[key], key))}
+      {Object.keys(boxes).map((key) => renderBox(boxes[key], key, border))}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import { Button, ButtonGroup, Classes } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import RichEditor from "../../../Components/Editor/Editor";
-import { removeFromTree } from "../../requests";
+import { removeFromTree } from "../../utils";
 import db from "../../../db";
 
 async function handleEditSave(

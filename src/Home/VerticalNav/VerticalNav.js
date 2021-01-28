@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { MenuDivider, Menu, MenuItem, Button } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
@@ -8,28 +8,14 @@ import NewImage from "../Components/Images/NewImage";
 
 import Dialog from "../../Components/Dialog/Dialog";
 
-import { createCallout } from "./utils";
-
 import "./VerticalNav.css";
 
 export default function VerticalNav(props) {
-  const { isOpen, setOpen, changeData } = props;
+  const { isOpen, setOpen, user, changeData } = props;
 
   const [noteOpen, setNoteOpen] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
-  const [callout, setCallout] = useState(null);
   let leftOpen = isOpen ? "open" : "closed";
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (props.treeData.subject._id === null) {
-        setCallout(createCallout());
-      } else {
-        setCallout(null);
-      }
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [props.treeData.subject._id]);
 
   return (
     <div className={`vertical-nav ${leftOpen}`}>
@@ -48,24 +34,20 @@ export default function VerticalNav(props) {
             large
           />
         </div>
-        {callout ? (
-          callout
-        ) : (
-          <Menu className="content">
-            <MenuDivider title="DnD" />
-            <DnDContainer {...{ ...props, setOpen }} />
-            <MenuItem
-              icon={IconNames.ANNOTATION}
-              text="New Note"
-              onClick={() => setNoteOpen(true)}
-            />
-            <MenuItem
-              icon={IconNames.IMAGE_ROTATE_LEFT}
-              text="New Image"
-              onClick={() => setImageOpen(true)}
-            />
-          </Menu>
-        )}
+        <Menu className="content">
+          <MenuDivider title="DnD" />
+          <DnDContainer {...{ ...props, setOpen }} />
+          <MenuItem
+            icon={IconNames.ANNOTATION}
+            text="New Note"
+            onClick={() => setNoteOpen(true)}
+          />
+          <MenuItem
+            icon={IconNames.IMAGE_ROTATE_LEFT}
+            text="New Image"
+            onClick={() => setImageOpen(true)}
+          />
+        </Menu>
       </div>
 
       <Dialog

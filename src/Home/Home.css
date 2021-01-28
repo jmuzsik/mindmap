@@ -7,16 +7,6 @@
 }
 .home .content-wrapper {
 }
-.draggable-tree {
-  padding: 0 20px;
-}
-.draggable-container {
-  margin: 10px 30px;
-  width: 300px;
-  height: 200px;
-  overflow: auto;
-  border: 1px solid #ccc;
-}
 .hidden {
   display: none;
 }
@@ -26,9 +16,7 @@
   display: flex;
   overflow: hidden;
   width: 100%;
-}
-.layout.open main {
-  grid-template-columns: 4fr 4fr;
+  min-height: calc(100vh - 60px);
 }
 .layout aside {
   margin-right: 15px;

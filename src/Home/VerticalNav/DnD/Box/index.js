@@ -1,7 +1,7 @@
 import React from "react";
 import { useDrag } from "react-dnd";
 
-import { findNode } from "../../../requests";
+import { findNode } from "../../../utils";
 
 import db from "../../../../db";
 

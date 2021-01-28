@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, ButtonGroup, Classes } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { removeFromTree } from "../../requests";
+import { removeFromTree } from "../../utils";
 import db from "../../../db";
 
 let blobUrl = (blob) => {

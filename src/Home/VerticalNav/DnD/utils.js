@@ -9,7 +9,7 @@ import Popover from "../../../Components/Popover/Popover";
 import { Box } from "./Box";
 import { Dustbin } from "./Dustbin";
 
-import { removeFromTree } from "../../requests";
+import { removeFromTree } from "../../utils";
 import { handleStringCreation, InnerContent, aORb } from "../../utils";
 
 function createContent(props) {

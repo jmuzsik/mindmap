@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
-import { Button } from "@blueprintjs/core";
+import { Radio, RadioGroup, Switch } from "@blueprintjs/core";
 
 import Network from "./Network/Network";
 import { createBoxesContent } from "./View/utils";
@@ -9,8 +9,7 @@ import { createBoxesContent } from "./View/utils";
 import { CustomDragLayer } from "./View/CustomDragLayer";
 import { Container } from "./View/Container";
 
-import './View/view.css';
-
+import "./View/view.css";
 
 function ViewContainer({ children }) {
   return <DndProvider backend={HTML5Backend}>{children}</DndProvider>;
@@ -18,14 +17,7 @@ function ViewContainer({ children }) {
 
 export default function NetworkContainer({ treeData, changeData }) {
   const [networkOrDnD, setNetworkOrDnD] = useState("dnd");
-
-  const boxesContent = createBoxesContent({
-    data: treeData.data,
-    structure: treeData.structure,
-    subject: treeData.subject,
-    changeData,
-    dimensions: treeData.dimensions,
-  });
+  const [border, setBorder] = useState(true);
 
   return (
     <div
@@ -35,24 +27,32 @@ export default function NetworkContainer({ treeData, changeData }) {
         width: treeData.dimensions.width,
       }}
     >
-      <Button
-        onClick={() =>
-          setNetworkOrDnD(networkOrDnD === "network" ? "dnd" : "network")
-        }
+      <RadioGroup
+        label="View"
+        onChange={() => setNetworkOrDnD(
+          networkOrDnD === "network" ? "dnd" : "network"
+        )}
+        selectedValue={networkOrDnD}
       >
-        Toggle
-      </Button>
+        <Radio label="Network" value="network" />
+        <Radio label="DnD" value="dnd" />
+      </RadioGroup>
+      <Switch
+        checked={border}
+        label="Border"
+        onChange={() => setBorder(!border)}
+      />
       {/* <Network treeData={treeData} /> */}
       {networkOrDnD === "network" ? (
         <Network treeData={treeData} />
       ) : (
         <ViewContainer>
           <Container
-            snapToGrid={false}
-            boxesContent={boxesContent}
-            dimensions={treeData.dimensions}
+            border={border}
+            treeData={treeData}
+            changeData={changeData}
           />
-          <CustomDragLayer snapToGrid={true} />
+          <CustomDragLayer border={border} />
           {/* <View
             boxesContent={boxesContent}
             dimensions={treeData.dimensions}

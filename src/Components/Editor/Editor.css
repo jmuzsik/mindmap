@@ -3,7 +3,7 @@
 }
 .RichEditor-editor {
   height: auto;
-  width: 300px;
+  /* width: 300px; */
   margin: auto;
 }
 .public-DraftEditor-content {
@@ -19,17 +19,6 @@
   justify-content: center;
 }
 
-.RichEditor-editor {
-  padding: 15px;
-  border: none;
-  border-radius: 3px;
-  -webkit-box-shadow: 0 0 0 0 rgb(19 124 189 / 0%), 0 0 0 0 rgb(19 124 189 / 0%),
-    inset 0 0 0 1px rgb(16 22 26 / 15%), inset 0 1px 1px rgb(16 22 26 / 20%);
-  box-shadow: 0 0 0 0 rgb(19 124 189 / 0%), 0 0 0 0 rgb(19 124 189 / 0%),
-    inset 0 0 0 1px rgb(16 22 26 / 15%), inset 0 1px 1px rgb(16 22 26 / 20%);
-  transition: box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9),
-    -webkit-box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9);
-}
 .RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
   display: none;
 }
@@ -39,15 +28,12 @@
   color: #666;
   font-family: "Hoefler Text", "Georgia", serif;
   font-style: italic;
-  margin: 16px 0;
-  padding: 10px 20px;
 }
 
 .RichEditor-editor .public-DraftStyleDefault-pre {
   background-color: rgba(0, 0, 0, 0.05);
   font-family: "Inconsolata", "Menlo", "Consolas", monospace;
   font-size: 16px;
-  padding: 20px;
 }
 .bp3-button-group.bp3-minimal .bp3-button.RichEditor-activeButton {
   box-shadow: none;
@@ -65,8 +51,22 @@
   text-align: left;
 }
 .RichEditor-editor [data-contents="true"] {
+  /* Moved css here as this is what is the content box 
+     so height/width are of importance */
+  border-radius: 3px;
+  padding: 10px 15px;
+  -webkit-box-shadow: 0 0 0 0 rgb(19 124 189 / 0%), 0 0 0 0 rgb(19 124 189 / 0%),
+    inset 0 0 0 1px rgb(16 22 26 / 15%), inset 0 1px 1px rgb(16 22 26 / 20%);
+  box-shadow: 0 0 0 0 rgb(19 124 189 / 0%), 0 0 0 0 rgb(19 124 189 / 0%),
+    inset 0 0 0 1px rgb(16 22 26 / 15%), inset 0 1px 1px rgb(16 22 26 / 20%);
+  transition: box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9),
+    -webkit-box-shadow 0.1s cubic-bezier(0.4, 1, 0.75, 0.9);
+  /* I am trying to keep width as small as possible and still show cursor */
+  min-width: 32px;
+  /* Turns div into span-like property */
   width: -moz-fit-content;
   width: fit-content;
   block-size: fit-content;
   max-width: 275px;
+  margin: auto;
 }

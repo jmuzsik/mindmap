@@ -19,3 +19,11 @@ export function useDeepEffect(fn, deps) {
     }
   }, [deps, fn]);
 }
+
+export function checkUserLoaded(user) {
+  if (!user.id) {
+    return " bp3-skeleton";
+  } else {
+    return "";
+  }
+}

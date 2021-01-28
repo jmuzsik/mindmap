@@ -7,9 +7,11 @@ import {
   subjectModel,
 } from "./models";
 
+// Literally deletes entire db
 // Dexie.delete("mindmap");
 const db = new Dexie("mindmap");
-db.version(3).stores({
+// Everytime a model changes, the version also needs to change
+db.version(4).stores({
   user: userModel,
   notes: noteModel,
   trees: treeModel,

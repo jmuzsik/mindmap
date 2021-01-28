@@ -1,4 +1,4 @@
-export default "++id,name,createdAt,icon,x,y";
+export default "++id,name,createdAt,x,y,height,width";
 
 // name: String,
 // createdAt: {

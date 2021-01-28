@@ -1,0 +1,8 @@
+/* https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript */
+.hidden-content {
+  position: absolute;
+  visibility: hidden;
+  height: auto;
+  width: auto;
+  white-space: nowrap; /* Thanks to Herb Caudill comment */
+}

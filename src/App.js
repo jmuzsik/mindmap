@@ -17,6 +17,11 @@ const DEF_USER = {
   images: [],
 };
 
+export const UserContext = React.createContext({
+  user: DEF_USER,
+  setUser: () => null,
+});
+
 function App(props) {
   const [user, setUser] = useState(DEF_USER);
 
@@ -36,11 +41,13 @@ function App(props) {
       setUser(DEF_USER);
     };
   }, [setUser, handleFetchUser]);
-
+  console.log(user)
   return (
-    <div className={`${user.theme === "dark" ? "bp3-dark" : ""}`}>
-      <Home {...props} />
-    </div>
+    <UserContext.Provider value={{ user, setUser }}>
+      <div className={`${user.theme === "dark" ? "bp3-dark" : ""}`}>
+        <Home {...{ ...props, user }} />
+      </div>
+    </UserContext.Provider>
   );
 }
 

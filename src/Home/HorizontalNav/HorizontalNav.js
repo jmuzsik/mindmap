@@ -14,11 +14,12 @@ import "./HorizontalNav.css";
 export default function HorizontalNav(props) {
   const {
     subjectsData: { subjects, subject },
+    user,
     changeData,
   } = props;
 
   return (
-    <header className="horizontal-nav">
+    <header className={`horizontal-nav`}>
       <Navbar>
         <Navbar.Group>
           <Navbar.Heading>

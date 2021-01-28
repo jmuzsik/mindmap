@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
-import { Resizable } from "re-resizable";
+import { Resize } from "./Resize";
 import { Box } from "./Box";
 import { ItemTypes } from "./ItemTypes";
 
-function getStyles(left, top, zIndex, { height, width }, isDragging) {
+function getStyles(left, top, zIndex, { height, width }, border, isDragging) {
   const transform = `translate3d(${left}px, ${top}px, 0)`;
   return {
     position: "absolute",
     transform,
     height,
     width,
+    border: border ? "1px solid #ddd" : "none",
     // right,
     WebkitTransform: transform,
     // IE fallback: hide the real node using CSS when dragging
@@ -22,16 +23,26 @@ function getStyles(left, top, zIndex, { height, width }, isDragging) {
     zIndex,
   };
 }
+
 export const DraggableBox = (props) => {
-  const { id, content, left, top, nodeId, data, zIndex } = props;
+  const { id, content, left, top, nodeId, data, zIndex, border } = props;
 
   const [dimensions, setDimensions] = useState({
-    width: data.width,
-    height: data.height,
+    width: data.width && data.width + 30,
+    height: data.height && data.height + 30,
   });
 
   const [{ isDragging }, drag, preview] = useDrag({
-    item: { type: ItemTypes.DRAG, id, left, top, content, dimensions, nodeId },
+    item: {
+      type: ItemTypes.DRAG,
+      id,
+      left,
+      top,
+      content,
+      dimensions,
+      nodeId,
+      zIndex,
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -40,31 +51,24 @@ export const DraggableBox = (props) => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
-  return (
-    // <Resizable
-    //   className="resizable"
-    //   style={getStyles(left, top, zIndex, dimensions, isDragging)}
-    //   size={{ width: dimensions.width, height: dimensions.height }}
-    //   lockAspectRatio={data.file}
-    //   onResizeStop={(e, direction, ref, d) => {
-    //     console.log(d, dimensions);
-    //     setDimensions({
-    //       width: dimensions.width + d.width,
-    //       height: dimensions.height + d.height,
-    //     });
-    //   }}
-    // >
-      <div
-        ref={drag}
-        // style={{ height: dimensions.height, width: dimensions.width }}
-        style={getStyles(left, top, zIndex, dimensions, isDragging)}
-      >
-        {/* style={getStyles(left, top, zIndex, dimensions, isDragging)}> */}
-        <Box
-          style={{ height: dimensions.height, width: dimensions.width }}
-          content={content}
-        />
-      </div>
-    // </Resizable>
+  const type = nodeId.split("-")[0];
+  const renderTypeCheck = type === "note" || type === "subject";
+  const styles = getStyles(left, top, zIndex, dimensions, border, isDragging);
+  const innerContent = (
+    <div
+      className={`drag ${renderTypeCheck ? "higher-level" : "lower-level"}`}
+      ref={drag}
+      style={renderTypeCheck ? styles : {}}
+    >
+      <Box className={type} content={content} />
+    </div>
+  );
+
+  return type === "note" || type === "subject" ? (
+    innerContent
+  ) : (
+    <Resize {...{ nodeId, data, styles, dimensions, setDimensions }}>
+      {innerContent}
+    </Resize>
   );
 };

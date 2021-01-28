@@ -64,7 +64,8 @@ export default class RichEditor extends React.Component {
             <Controls
               editorState={editorState}
               onToggle={this.setAlignment}
-              name="Block"
+              name="Alignment"
+              alignment={this.state.alignment}
               styles={ALIGNMENT_TYPES}
             />
             <Divider />
@@ -76,10 +77,7 @@ export default class RichEditor extends React.Component {
             />
           </ButtonGroup>
         )}
-        <div
-          className={className}
-          style={{ width: this.props.width + 30 }}
-        >
+        <div className={className}>
           <Editor
             blockStyleFn={getBlockStyle}
             customStyleMap={styleMap}
@@ -148,7 +146,6 @@ const ALIGNMENT_TYPES = [
   { label: IconNames.ALIGN_LEFT, style: "left" },
   { label: IconNames.ALIGN_CENTER, style: "center" },
   { label: IconNames.ALIGN_RIGHT, style: "right" },
-  { label: IconNames.ALIGN_JUSTIFY, style: "justify" },
 ];
 var INLINE_STYLES = [
   { label: IconNames.BOLD, style: "BOLD" },
@@ -156,7 +153,7 @@ var INLINE_STYLES = [
   { label: IconNames.UNDERLINE, style: "UNDERLINE" },
 ];
 function Controls(props) {
-  const { editorState, onToggle, name, styles } = props;
+  const { editorState, onToggle, name, alignment, styles } = props;
   let selection, blockType, currentStyle;
   if (name === "Block") {
     selection = editorState.getSelection();
@@ -169,20 +166,25 @@ function Controls(props) {
   }
   return (
     <ButtonGroup minimal className="RichEditor-controls">
-      {styles.map((type) => (
-        <StyleButton
-          key={type.label}
-          active={
-            name === "Block"
-              ? type.style === blockType
-              : currentStyle?.has(type.style)
-          }
-          label={type.label}
-          onToggle={onToggle}
-          style={type.style}
-          icon={type.icon}
-        />
-      ))}
+      {styles.map((type) => {
+        console.log(type, name);
+        return (
+          <StyleButton
+            key={type.label}
+            active={
+              name === "Block"
+                ? type.style === blockType
+                : name === "Alignment"
+                ? type.style === alignment
+                : currentStyle?.has(type.style)
+            }
+            label={type.label}
+            onToggle={onToggle}
+            style={type.style}
+            icon={type.icon}
+          />
+        );
+      })}
     </ButtonGroup>
   );
 }
