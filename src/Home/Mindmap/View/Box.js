@@ -1,4 +1,3 @@
-import { forceCenter } from "d3-force";
 import React from "react";
 
 export const Box = ({ content }) => {

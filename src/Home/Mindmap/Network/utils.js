@@ -1,5 +1,6 @@
 import React from "react";
 
+import Editor from "../../../Components/Editor";
 import { InnerContent } from "../../utils";
 
 // 0 is main node, 1 is secondary, 3 is... etc
@@ -36,11 +37,10 @@ const pickColor = (type, depth) => {
 
 const createRadius = (depth) => (depth === 1 ? 20 : 15);
 
-function createContent(props) {
-  const { type, id, data } = props;
+function createContent({ data }) {
   return (
     <div className="treenode-content">
-      <InnerContent {...{ id, data, type }} />
+      <InnerContent data={data} />
     </div>
   );
 }
@@ -87,19 +87,16 @@ function flatten(array) {
 
 function createNodes(nodes, data) {
   const nodesWithData = nodes.map((n) => {
-    const noteOrImage = n.type === "note" ? 0 : 1;
-    const d = data[noteOrImage].find(({ id }) => id === n.dataId);
+    const d = data.find(({ id }) => id === n.dataId);
     return { ...n, data: d };
   });
-  return nodesWithData.map(({ data, id, parent, depth, type }) => {
+  return nodesWithData.map(({ data, id, parent, depth }) => {
     return {
-    jsx: createContent({
-        type,
+      jsx: createContent({
         id,
         data,
       }),
       depth,
-      type,
       id,
       parent,
       color: pickColor("n", depth),
@@ -124,7 +121,15 @@ export function createData(tree, subject, data) {
   return {
     nodes: [
       {
-        jsx: <h1>{subject.name}</h1>,
+        jsx: (
+          <Editor
+            contentEditable={false}
+            readOnly={true}
+            editorState={subject.content}
+            setEditorState={() => null}
+            theme="bubble"
+          />
+        ),
         id: "0",
         type: "subject",
         depth: 0,

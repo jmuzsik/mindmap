@@ -1,12 +1,13 @@
 import React from "react";
 
+import Editor from "../../../Components/Editor";
 import { InnerContent } from "../../utils";
 
 function createContent(props) {
-  const { type, id, data } = props;
+  const { type, data } = props;
   return (
     <div className={`dnd-content ${type}-content`}>
-      <InnerContent {...{ id, data, type }} />
+      <InnerContent data={data} />
     </div>
   );
 }
@@ -71,7 +72,7 @@ function getLocationFromParent(parent, count) {
 
 /**
  *
- * @param {object} data - the data object related to the note or image
+ * @param {object} data - the data object related to node
  * @param {Number} count - the indece of the childNodes related to parent
  * @param {Number} depth - how far into the tree we currently are (either 0,1,2)
  */
@@ -144,17 +145,11 @@ function flatten(array) {
   return result;
 }
 
-export function createBoxesContent({
-  data,
-  structure,
-  subject,
-  dimensions,
-}) {
+export function createBoxesContent({ data, structure, subject, dimensions }) {
   const structureCopy = JSON.parse(JSON.stringify(structure));
   const nodes = flatten(structureCopy.childNodes);
   const nodesWithDataAndContent = nodes.reduce((obj, n) => {
-    const noteOrImage = n.type === "note" ? 0 : 1;
-    const d = data[noteOrImage].find(({ id }) => id === n.dataId);
+    const d = data.find(({ id }) => id === n.dataId);
     obj[n.nodeId] = {
       ...n,
       data: d,
@@ -168,7 +163,15 @@ export function createBoxesContent({
   return Object.assign(
     {
       [`subject-${subject.id}`]: {
-        content: <h1>{subject.name}</h1>,
+        content: (
+          <Editor
+            contentEditable={false}
+            readOnly={true}
+            editorState={subject.content}
+            setEditorState={() => null}
+            theme="bubble"
+          />
+        ),
         id: subject.id,
         nodeId: `subject-${subject.id}`,
         data: subject,

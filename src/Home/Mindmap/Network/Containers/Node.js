@@ -18,9 +18,8 @@ import {
 import PropTypes from "prop-types";
 
 const Node = ({ x, node, y, radius, color, scale = 1 }) => {
-  const { type, depth, jsx, id } = node;
-  const icon =
-    type === "note" ? "annotation" : type === "image" ? "media" : "home";
+  const { depth, jsx } = node;
+  const icon = "annotation";
   return (
     <foreignObject
       className={`depth-${depth}`}
@@ -33,7 +32,7 @@ const Node = ({ x, node, y, radius, color, scale = 1 }) => {
         interactionKind={PopoverInteractionKind.HOVER_TARGET_ONLY}
         content={jsx}
         position={Position.TOP}
-        popoverClassName={Classes.POPOVER_CONTENT_SIZING}
+        popoverClassName={`${Classes.POPOVER_CONTENT_SIZING} network-node-content`}
       >
         <Icon
           icon={icon}

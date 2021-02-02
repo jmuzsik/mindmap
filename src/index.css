@@ -2,8 +2,8 @@
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 
-
-body, html {
+body,
+html {
   -webkit-overflow-scrolling: touch;
   overflow: hidden;
 }
@@ -57,4 +57,34 @@ div.bp3-input-group .bp3-button {
 }
 img {
   max-width: 100%;
+}
+/* For skeleton */
+.layout main {
+  display: flex;
+  overflow: scroll;
+  width: 100%;
+  min-height: calc(100vh - 60px);
+}
+.network-container {
+  width: calc(100% - (100% / 4));
+  height: calc(100vh - 60px);
+  margin: auto;
+}
+header.horizontal-nav {
+  background: #fff;
+  box-shadow: 0 2px 8px #f0f1f2;
+  padding-left: 0;
+  padding-right: 0;
+  height: 60px;
+}
+.horizontal-nav .bp3-navbar {
+  display: grid;
+  gap: 0 15px;
+  grid-template-columns: 2fr 6fr;
+}
+.vertical-nav .sidebar-open {
+  position: fixed;
+  z-index: 10;
+  top: 60px;
+  left: 0;
 }

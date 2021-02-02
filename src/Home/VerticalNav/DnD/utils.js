@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Button, Intent } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
-import Note from "../../Components/Notes/Note";
-import Image from "../../Components/Images/Image";
+import Node from "../../Nodes/Node";
 import Dialog from "../../../Components/Dialog/Dialog";
 import Popover from "../../../Components/Popover/Popover";
+import Editor from "../../../Components/Editor";
+
 import { Box } from "./Box";
 import { Dustbin } from "./Dustbin";
 
@@ -16,7 +17,17 @@ function createContent(props) {
   const { type, id, data, label, changeData } = props;
   return (
     <React.Fragment>
-      <span className="treenode-id">{handleStringCreation(label, data)}</span>
+      {type === "subject" ? (
+        <Editor
+          contentEditable={false}
+          readOnly={true}
+          editorState={data.content}
+          setEditorState={() => null}
+          theme="bubble"
+        />
+      ) : (
+        <span className="treenode-id">{handleStringCreation(label, data)}</span>
+      )}
       {type !== "subject" && (
         <Popover {...{ type, id }}>
           <InnerContent {...{ id, data, type }} />
@@ -29,7 +40,7 @@ function createContent(props) {
   );
 }
 
-// This and below corresponds to the notes/images of the tree
+// This and below corresponds to the nodes of the tree
 function TreeNodeContent(props) {
   const { i, id, data, type, changeData } = props;
   const [isOpen, setOpen] = useState(false);
@@ -44,29 +55,14 @@ function TreeNodeContent(props) {
       </Button>
       <Dialog
         {...{
-          className: aORb(type, "edit-note-dialog", "edit-image-dialog"),
-          icon: aORb(type, IconNames.ANNOTATION, IconNames.IMAGE_ROTATE_LEFT),
-          title: aORb(type, "Edit Note", "Edit Image"),
+          className: "edit-content-dialog",
+          icon: IconNames.ANNOTATION,
+          title: "Edit Content",
           isOpen,
           setOpen,
         }}
       >
-        {aORb(
-          type,
-          <Note
-            note={data}
-            idx={i}
-            changeData={changeData}
-            setOpen={setOpen}
-          />,
-          <Image
-            key={id}
-            image={data}
-            changeData={changeData}
-            setOpen={setOpen}
-            idx={i}
-          />
-        )}
+        <Node node={data} idx={i} changeData={changeData} setOpen={setOpen} />
       </Dialog>
     </div>
   );
@@ -87,7 +83,7 @@ export function createTreeNode(props) {
     hasCaret: false,
     childNodes: [],
     data,
-    icon: aORb(type, IconNames.DOCUMENT, IconNames.MEDIA),
+    icon: IconNames.DOCUMENT,
   };
 }
 
@@ -99,12 +95,7 @@ function createDustbinObj({ state, childNodes, changeData }) {
     isExpanded: true,
     data: state.data ? state.data : {},
     childNodes,
-    icon: aORb(
-      state.type,
-      IconNames.DOCUMENT,
-      IconNames.MEDIA,
-      IconNames.FOLDER_CLOSE
-    ),
+    icon: aORb(state.type, IconNames.FOLDER_CLOSE, IconNames.DOCUMENT),
   };
 }
 
@@ -124,10 +115,8 @@ function createDustbin(
 function recurseNested(cur, data, depth = 1, changeData) {
   for (let i = 0; i < cur.length; i++) {
     const elem = cur[i];
-    const noteOrImage = elem.type === "note" ? 0 : 1;
-    const node = data[noteOrImage].find((el) => el.id === elem.id);
+    const node = data.find((el) => el.id === elem.id);
     const id = `${elem.type}-${node.id}`;
-    // Find the node in image or note array
     // atm I only want to handle a depth of 2 in the mind map
     let jsxObj;
     if (depth === 2) {
@@ -145,12 +134,7 @@ function recurseNested(cur, data, depth = 1, changeData) {
         isExpanded: true,
         data: node || {},
         childNodes: [],
-        icon: aORb(
-          elem.type,
-          IconNames.DOCUMENT,
-          IconNames.MEDIA,
-          IconNames.FOLDER_CLOSE
-        ),
+        icon: aORb(elem.type, IconNames.FOLDER_CLOSE, IconNames.DOCUMENT),
       };
     } else {
       // Max of 4 children for depth of 1
@@ -189,12 +173,7 @@ function recurseNested(cur, data, depth = 1, changeData) {
             depth + 1,
             changeData
           ),
-          icon: aORb(
-            elem.type,
-            IconNames.DOCUMENT,
-            IconNames.MEDIA,
-            IconNames.FOLDER_CLOSE
-          ),
+          icon: aORb(elem.type, IconNames.FOLDER_CLOSE, IconNames.DOCUMENT),
         };
       }
     }
@@ -212,7 +191,15 @@ export function createTreeDustbins({ data, structure, subject, changeData }) {
       createDustbinObj({
         state: {
           type: "subject",
-          label: subject.name,
+          label: (
+            <Editor
+              contentEditable={false}
+              readOnly={true}
+              editorState={subject.content}
+              setEditorState={() => null}
+              theme="bubble"
+            />
+          ),
           id: `subject-${subject.id}`,
           data: subject,
         },
@@ -223,18 +210,21 @@ export function createTreeDustbins({ data, structure, subject, changeData }) {
   } else {
     nodes = [
       {
-        label: <span className="treenode-id">{subject.name}</span>,
+        label: (
+          <Editor
+            contentEditable={false}
+            readOnly={true}
+            editorState={subject.content}
+            setEditorState={() => null}
+            theme="bubble"
+          />
+        ),
         id: subject.id,
         hasCaret: true,
         isExpanded: true,
         data: subject,
         childNodes: [],
-        icon: aORb(
-          "subject",
-          IconNames.DOCUMENT,
-          IconNames.MEDIA,
-          IconNames.FOLDER_CLOSE
-        ),
+        icon: IconNames.FOLDER_CLOSE,
       },
     ];
   }
@@ -247,20 +237,11 @@ export function createTreeDustbins({ data, structure, subject, changeData }) {
   return nodes;
 }
 
-export function createTreeBoxes({ changeData, data: [notes, images] }) {
+export function createTreeBoxes({ changeData, data }) {
   let id = 0;
   const treeNodes = [
     {
-      label: "Notes",
-      id: id++,
-      className: "folder",
-      icon: IconNames.FOLDER_CLOSE,
-      hasCaret: true,
-      isExpanded: true,
-      childNodes: [],
-    },
-    {
-      label: "Images",
+      label: "Content",
       id: id++,
       className: "folder",
       icon: IconNames.FOLDER_CLOSE,
@@ -269,33 +250,18 @@ export function createTreeBoxes({ changeData, data: [notes, images] }) {
       childNodes: [],
     },
   ];
-  for (let i = 0; i < notes.length; i++) {
-    const notesFolder = treeNodes[0];
-    const note = notes[i];
-    notesFolder.childNodes.push(
+  for (let i = 0; i < data.length; i++) {
+    const nodesFolder = treeNodes[0];
+    const node = data[i];
+    nodesFolder.childNodes.push(
       createTreeNode({
         i,
-        id: note.id,
+        id: node.id,
         idx: id++,
-        data: note,
-        type: "note",
+        data: node,
+        type: "node",
         changeData,
-        inTree: note.inTree,
-      })
-    );
-  }
-  for (let i = 0; i < images.length; i++) {
-    const imagesFolder = treeNodes[1];
-    const image = images[i];
-    imagesFolder.childNodes.push(
-      createTreeNode({
-        i,
-        id: image.id,
-        idx: id++,
-        data: image,
-        type: "image",
-        changeData,
-        inTree: image.inTree,
+        inTree: node.inTree,
       })
     );
   }

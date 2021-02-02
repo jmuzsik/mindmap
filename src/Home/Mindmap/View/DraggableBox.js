@@ -43,32 +43,25 @@ export const DraggableBox = (props) => {
       nodeId,
       zIndex,
     },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
   });
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
-  const type = nodeId.split("-")[0];
-  const renderTypeCheck = type === "note" || type === "subject";
   const styles = getStyles(left, top, zIndex, dimensions, border, isDragging);
-  const innerContent = (
-    <div
-      className={`drag ${renderTypeCheck ? "higher-level" : "lower-level"}`}
-      ref={drag}
-      style={renderTypeCheck ? styles : {}}
+  return (
+    <Resize
+      {...{ nodeId, data, styles, dimensions, setDimensions }}
+      style={styles}
     >
-      <Box className={type} content={content} />
-    </div>
-  );
-
-  return type === "note" || type === "subject" ? (
-    innerContent
-  ) : (
-    <Resize {...{ nodeId, data, styles, dimensions, setDimensions }}>
-      {innerContent}
+      <div className="drag" ref={drag}>
+        <Box content={content} />
+      </div>
     </Resize>
   );
 };

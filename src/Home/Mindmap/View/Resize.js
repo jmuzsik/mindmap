@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Resizable } from "re-resizable";
 
 import db from "../../../db";

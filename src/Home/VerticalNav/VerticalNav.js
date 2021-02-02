@@ -3,18 +3,16 @@ import { MenuDivider, Menu, MenuItem, Button } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
 import DnDContainer from "./DnD/DnD";
-import NewNote from "../Components/Notes/NewNote";
-import NewImage from "../Components/Images/NewImage";
+import NewNode from "../Nodes/NewNode";
 
 import Dialog from "../../Components/Dialog/Dialog";
 
 import "./VerticalNav.css";
 
 export default function VerticalNav(props) {
-  const { isOpen, setOpen, user, changeData } = props;
+  const { isOpen, setOpen, changeData } = props;
 
-  const [noteOpen, setNoteOpen] = useState(false);
-  const [imageOpen, setImageOpen] = useState(false);
+  const [nodeOpen, setNodeOpen] = useState(false);
   let leftOpen = isOpen ? "open" : "closed";
 
   return (
@@ -39,38 +37,21 @@ export default function VerticalNav(props) {
           <DnDContainer {...{ ...props, setOpen }} />
           <MenuItem
             icon={IconNames.ANNOTATION}
-            text="New Note"
-            onClick={() => setNoteOpen(true)}
-          />
-          <MenuItem
-            icon={IconNames.IMAGE_ROTATE_LEFT}
-            text="New Image"
-            onClick={() => setImageOpen(true)}
+            text="New Content"
+            onClick={() => setNodeOpen(true)}
           />
         </Menu>
       </div>
-
       <Dialog
         {...{
-          className: "new-note-dialog",
+          className: "new-node-dialog",
           icon: IconNames.ANNOTATION,
-          setOpen: setNoteOpen,
-          title: "New Note",
-          isOpen: noteOpen,
+          setOpen: setNodeOpen,
+          title: "New Content",
+          isOpen: nodeOpen,
         }}
       >
-        <NewNote {...props} setOpen={setNoteOpen} changeData={changeData} />
-      </Dialog>
-      <Dialog
-        {...{
-          className: "new-image-dialog",
-          icon: IconNames.IMAGE_ROTATE_LEFT,
-          setOpen: setImageOpen,
-          title: "New Image",
-          isOpen: imageOpen,
-        }}
-      >
-        <NewImage {...props} setOpen={setImageOpen} changeData={changeData} />
+        <NewNode {...props} setOpen={setNodeOpen} changeData={changeData} />
       </Dialog>
     </div>
   );

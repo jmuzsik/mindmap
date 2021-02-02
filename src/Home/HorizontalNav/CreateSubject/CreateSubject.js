@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Popover,
   Button,
@@ -9,37 +9,21 @@ import {
 import { IconNames } from "@blueprintjs/icons";
 
 import { UserContext } from "../../../App";
+import Editor from "../../../Components/Editor";
 
 import db from "../../../db";
 
 import "./CreateSubject.css";
 
 export async function handleSubmit(
-  { name },
-  {
-    hiddenH1Ref,
-    changeData,
-    isSubmitting,
-    handleChange,
-    finishedSubmitting,
-    userObj: { user, setUser },
-  }
+  data,
+  { changeData, isSubmitting, finishedSubmitting, userObj: { user, setUser } }
 ) {
-  // This text will be displayed in a future component where the
-  // height/width need to be known
-  const h1 = hiddenH1Ref.current;
-  const [width, height] = [h1.clientWidth, h1.clientHeight];
-
   const subjectObj = {
     createdAt: +new Date(),
-    name,
-    // TODO: option to change the icon
-    // arbitrary selection
-    icon: "clean",
     x: "center",
     y: "center",
-    height,
-    width,
+    ...data,
   };
   const subjectId = await db.subjects.add(subjectObj);
   const subject = await db.subjects.get(subjectId);
@@ -49,7 +33,8 @@ export async function handleSubmit(
     structure: {
       id: subjectId,
       type: "subject",
-      name: subject.name,
+      content: data.content,
+      data: subject,
       childNodes: [],
     },
   };
@@ -67,88 +52,90 @@ export async function handleSubmit(
     update: "newSubject",
     subject,
     // New subject has no associated data
-    data: [[], []],
+    data: [],
     structure,
   });
   isSubmitting(false);
-  handleChange("");
   finishedSubmitting(true);
 }
 
-export default function CreateSubject({ changeData }) {
+export default function CreateSubject({ changeData, names }) {
   const [submitting, isSubmitting] = useState(false);
   const [submitted, finishedSubmitting] = useState(false);
-  const [name, handleChange] = useState("");
+  const [editorState, setEditorState] = useState(null);
 
-  const hiddenH1Ref = useRef();
+  let editorRef;
+  // This is done instead of useRef as I need to focus the element
+  editorRef = useCallback((node) => {
+    if (node !== null) {
+      node.focus(); // node = editorRef.current
+      editorRef.current = node; // it is not done on it's own
+    }
+  }, []);
 
   return (
-    <React.Fragment>
-      <Popover
-        popoverClassName="subject-popover"
-        portalClassName="subject-popover-portal"
-        position="auto"
-        minimal
-        enforceFocus={false}
-      >
-        <Button text="Create Subject" />
-        {!submitted ? (
-          <UserContext.Consumer>
-            {(userObj) => (
-              <form
-                className="create-subject"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  isSubmitting(true);
-                  handleSubmit(
-                    { name },
-                    {
-                      hiddenH1Ref,
-                      changeData,
-                      userObj,
-                      isSubmitting,
-                      handleChange,
-                      finishedSubmitting,
-                    }
-                  );
-                }}
+    <Popover
+      popoverClassName="subject-popover"
+      portalClassName="subject-popover-portal"
+      position="auto"
+      minimal
+      enforceFocus={false}
+    >
+      <Button text={`${names.create} ${names.subject}`} />
+      {!submitted ? (
+        <UserContext.Consumer>
+          {(userObj) => (
+            <form
+              className="create-subject"
+              onSubmit={(e) => {
+                e.preventDefault();
+                isSubmitting(true);
+                const editor = editorRef.current.getEditor();
+                const content = editor.getContents();
+                const box = editor.root;
+                handleSubmit(
+                  {
+                    content,
+                    height: box.clientHeight,
+                    width: box.clientWidth,
+                  },
+                  {
+                    changeData,
+                    userObj,
+                    isSubmitting,
+                    finishedSubmitting,
+                  }
+                );
+              }}
+            >
+              <p>
+                <span role="img" aria-label="thinking face">
+                  🤔
+                </span>
+              </p>
+              <Editor
+                editorRef={editorRef}
+                editorState={editorState}
+                setEditorState={setEditorState}
+                theme="snow"
+                controls="minimal"
+              />
+              <Button
+                type="submit"
+                intent={Intent.SUCCESS}
+                // disabled={content.length === 0 || submitting}
+                loading={submitting}
               >
-                <p>
-                  Hmm...{" "}
-                  <span role="img" aria-label="thinking face">
-                    🤔
-                  </span>
-                </p>
-                <InputGroup
-                  autoFocus
-                  asyncControl={true}
-                  disabled={submitting}
-                  large
-                  leftIcon={IconNames.GIT_NEW_BRANCH}
-                  onChange={(e) => handleChange(e.target.value)}
-                  placeholder="New Subject"
-                  value={name}
-                />
-                <Button
-                  type="submit"
-                  intent={Intent.SUCCESS}
-                  disabled={name.length === 0 || submitting}
-                  loading={submitting}
-                >
-                  Do it
-                </Button>
-              </form>
-            )}
-          </UserContext.Consumer>
-        ) : (
-          <Callout icon={IconNames.TICK_CIRCLE} intent={Intent.SUCCESS}>
-            All good here!
-          </Callout>
-        )}
-      </Popover>
-      <h1 ref={hiddenH1Ref} className="hidden-content">
-        {name}
-      </h1>
-    </React.Fragment>
+                {names.action}
+              </Button>
+            </form>
+          )}
+        </UserContext.Consumer>
+      ) : (
+        <Callout icon={IconNames.TICK_CIRCLE} intent={Intent.SUCCESS}>
+          All good here!
+        </Callout>
+      )}
+    </Popover>
   );
 }

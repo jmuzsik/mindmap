@@ -6,7 +6,6 @@ import { findNode } from "../../../utils";
 import db from "../../../../db";
 
 async function handleUpdate({ parent, data }, changeData) {
-  console.log(parent, data)
   // Need number type for comparison
   // type is also available: const [parentType, parentId] = parent.split(',');
   const parentSplit = parent.split("-");
@@ -14,9 +13,9 @@ async function handleUpdate({ parent, data }, changeData) {
   // First find the data object with dataId
   let [dataType, dataId] = data.split("-");
   dataId = Number(dataId);
-  // note -> notes image -> images
-  await db[dataType + "s"].update(dataId, { inTree: true });
-  const item = await db[dataType + "s"].get(dataId);
+  // node -> nodes
+  await db.nodes.update(dataId, { inTree: true });
+  const item = await db.nodes.get(dataId);
 
   // update to inTree -> true
   // Then get the tree of current subject and update the tree with data
@@ -24,7 +23,6 @@ async function handleUpdate({ parent, data }, changeData) {
   const tree = await db.trees.get({ subjectId: user.currentSubject });
   const structure = tree.structure;
   const node = findNode(parentId, tree.structure, {}, false);
-  console.log(structure, node, parentId)
   node.childNodes.push({
     id: item.id,
     nodeId: data,
@@ -33,7 +31,6 @@ async function handleUpdate({ parent, data }, changeData) {
   });
   // update tree
   await db.trees.update(tree.id, { structure });
-  console.log(item, structure)
   changeData({ update: "updateTreeSingular", item, type: dataType, structure });
 }
 

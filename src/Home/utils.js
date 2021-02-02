@@ -1,18 +1,10 @@
 import React from "react";
-import { convertFromRaw, EditorState } from "draft-js";
 import { Intent, Callout } from "@blueprintjs/core";
 import update from "immutability-helper";
 
 import db from "../db";
 
-import RichEditor from "../Components/Editor/Editor";
-
-let blobUrl = (blob) => {
-  if (!blob.url) {
-    blob.url = URL.createObjectURL(blob);
-  }
-  return blob.url;
-};
+import Editor from "../Components/Editor";
 
 export function handleStringCreation(label, data) {
   if (typeof label === "string") {
@@ -23,40 +15,25 @@ export function handleStringCreation(label, data) {
   return label;
 }
 
-export function aORb(type, a, b, c = null) {
-  return type === "note" ? a : type === "image" ? b : c;
+export function aORb(type, a, b) {
+  return type === "subject" ? a : b;
 }
 
-export function InnerContent({ type, id, data }) {
-  return aORb(
-    type,
-    <RichEditor
-      width={data.width}
-      id={id}
-      minimal
-      controls={false}
-      editorState={
-        data.raw
-          ? EditorState.createWithContent(convertFromRaw(data.raw))
-          : null
-      }
+export function InnerContent({ data }) {
+  return (
+    <Editor
       contentEditable={false}
       readOnly={true}
-      onChange={() => null}
-    />,
-    <img
-      src={data.file ? blobUrl(data.file) : ""}
-      alt={id}
-      width={data.width}
-      height={data.height}
+      editorState={data.content}
+      setEditorState={() => null}
+      theme="bubble"
     />
   );
 }
 
 export const createCallout = () => (
   <Callout intent={Intent.WARNING} title="You have no subject!">
-    Please create a subject by clicking the Create Subject button above to use
-    this website!
+    Please create a subject by clicking the button above to use this website!
   </Callout>
 );
 
@@ -115,15 +92,15 @@ export async function removeFromTree(nodeId, changeData, deletion) {
       // Go through and update each data within if there are elements
       for (let j = 0; j < elem.childNodes.length; j++) {
         inner = elem.childNodes[j];
-        await db[inner.type + "s"].update(inner.id, { inTree: false });
-        data.push([await db[inner.type + "s"].get(inner.id), inner.type]);
+        await db.nodes.update(inner.id, { inTree: false });
+        data.push(await db.nodes.get(inner.id));
       }
       // removal
       childNodes = update(structure.childNodes, (arr) =>
         arr.filter((n) => n.nodeId !== nodeId)
       );
-      await db[elem.type + "s"].update(elem.id, { inTree: false });
-      data.push([await db[elem.type + "s"].get(elem.id), elem.type]);
+      await db.nodes.update(elem.id, { inTree: false });
+      data.push(await db.nodes.get(elem.id));
       break;
     }
     // Otherwise check if inner node is what has the id
@@ -137,8 +114,8 @@ export async function removeFromTree(nodeId, changeData, deletion) {
               childNodes: (arr) => arr.filter((n) => n.nodeId !== nodeId),
             },
           });
-          await db[inner.type + "s"].update(inner.id, { inTree: false });
-          data.push([await db[inner.type + "s"].get(inner.id), inner.type]);
+          await db.nodes.update(inner.id, { inTree: false });
+          data.push(await db.nodes.get(inner.id));
           break;
         }
       }
@@ -148,7 +125,7 @@ export async function removeFromTree(nodeId, changeData, deletion) {
     childNodes: { $set: childNodes },
   });
   // If what is deleted is not within the tree structure
-  // - this is called whenever an image or note is deleted
+  // - this is called whenever a node is deleted
   if (data.length === 0) return null;
 
   await db.trees.update(tree.id, { structure: updatedStructure });

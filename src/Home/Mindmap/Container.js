@@ -18,7 +18,6 @@ function ViewContainer({ children }) {
 export default function NetworkContainer({ treeData, changeData }) {
   const [networkOrDnD, setNetworkOrDnD] = useState("dnd");
   const [border, setBorder] = useState(true);
-
   return (
     <div
       className="network-container"

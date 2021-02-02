@@ -1,45 +1,39 @@
-import React, { useState } from "react";
-import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
+import React, { useState, useCallback } from "react";
 import { Button, ButtonGroup, Classes } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import RichEditor from "../../../Components/Editor/Editor";
-import { removeFromTree } from "../../utils";
-import db from "../../../db";
+import Editor from "../../Components/Editor";
+import { removeFromTree } from "../utils";
+import db from "../../db";
 
 async function handleEditSave(
-  raw,
+  { content, height, width },
   { setLoading, setDisabled, setEditable, changeData, id }
 ) {
-  const elem = document.querySelector(`[id="${id}"] [data-contents="true"]`);
-  const height = elem.clientHeight;
-  const width = elem.clientWidth;
-  await db.notes.update(id, {
+  await db.nodes.update(id, {
     height,
     width,
-    raw,
+    content,
   });
-  const editedNote = await db.notes.get(id);
+  const editedNode = await db.nodes.get(id);
 
   setLoading(false);
   setDisabled(false);
   setEditable(false);
-  changeData({ update: "edit", note: editedNote, type: "note" });
+  changeData({ update: "edit", node: editedNode });
 }
 
 async function handleDelete({ changeData, setOpen, id }) {
-  // i do this string as i need to avoid id replications btw images and notes
-  const treeRemoval = await removeFromTree(`note-${id}`, null, true);
+  const treeRemoval = await removeFromTree(`node-${id}`, null, true);
 
   // undefined or rejection
-  await db.notes.delete(id);
+  await db.nodes.delete(id);
 
   setOpen(false);
   if (treeRemoval === null) {
-    changeData({ update: "delete", type: "note", id });
+    changeData({ update: "delete", id });
   } else {
     changeData({
       update: "deleteAndRemove",
-      type: "note",
       id,
       structure: treeRemoval.updatedStructure,
       data: treeRemoval.data,
@@ -47,18 +41,26 @@ async function handleDelete({ changeData, setOpen, id }) {
   }
 }
 
-export default function Note(props) {
-  const { note, changeData, setOpen } = props;
+export default function Node(props) {
+  const { node, changeData, setOpen } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [editorState, setEditorState] = useState(
-    EditorState.createWithContent(convertFromRaw(note.raw))
-  );
+  const [editorState, setEditorState] = useState(node.content);
   const [editable, setEditable] = useState(false);
-    console.log(note)
+
+  let editorRef;
+
+  // This is done instead of useRef as I need to focus the element
+  editorRef = useCallback((node) => {
+    if (node !== null) {
+      node.focus(); // node = editorRef.current
+      editorRef.current = node; // it is not done on it's own
+    }
+  }, []);
+
   return (
-    <form className="note">
+    <form className="node">
       <div className={Classes.DIALOG_BODY}>
         <ButtonGroup>
           <Button
@@ -81,7 +83,7 @@ export default function Note(props) {
               await handleDelete({
                 changeData,
                 setOpen,
-                id: note.id,
+                id: node.id,
               });
               // TODO: Handle error
             }}
@@ -89,15 +91,13 @@ export default function Note(props) {
             Delete
           </Button>
         </ButtonGroup>
-        <RichEditor
-          width={300}
-          id={note.id}
-          minimal={true}
-          controls={editable}
-          editorState={editorState}
+        <Editor
           contentEditable={editable}
+          theme={editable ? "snow" : "bubble"}
           readOnly={!editable}
-          onChange={setEditorState}
+          editorRef={editorRef}
+          editorState={editorState}
+          setEditorState={setEditorState}
         />
       </div>
       <div className={Classes.DIALOG_FOOTER}>
@@ -111,13 +111,16 @@ export default function Note(props) {
               onClick={async () => {
                 setLoading(true);
                 setDisabled(true);
+                const editor = editorRef.current.getEditor();
+                const content = editor.getContents();
+                const box = editor.root;
                 await handleEditSave(
-                  convertToRaw(editorState.getCurrentContent()),
+                  { content, height: box.clientHeight, width: box.clientWidth },
                   {
                     setLoading,
                     setDisabled,
                     setEditable,
-                    id: note.id,
+                    id: node.id,
                     changeData,
                   }
                 );

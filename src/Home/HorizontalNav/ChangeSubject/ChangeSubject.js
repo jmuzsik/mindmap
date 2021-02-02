@@ -1,6 +1,8 @@
 import React from "react";
 import { Popover, Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
 
+import Editor from "../../../Components/Editor";
+
 import db from "../../../db";
 
 function createMenu({ subjects }, { changeData }) {
@@ -8,7 +10,15 @@ function createMenu({ subjects }, { changeData }) {
     <Menu>
       {subjects.map((subject, i) => (
         <MenuItem
-          text={subject.name}
+          text={
+            <Editor
+              contentEditable={false}
+              readOnly={true}
+              editorState={subject.content}
+              setEditorState={() => null}
+              theme="bubble"
+            />
+          }
           onClick={() => handleOnChange({ subjects, subject }, { changeData })}
           key={subject.id || i}
         ></MenuItem>
@@ -19,24 +29,23 @@ function createMenu({ subjects }, { changeData }) {
 
 async function handleOnChange({ subject }, { changeData }) {
   const subjectId = subject.id;
-  const notes = (await db.notes.where({ subjectId }).toArray()) || [];
-  const images = (await db.images.where({ subjectId }).toArray()) || [];
+  const nodes = (await db.nodes.where({ subjectId }).toArray()) || [];
   const tree = await db.trees.get({ subjectId });
   const structure = tree.structure;
   const user = await db.user.toCollection().first();
   await db.user.update(user.id, {
-    currentSubject: subjectId
+    currentSubject: subjectId,
   });
 
   changeData({
     update: "updateSubject",
     currentSubject: subject,
-    data: [notes, images],
+    data: nodes,
     structure,
   });
 }
 
-export default function ChangeSubject({ changeData, subjects }) {
+export default function ChangeSubject({ changeData, subjects, names }) {
   return (
     <React.Fragment>
       <Popover
@@ -46,7 +55,7 @@ export default function ChangeSubject({ changeData, subjects }) {
         minimal
         enforceFocus={false}
       >
-        <Button text="Change Subject" intent={Intent.PRIMARY} />
+        <Button text={`${names.change} ${names.subject}`} intent={Intent.PRIMARY} />
         {createMenu({ subjects }, { changeData })}
       </Popover>
     </React.Fragment>

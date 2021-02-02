@@ -46,7 +46,6 @@ export const Container = ({ treeData, changeData, border }) => {
 
   const moveBox = useCallback(
     (id, left, top) => {
-      console.log(id);
       setBoxes(
         update(boxes, {
           [id]: {
@@ -57,6 +56,7 @@ export const Container = ({ treeData, changeData, border }) => {
     },
     [boxes]
   );
+
   const [, drop] = useDrop({
     accept: ItemTypes.DRAG,
     drop(item, monitor) {
@@ -73,6 +73,7 @@ export const Container = ({ treeData, changeData, border }) => {
       return undefined;
     },
   });
+
   return (
     <div
       ref={drop}
@@ -80,6 +81,7 @@ export const Container = ({ treeData, changeData, border }) => {
         ...styles,
         height: treeData.dimensions.height,
         width: treeData.dimensions.width,
+
       }}
     >
       {Object.keys(boxes).map((key) => renderBox(boxes[key], key, border))}

@@ -1,59 +1,5 @@
-.home {
-}
-.home main {
-  display: grid;
-  gap: 0 15px;
-  grid-template-columns: 4fr 4fr;
-}
-.home .content-wrapper {
-}
 .hidden {
   display: none;
-}
-.drawer-open {
-}
-.layout main {
-  display: flex;
-  overflow: hidden;
-  width: 100%;
-  min-height: calc(100vh - 60px);
-}
-.layout aside {
-  margin-right: 15px;
-}
-.layout aside section {
-  margin-right: 15px;
-}
-.mindmap {
-  flex-grow: 1;
-}
-.vertical-nav {
-  transition: width 0.4s;
-  width: 0;
-}
-.vertical-nav.open {
-  width: 100%;
-}
-.vertical-nav .sidebar {
-  transition: transform 0.4s;
-}
-.vertical-nav .sidebar .bp3-tree-node-label {
-  overflow-x: scroll;
-}
-.open .vertical-nav .sidebar-open {
-  display: none;
-}
-.vertical-nav .sidebar-open {
-  position: fixed;
-  z-index: 10;
-}
-.vertical-nav .header {
-  display: flex;
-  justify-content: flex-end;
-}
-.network-container {
-  width: 100%;
-  height: calc(100vh - 60px);
 }
 .network-container-inner {
   height: 100%;

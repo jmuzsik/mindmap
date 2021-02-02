@@ -4,6 +4,8 @@ import { useDeepEffect } from "../../../Utils";
 import ResponsiveNetwork from "./Containers/ResponsiveNetwork";
 import { createData } from "./utils";
 
+import './Network.css';
+
 // TODO: needs to be changed to this for updated node module
 
 export default function Network({ treeData }) {
