@@ -1,1 +1,1 @@
-export default "++id,content,createdAt,x,y,height,width";
+export default "++id,content,createdAt,x,y,width,aspectRatio";

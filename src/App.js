@@ -27,6 +27,7 @@ import handleDataChange from "./handleDataChange";
 
 import Home from "./Home";
 
+import "normalize.css";
 import "react-quill/dist/quill.snow.css";
 
 export const UserContext = React.createContext({
@@ -99,10 +100,14 @@ function App(props) {
       setUser(DEF_USER);
     };
   }, [setUser, handleFetchUser]);
-
+console.log(treeData, user)
   return (
     <UserContext.Provider value={{ user, setUser }}>
-      <div className={`${user.theme === "dark" ? "bp3-dark" : ""}`}>
+      <div
+        className={`app ${user.theme === "dark" ? "bp3-dark" : ""} ${
+          loading ? "loading" : "finished-loading"
+        }`}
+      >
         {loading ? (
           <section className="bp3-skeletonlayout">
             <header className="bp3-skeletonhorizontal-nav bp3-skeleton">

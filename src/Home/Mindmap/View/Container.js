@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "./ItemTypes";
 import { DraggableBox } from "./DraggableBox";
@@ -44,18 +44,15 @@ export const Container = ({ treeData, changeData, border }) => {
     treeData.dimensions,
   ]);
 
-  const moveBox = useCallback(
-    (id, left, top) => {
-      setBoxes(
-        update(boxes, {
-          [id]: {
-            $merge: { left, top },
-          },
-        })
-      );
-    },
-    [boxes]
-  );
+  const moveBox = (id, left, top) => {
+    setBoxes(
+      update(boxes, {
+        [id]: {
+          $merge: { left, top },
+        },
+      })
+    );
+  };
 
   const [, drop] = useDrop({
     accept: ItemTypes.DRAG,
@@ -81,7 +78,6 @@ export const Container = ({ treeData, changeData, border }) => {
         ...styles,
         height: treeData.dimensions.height,
         width: treeData.dimensions.width,
-
       }}
     >
       {Object.keys(boxes).map((key) => renderBox(boxes[key], key, border))}

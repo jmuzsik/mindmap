@@ -1,12 +1,6 @@
-import React, { useState, useCallback } from "react";
-import {
-  Popover,
-  Button,
-  Intent,
-  InputGroup,
-  Callout,
-} from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
+import React, { useState, useCallback, useEffect } from "react";
+import { Button, Intent } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 
 import { UserContext } from "../../../App";
 import Editor from "../../../Components/Editor";
@@ -17,7 +11,14 @@ import "./CreateSubject.css";
 
 export async function handleSubmit(
   data,
-  { changeData, isSubmitting, finishedSubmitting, userObj: { user, setUser } }
+  {
+    changeData,
+    isSubmitting,
+    setEditorState,
+    userObj: { user, setUser },
+    setClosed,
+    setForcedOpen,
+  }
 ) {
   const subjectObj = {
     createdAt: +new Date(),
@@ -56,13 +57,25 @@ export async function handleSubmit(
     structure,
   });
   isSubmitting(false);
-  finishedSubmitting(true);
+  setEditorState(null);
+  // Kind of hacky way to close it then have it instantly accessible
+  setClosed(false);
+  setForcedOpen(false);
+  setTimeout(() => {
+    setClosed(undefined);
+    setForcedOpen(undefined);
+  }, 1);
 }
 
-export default function CreateSubject({ changeData, names }) {
+export default function CreateSubject({ changeData, names, userObj }) {
   const [submitting, isSubmitting] = useState(false);
-  const [submitted, finishedSubmitting] = useState(false);
   const [editorState, setEditorState] = useState(null);
+  // if false, cannot open unless set, if undefined, can open without being set
+  // used to close the popover after submission
+  const [closed, setClosed] = useState(undefined);
+  // used to force it open if user does not have a subject
+  // things will break without a subject
+  const [forceOpen, setForcedOpen] = useState(undefined);
 
   let editorRef;
   // This is done instead of useRef as I need to focus the element
@@ -73,16 +86,20 @@ export default function CreateSubject({ changeData, names }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (!userObj.user.currentSubject) {
+      setForcedOpen(true);
+    }
+  }, [userObj.user]);
+
   return (
-    <Popover
-      popoverClassName="subject-popover"
-      portalClassName="subject-popover-portal"
-      position="auto"
-      minimal
-      enforceFocus={false}
-    >
-      <Button text={`${names.create} ${names.subject}`} />
-      {!submitted ? (
+    <Popover2
+      autoFocus
+      portalClassName="create-subject-portal"
+      placement="bottom-end"
+      hasBackdrop
+      isOpen={closed || forceOpen}
+      content={
         <UserContext.Consumer>
           {(userObj) => (
             <form
@@ -96,23 +113,20 @@ export default function CreateSubject({ changeData, names }) {
                 handleSubmit(
                   {
                     content,
-                    height: box.clientHeight,
                     width: box.clientWidth,
+                    aspectRatio: box.clientWidth / box.clientHeight,
                   },
                   {
                     changeData,
                     userObj,
                     isSubmitting,
-                    finishedSubmitting,
+                    setEditorState,
+                    setClosed,
+                    setForcedOpen,
                   }
                 );
               }}
             >
-              <p>
-                <span role="img" aria-label="thinking face">
-                  🤔
-                </span>
-              </p>
               <Editor
                 editorRef={editorRef}
                 editorState={editorState}
@@ -131,11 +145,9 @@ export default function CreateSubject({ changeData, names }) {
             </form>
           )}
         </UserContext.Consumer>
-      ) : (
-        <Callout icon={IconNames.TICK_CIRCLE} intent={Intent.SUCCESS}>
-          All good here!
-        </Callout>
-      )}
-    </Popover>
+      }
+    >
+      <Button text={`${names.create} ${names.subject}`} />
+    </Popover2>
   );
 }

@@ -6,3 +6,6 @@
   width: auto;
   white-space: nowrap; /* Thanks to Herb Caudill comment */
 }
+.create-subject-portal .bp3-overlay-backdrop {
+  background: rgba(16, 22, 26, 0.7);
+}

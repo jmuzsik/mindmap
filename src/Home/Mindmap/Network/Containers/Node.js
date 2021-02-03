@@ -8,13 +8,11 @@
  */
 import React, { memo } from "react";
 import {
-  Popover,
   Classes,
-  Position,
   Icon,
-  PopoverInteractionKind,
   Intent,
 } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import PropTypes from "prop-types";
 
 const Node = ({ x, node, y, radius, color, scale = 1 }) => {
@@ -28,10 +26,8 @@ const Node = ({ x, node, y, radius, color, scale = 1 }) => {
       height={radius * 2}
       style={{ background: color }}
     >
-      <Popover
-        interactionKind={PopoverInteractionKind.HOVER_TARGET_ONLY}
+      <Popover2
         content={jsx}
-        position={Position.TOP}
         popoverClassName={`${Classes.POPOVER_CONTENT_SIZING} network-node-content`}
       >
         <Icon
@@ -40,7 +36,7 @@ const Node = ({ x, node, y, radius, color, scale = 1 }) => {
           intent={Intent.PRIMARY}
           style={{ height: radius * 2, width: radius * 2 }}
         ></Icon>
-      </Popover>
+      </Popover2>
     </foreignObject>
   );
 };

@@ -1,6 +1,5 @@
 import React from "react";
 import ReactQuill from "react-quill";
-
 import "./Editor.css";
 
 const createModules = (minimal) => {
@@ -18,7 +17,9 @@ const createModules = (minimal) => {
     ["link", "image"],
     ["clean"],
   ];
-  if (!minimal) returnObj.toolbar = returnObj.toolbar.concat(additionalProps);
+  if (!minimal) {
+    returnObj.toolbar = returnObj.toolbar.concat(additionalProps);
+  }
   return returnObj;
 };
 

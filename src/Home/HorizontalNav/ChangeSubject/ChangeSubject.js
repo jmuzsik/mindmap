@@ -1,5 +1,6 @@
 import React from "react";
-import { Popover, Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
+import { Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 
 import Editor from "../../../Components/Editor";
 
@@ -39,7 +40,7 @@ async function handleOnChange({ subject }, { changeData }) {
 
   changeData({
     update: "updateSubject",
-    currentSubject: subject,
+    subject,
     data: nodes,
     structure,
   });
@@ -47,17 +48,15 @@ async function handleOnChange({ subject }, { changeData }) {
 
 export default function ChangeSubject({ changeData, subjects, names }) {
   return (
-    <React.Fragment>
-      <Popover
-        popoverClassName="subject-popover"
-        portalClassName="subject-popover-portal"
-        position="auto"
-        minimal
-        enforceFocus={false}
-      >
-        <Button text={`${names.change} ${names.subject}`} intent={Intent.PRIMARY} />
-        {createMenu({ subjects }, { changeData })}
-      </Popover>
-    </React.Fragment>
+    <Popover2
+      placement="bottom-end"
+      autoFocus
+      content={createMenu({ subjects }, { changeData })}
+    >
+      <Button
+        text={`${names.change} ${names.subject}`}
+        intent={Intent.PRIMARY}
+      />
+    </Popover2>
   );
 }

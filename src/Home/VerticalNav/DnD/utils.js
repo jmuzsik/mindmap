@@ -14,7 +14,7 @@ import { removeFromTree } from "../../utils";
 import { handleStringCreation, InnerContent, aORb } from "../../utils";
 
 function createContent(props) {
-  const { type, id, data, label, changeData } = props;
+  const { type, id, data, label, changeData, names } = props;
   return (
     <React.Fragment>
       {type === "subject" ? (
@@ -29,7 +29,7 @@ function createContent(props) {
         <span className="treenode-id">{handleStringCreation(label, data)}</span>
       )}
       {type !== "subject" && (
-        <Popover {...{ type, id }}>
+        <Popover {...{ type, id, names }}>
           <InnerContent {...{ id, data, type }} />
         </Popover>
       )}
@@ -42,27 +42,33 @@ function createContent(props) {
 
 // This and below corresponds to the nodes of the tree
 function TreeNodeContent(props) {
-  const { i, id, data, type, changeData } = props;
+  const { i, id, data, type, changeData, names } = props;
   const [isOpen, setOpen] = useState(false);
   return (
     <div className="data-content">
       <span className="treenode-id">{id}</span>
-      <Popover {...{ type, id }}>
+      <Popover {...{ type, id, names }}>
         <InnerContent {...{ type, data, id }} />
       </Popover>
       <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>
-        Edit
+        {names.edit}
       </Button>
       <Dialog
         {...{
           className: "edit-content-dialog",
           icon: IconNames.ANNOTATION,
-          title: "Edit Content",
+          title: `${names.edit} ${names.content}`,
           isOpen,
           setOpen,
         }}
       >
-        <Node node={data} idx={i} changeData={changeData} setOpen={setOpen} />
+        <Node
+          node={data}
+          idx={i}
+          changeData={changeData}
+          setOpen={setOpen}
+          names={names}
+        />
       </Dialog>
     </div>
   );
@@ -100,19 +106,19 @@ function createDustbinObj({ state, childNodes, changeData }) {
 }
 
 function createDustbin(
-  { type, id, data, label, additionalProps = {} },
+  { type, id, data, label, additionalProps = {}, names },
   changeData
 ) {
   return (
     <Dustbin
       {...additionalProps}
       name={id}
-      content={createContent({ type, id, data, label, changeData })}
+      content={createContent({ type, id, data, label, changeData, names })}
     />
   );
 }
 
-function recurseNested(cur, data, depth = 1, changeData) {
+function recurseNested(cur, data, depth = 1, changeData, names) {
   for (let i = 0; i < cur.length; i++) {
     const elem = cur[i];
     const node = data.find((el) => el.id === elem.id);
@@ -128,6 +134,7 @@ function recurseNested(cur, data, depth = 1, changeData) {
           data: node,
           label: elem.id,
           changeData,
+          names,
         }),
         id,
         hasCaret: true,
@@ -145,13 +152,15 @@ function recurseNested(cur, data, depth = 1, changeData) {
             id,
             data: node,
             label: elem.id,
+            names,
           },
           changeData,
           childNodes: recurseNested(
             elem.childNodes,
             data,
             depth + 1,
-            changeData
+            changeData,
+            names
           ),
         });
       } else {
@@ -162,6 +171,7 @@ function recurseNested(cur, data, depth = 1, changeData) {
             data: node,
             label: elem.id,
             changeData,
+            names,
           }),
           id: elem.id,
           hasCaret: true,
@@ -171,7 +181,8 @@ function recurseNested(cur, data, depth = 1, changeData) {
             elem.childNodes,
             data,
             depth + 1,
-            changeData
+            changeData,
+            names
           ),
           icon: aORb(elem.type, IconNames.FOLDER_CLOSE, IconNames.DOCUMENT),
         };
@@ -182,7 +193,13 @@ function recurseNested(cur, data, depth = 1, changeData) {
   return cur;
 }
 
-export function createTreeDustbins({ data, structure, subject, changeData }) {
+export function createTreeDustbins({
+  data,
+  structure,
+  subject,
+  changeData,
+  names,
+}) {
   // Max of 8 children
   const structureCopy = JSON.parse(JSON.stringify(structure));
   let nodes;
@@ -230,18 +247,24 @@ export function createTreeDustbins({ data, structure, subject, changeData }) {
   }
   let result;
   if (structureCopy) {
-    result = recurseNested(structureCopy.childNodes, data, 1, changeData);
+    result = recurseNested(
+      structureCopy.childNodes,
+      data,
+      1,
+      changeData,
+      names
+    );
   }
   if (result) nodes[0].childNodes = result;
 
   return nodes;
 }
 
-export function createTreeBoxes({ changeData, data }) {
+export function createTreeBoxes({ changeData, data, names }) {
   let id = 0;
   const treeNodes = [
     {
-      label: "Content",
+      label: names.content,
       id: id++,
       className: "folder",
       icon: IconNames.FOLDER_CLOSE,
@@ -262,6 +285,7 @@ export function createTreeBoxes({ changeData, data }) {
         type: "node",
         changeData,
         inTree: node.inTree,
+        names,
       })
     );
   }

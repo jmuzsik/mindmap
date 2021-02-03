@@ -1,9 +1,12 @@
-.horizontal-nav .bp3-navbar-group {
-  float: none;
-  justify-content: space-between;
+.right-group {
+  justify-content: flex-end;
 }
-.horizontal-nav .bp3-navbar-group.right-group {
-  justify-content: space-evenly;
+.right-group > * {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.bp3-navbar-heading {
+  width :100%;
 }
 .horizontal-nav .bp3-navbar-heading .bp3-icon {
   margin-right: 10px;
@@ -21,7 +24,6 @@
   height: 30px;
   position: absolute;
   width: 1px;
-  background: rgba(0, 0, 0, 0.1);
 }
 .horizontal-nav .ant-select-auto-complete {
   margin-left: 20px;

@@ -22,18 +22,6 @@ export default function Home(props) {
     setOpen,
   } = props;
 
-  // When user first visits the site they have no subject but
-  // a subject is necessary to do anything useful on this site
-  // ... so here I use this state to wait one second (to avoid
-  // rendering prior to a new user object being created in the
-  // db), and then render a callout to tell users to create one
-  // const isFirstRun = useRef(true);
-  // useEffect(() => {
-  //   if (isFirstRun.current) {
-  //     isFirstRun.current = false;
-  //     return;
-  //   }
-  // });
   useEffect(() => {
     const dataObj = update(treeData, {
       dimensions: { $set: getDim(mainRef, isOpen) },
@@ -41,7 +29,7 @@ export default function Home(props) {
     setTreeData(dataObj);
   }, [isOpen, userProp.currentSubject]);
 
-
+  console.log(treeData);
   return (
     <section className={`layout ${open}`}>
       <HorizontalNav
@@ -55,23 +43,21 @@ export default function Home(props) {
       <main ref={mainRef}>
         {/* This is for when someone initially comes into the site
               - they need to create a subject */}
-        {!userProp.currentSubject ? (
+        {/* {!userProp.currentSubject ? (
           createCallout()
-        ) : (
-          <React.Fragment>
-            <VerticalNav
-              {...{
-                history,
-                isOpen,
-                setOpen,
-                treeData,
-                changeData,
-                user: userProp,
-              }}
-            />
-            <MindMapContainer treeData={treeData} changeData={changeData} />
-          </React.Fragment>
-        )}
+        ) : ( */}
+        <VerticalNav
+          {...{
+            history,
+            isOpen,
+            setOpen,
+            treeData,
+            changeData,
+            user: userProp,
+          }}
+        />
+        <MindMapContainer treeData={treeData} changeData={changeData} />
+        {/* )} */}
       </main>
     </section>
   );

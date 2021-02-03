@@ -30,6 +30,14 @@ export default (dataChange, treeData) => {
       return update(treeData, {
         subject: { $set: dataChange.subject },
         structure: { $set: dataChange.structure },
+        data: { $set: dataChange.data },
+      });
+    case "deleteSubject":
+      return update(treeData, {
+        subject: { $set: dataChange.subject },
+        subjects: { $set: dataChange.subjects },
+        structure: { $set: dataChange.structure },
+        data: { $set: dataChange.data },
       });
     case "updateTreeSingular":
       idx = treeData.data.findIndex(({ id }) => id === dataChange.item.id);

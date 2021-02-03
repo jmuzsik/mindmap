@@ -1,38 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDrag } from "react-dnd";
-import { getEmptyImage } from "react-dnd-html5-backend";
 import { Resize } from "./Resize";
-import { Box } from "./Box";
 import { ItemTypes } from "./ItemTypes";
-
-function getStyles(left, top, zIndex, { height, width }, border, isDragging) {
-  const transform = `translate3d(${left}px, ${top}px, 0)`;
-  return {
-    position: "absolute",
-    transform,
-    height,
-    width,
-    border: border ? "1px solid #ddd" : "none",
-    // right,
-    WebkitTransform: transform,
-    // IE fallback: hide the real node using CSS when dragging
-    // because IE will ignore our custom "empty image" drag preview.
-    opacity: isDragging ? 0 : 1,
-    objectFit: "fill",
-    // height: isDragging ? 0 : "",
-    zIndex,
-  };
-}
 
 export const DraggableBox = (props) => {
   const { id, content, left, top, nodeId, data, zIndex, border } = props;
 
   const [dimensions, setDimensions] = useState({
-    width: data.width && data.width + 30,
-    height: data.height && data.height + 30,
+    width: data.aspectRatio && data.width + 30,
+    // ie. if 2:1/width=70 (width:height) then (100:50), etc.
+    // aspect ratio is a double (calculated through width / height)
+    height: data.aspectRatio && (data.width + 30) / data.aspectRatio,
   });
 
-  const [{ isDragging }, drag, preview] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     item: {
       type: ItemTypes.DRAG,
       id,
@@ -43,24 +24,35 @@ export const DraggableBox = (props) => {
       nodeId,
       zIndex,
     },
-    collect: (monitor) => {
-      return {
-        isDragging: monitor.isDragging(),
-      };
-    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
   });
-  useEffect(() => {
-    preview(getEmptyImage(), { captureDraggingState: true });
-  }, []);
 
-  const styles = getStyles(left, top, zIndex, dimensions, border, isDragging);
+  const styles = {
+    height: dimensions.height,
+    width: dimensions.width,
+    transform: "translate3d(0, 0, 0)",
+  };
+  if (isDragging) {
+    return <div ref={drag} />;
+  }
   return (
     <Resize
-      {...{ nodeId, data, styles, dimensions, setDimensions }}
-      style={styles}
+      {...{
+        nodeId,
+        data,
+        styles,
+        left,
+        top,
+        dimensions,
+        setDimensions,
+        border,
+        zIndex,
+      }}
     >
-      <div className="drag" ref={drag}>
-        <Box content={content} />
+      <div className="drag" ref={drag} style={styles}>
+        <div className="dnd-box">{content}</div>
       </div>
     </Resize>
   );

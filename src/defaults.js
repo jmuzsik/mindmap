@@ -2,7 +2,7 @@
 export const DEF_NODES_DATA = [];
 
 export const DEF_STRUCTURE_DATA = {
-  id: 0,
+  id: "",
   // subject
   type: "subject",
   content: null,
@@ -11,7 +11,7 @@ export const DEF_STRUCTURE_DATA = {
   ],
 };
 
-export const DEF_SUBJECT_DATA = { content: null, id: 0 };
+export const DEF_SUBJECT_DATA = { content: null, id: "" };
 export const DEF_SUBJECTS_DATA = [];
 
 export const DEF_DATA_CHANGE = {
@@ -31,6 +31,8 @@ export const DEF_NAMES = {
   dnd: "DnD",
   settings: "Settings",
   action: "Do it",
+  content: "Content",
+  delete: "Delete",
   createdAt: +new Date(),
 };
 

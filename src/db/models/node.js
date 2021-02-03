@@ -1,1 +1,1 @@
-export default "++id,createdAt,content,subjectId,height,width,inTree,x,y";
+export default "++id,createdAt,content,subjectId,aspectRatio,width,inTree,x,y";

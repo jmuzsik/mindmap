@@ -164,13 +164,15 @@ export function createBoxesContent({ data, structure, subject, dimensions }) {
     {
       [`subject-${subject.id}`]: {
         content: (
-          <Editor
-            contentEditable={false}
-            readOnly={true}
-            editorState={subject.content}
-            setEditorState={() => null}
-            theme="bubble"
-          />
+          <div className="dnd-content subject-content">
+            <Editor
+              contentEditable={false}
+              readOnly={true}
+              editorState={subject.content}
+              setEditorState={() => null}
+              theme="bubble"
+            />
+          </div>
         ),
         id: subject.id,
         nodeId: `subject-${subject.id}`,

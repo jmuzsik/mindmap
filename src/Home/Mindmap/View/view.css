@@ -1,17 +1,24 @@
-.dnd-content,
-.drag,
-.resizable {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.drag {
+  overflow: hidden;
+}
+.drag .dnd-box {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+.drag .dnd-box > * {
+  display: table-cell;
+  vertical-align: middle;
+  overflow: hidden;
 }
 .dnd-content img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
 }
-.resizable,
-.drag.higher-level {
+.resizable {
   cursor: move;
+  padding: 0;
 }
 .dnd-content .RichEditor-editor {
   box-shadow: none;
@@ -19,4 +26,8 @@
 .drag .subject h1 {
   margin: 0;
   padding: 15px;
+}
+.dnd-box,
+div.dnd-box * {
+  cursor: move;
 }

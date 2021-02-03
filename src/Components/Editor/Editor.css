@@ -13,3 +13,9 @@
 .ql-container.ql-disabled .ql-tooltip {
   display: none;
 }
+.bp3-portal .ql-disabled * {
+  cursor: pointer;
+}
+.bp3-menu .ql-disabled * {
+  cursor: auto;
+}

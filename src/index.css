@@ -1,14 +1,11 @@
-@import "~normalize.css";
 @import "~@blueprintjs/core/lib/css/blueprint.css";
+@import "~@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 body,
 html {
   -webkit-overflow-scrolling: touch;
   overflow: hidden;
-}
-.layout {
-  background: #f5f8fa;
 }
 button a {
   color: inherit;
@@ -18,11 +15,38 @@ button a:hover {
   text-decoration: none;
   color: inherit;
 }
+.bp3-dark main {
+  background-color: #30404d;
+}
+.bp3-dark .bp3-menu {
+  background: #394b59;
+}
+.bp3-dark .bp3-popover2-content .ql-toolbar {
+  background-color: #ebf1f5;
+}
+.bp3-dark .bp3-popover2-content .ql-container {
+  background-color: #ebf1f5;
+}
+.bp3-dark .bp3-popover2-content .ql-editor {
+  background-color: white;
+  color: #182026;
+}
 div.bp3-input-group .bp3-button {
   min-width: 30px;
   min-height: 30px;
   margin: inherit;
   padding: inherit;
+}
+.app.loading {
+  opacity: 0;
+  -moz-transition: opacity 1.5s;
+  -webkit-transition: opacity 1.5s;
+  -o-transition: opacity 1.5s;
+  transition: opacity 1.5s;
+}
+
+.app.finished-loading {
+  opacity: 1;
 }
 @media (min-width: 768px) {
   div.bp3-card {
@@ -71,7 +95,6 @@ img {
   margin: auto;
 }
 header.horizontal-nav {
-  background: #fff;
   box-shadow: 0 2px 8px #f0f1f2;
   padding-left: 0;
   padding-right: 0;
@@ -87,4 +110,13 @@ header.horizontal-nav {
   z-index: 10;
   top: 60px;
   left: 0;
+}
+.bp3-tree-node-content {
+  height: 100%;
+}
+.bp3-tree-node-content .ql-editor {
+  margin: 0;
+  line-height: 1;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }

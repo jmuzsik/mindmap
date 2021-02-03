@@ -1,16 +1,17 @@
 import React from "react";
-import { Button, Intent, Popover } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 
-export default function PopoverContainer({ type, id, children }) {
+export default function PopoverContainer({ type, id, children, names }) {
   return (
-    <Popover
-      popoverClassName={`${type}-${id}-popover`}
-      portalClassName={`${type}-${id}-portal`}
+    <Popover2
+      autoFocus
+      placement="bottom-end" 
+      content={children}
     >
       <Button intent={Intent.PRIMARY} minimal>
-        View
+        {names.view}
       </Button>
-      {children}
-    </Popover>
+    </Popover2>
   );
 }

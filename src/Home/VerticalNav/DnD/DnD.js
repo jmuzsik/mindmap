@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DataTree from "./Tree/DataTree";
@@ -7,7 +7,7 @@ import { createTreeBoxes, createTreeDustbins } from "./utils";
 
 const TreeContainer = memo(function TreeContainer(props) {
   const {
-    treeData: { data, structure, subject },
+    treeData: { data, structure, subject, names },
     changeData,
   } = props;
 
@@ -15,15 +15,18 @@ const TreeContainer = memo(function TreeContainer(props) {
     createTreeBoxes({
       data,
       changeData,
+      names,
     }),
     createTreeDustbins({
       data,
       structure,
       subject,
       changeData,
+      names,
     }),
   ];
-  const update = { subject, structure, data };
+
+  const update = { subject, structure, data, names };
   return (
     <div className="tree-map">
       <DataTree update={update} contents={dataContents} />

@@ -10,8 +10,8 @@ async function handleEditSave(
   { setLoading, setDisabled, setEditable, changeData, id }
 ) {
   await db.nodes.update(id, {
-    height,
     width,
+    aspectRatio: width / height,
     content,
   });
   const editedNode = await db.nodes.get(id);
@@ -42,7 +42,7 @@ async function handleDelete({ changeData, setOpen, id }) {
 }
 
 export default function Node(props) {
-  const { node, changeData, setOpen } = props;
+  const { node, changeData, setOpen, names } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -69,7 +69,7 @@ export default function Node(props) {
             icon={IconNames.EDIT}
             onClick={() => setEditable(!editable)}
           >
-            Edit
+            {names.edit}
           </Button>
           <Button
             type="button"
@@ -88,7 +88,7 @@ export default function Node(props) {
               // TODO: Handle error
             }}
           >
-            Delete
+            {names.delete}
           </Button>
         </ButtonGroup>
         <Editor
@@ -127,7 +127,7 @@ export default function Node(props) {
                 // TODO: Handle error
               }}
             >
-              Save
+              {names.action}
             </Button>
           )}
         </div>
