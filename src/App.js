@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
+import { getItem } from "./Settings";
 import db from "./db";
 
 import {
@@ -100,7 +101,7 @@ function App(props) {
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <div
-        className={`app ${user.theme === "dark" ? "bp3-dark" : ""} ${
+        className={`app ${getItem("theme")} ${
           loading ? "loading" : "finished-loading"
         }`}
       >

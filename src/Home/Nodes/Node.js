@@ -42,7 +42,7 @@ async function handleDelete({ changeData, setOpen, id }) {
 }
 
 export default function Node(props) {
-  const { node, changeData, setOpen, names, user } = props;
+  const { node, changeData, setOpen, names } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,12 +52,15 @@ export default function Node(props) {
   let editorRef;
 
   // This is done instead of useRef as I need to focus the element
-  editorRef = useCallback((node) => {
-    if (node !== null) {
-      node.focus(); // node = editorRef.current
-      editorRef.current = node; // it is not done on it's own
-    }
-  }, [editorRef]);
+  editorRef = useCallback(
+    (node) => {
+      if (node !== null) {
+        node.focus(); // node = editorRef.current
+        editorRef.current = node; // it is not done on it's own
+      }
+    },
+    [editorRef]
+  );
 
   return (
     <form className="node">
@@ -93,7 +96,7 @@ export default function Node(props) {
         </ButtonGroup>
         <Editor
           contentEditable={editable}
-          theme={editable ? user.editor : "bubble"}
+          theme={editable ? "snow" : "bubble"}
           readOnly={!editable}
           editorRef={editorRef}
           editorState={editorState}

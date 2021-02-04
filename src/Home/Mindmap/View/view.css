@@ -34,3 +34,15 @@
 div.dnd-box * {
   cursor: move;
 }
+.dnd-settings-target {
+  float: right;
+}
+.dnd-settings {
+  padding: 10px;
+}
+.dnd-settings .bp3-switch {
+  margin-bottom: 0;
+}
+.dnd-settings :first-child {
+  margin-bottom: 10px;
+}

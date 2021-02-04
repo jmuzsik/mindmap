@@ -1,20 +1,24 @@
 import React from "react";
 import ReactQuill from "react-quill";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import "./Editor.css";
+
+window.katex = katex;
 
 const createModules = (minimal) => {
   const returnObj = {
     toolbar: [
       [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote", "code"],
+      [{ font: [] }],
+      ["bold", "italic", "underline"],
       [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-      [{ align: [] }],
     ],
   };
   const additionalProps = [
-    [{ font: [] }],
-    [{ list: "ordered" }, { list: "bullet" }],
+    [{ list: "ordered" }, { list: "bullet" }, { align: [] }],
     ["link", "image"],
+    ["formula", "code-block"],
     ["clean"],
   ];
   if (!minimal) {
@@ -31,7 +35,8 @@ const formats = [
   "strike",
   "size",
   "blockquote",
-  "code",
+  "code-block",
+  "formula",
   "list",
   "bullet",
   "link",

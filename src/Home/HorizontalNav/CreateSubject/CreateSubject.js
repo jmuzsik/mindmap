@@ -5,6 +5,7 @@ import { Popover2 } from "@blueprintjs/popover2";
 import Editor from "../../../Components/Editor";
 
 import db from "../../../db";
+import { getItem } from "../../../Settings";
 
 import "./CreateSubject.css";
 
@@ -79,12 +80,15 @@ export default function CreateSubject({ changeData, names, user, setUser }) {
 
   let editorRef;
   // This is done instead of useRef as I need to focus the element
-  editorRef = useCallback((node) => {
-    if (node !== null) {
-      node.focus(); // node = editorRef.current
-      editorRef.current = node; // it is not done on it's own
-    }
-  }, [editorRef]);
+  editorRef = useCallback(
+    (node) => {
+      if (node !== null) {
+        node.focus(); // node = editorRef.current
+        editorRef.current = node; // it is not done on it's own
+      }
+    },
+    [editorRef]
+  );
 
   useEffect(() => {
     if (!user.currentSubject) {
@@ -95,7 +99,7 @@ export default function CreateSubject({ changeData, names, user, setUser }) {
   return (
     <Popover2
       autoFocus
-      portalClassName="create-subject-portal"
+      portalClassName={getItem("theme")}
       hasBackdrop={!user.currentSubject}
       isOpen={closed || forceOpen}
       content={
@@ -129,7 +133,7 @@ export default function CreateSubject({ changeData, names, user, setUser }) {
             editorRef={editorRef}
             editorState={editorState}
             setEditorState={setEditorState}
-            theme={user.editor}
+            theme={getItem("editor")}
             controls="minimal"
           />
           <Button

@@ -12,6 +12,7 @@ import { Dustbin } from "./Dustbin";
 
 import { removeFromTree } from "../../utils";
 import { handleStringCreation, InnerContent, aORb } from "../../utils";
+import { UserContext } from "../../../App";
 
 function createContent(props) {
   const { type, id, data, label, changeData, names } = props;
@@ -42,7 +43,7 @@ function createContent(props) {
 
 // This and below corresponds to the nodes of the tree
 function TreeNodeContent(props) {
-  const { i, id, data, type, changeData, names, user } = props;
+  const { i, id, data, type, changeData, names } = props;
   const [isOpen, setOpen] = useState(false);
   return (
     <div className="data-content">
@@ -53,25 +54,29 @@ function TreeNodeContent(props) {
       <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>
         {names.edit}
       </Button>
-      <Dialog
-        {...{
-          user,
-          className: "edit-content-dialog",
-          icon: IconNames.ANNOTATION,
-          title: `${names.edit} ${names.content}`,
-          isOpen,
-          setOpen,
-        }}
-      >
-        <Node
-          node={data}
-          idx={i}
-          changeData={changeData}
-          setOpen={setOpen}
-          names={names}
-          user={user}
-        />
-      </Dialog>
+      <UserContext.Consumer>
+        {({ user }) => (
+          <Dialog
+            {...{
+              className: "edit-content-dialog",
+              icon: IconNames.ANNOTATION,
+              title: `${names.edit} ${names.content}`,
+              isOpen,
+              setOpen,
+              user,
+            }}
+          >
+            <Node
+              node={data}
+              idx={i}
+              changeData={changeData}
+              setOpen={setOpen}
+              names={names}
+              user={user}
+            />
+          </Dialog>
+        )}
+      </UserContext.Consumer>
     </div>
   );
 }
@@ -262,7 +267,7 @@ export function createTreeDustbins({
   return nodes;
 }
 
-export function createTreeBoxes({ changeData, data, names, user }) {
+export function createTreeBoxes({ changeData, data, names }) {
   let id = 0;
   const treeNodes = [
     {
@@ -288,7 +293,6 @@ export function createTreeBoxes({ changeData, data, names, user }) {
         changeData,
         inTree: node.inTree,
         names,
-        user,
       })
     );
   }

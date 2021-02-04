@@ -12,7 +12,7 @@ import {
 // Dexie.delete("mindmap");
 const db = new Dexie("mindmap");
 // Everytime a model changes, the version also needs to change
-db.version(20).stores({
+db.version(25).stores({
   user: userModel,
   trees: treeModel,
   subjects: subjectModel,

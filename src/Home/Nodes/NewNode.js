@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Button, Classes } from "@blueprintjs/core";
 
 import db from "../../db";
+import { getItem } from "../../Settings";
 
 import "./Nodes.css";
 import Editor from "../../Components/Editor";
@@ -38,12 +39,15 @@ export default function NewNode({ setOpen, changeData, names, user }) {
   let editorRef;
 
   // This is done instead of useRef as I need to focus the element
-  editorRef = useCallback((node) => {
-    if (node !== null) {
-      node.focus(); // node = editorRef.current
-      editorRef.current = node; // it is not done on it's own
-    }
-  }, [editorRef]);
+  editorRef = useCallback(
+    (node) => {
+      if (node !== null) {
+        node.focus(); // node = editorRef.current
+        editorRef.current = node; // it is not done on it's own
+      }
+    },
+    [editorRef]
+  );
 
   return (
     <div className={`new-node ${Classes.DIALOG_BODY}`}>
@@ -72,7 +76,7 @@ export default function NewNode({ setOpen, changeData, names, user }) {
           editorRef={editorRef}
           editorState={editorState}
           setEditorState={setEditorState}
-          theme={user.editor}
+          theme={getItem("editor")}
         />
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

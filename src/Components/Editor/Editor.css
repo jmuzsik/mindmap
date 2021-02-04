@@ -1,27 +1,43 @@
 .ql-container {
   padding: 10px;
 }
+.ql-container .ql-toolbar {
+  z-index: 1;
+}
 .ql-toolbar .ql-active svg {
   pointer-events: none;
+}
+.ql-container .ql-editor {
+  max-height: 500px;
+  overflow: scroll;
 }
 .ql-container.ql-disabled .ql-editor {
   box-shadow: none;
 }
 .ql-container .ql-editor {
-  min-width: 32px;
+  min-width: 33px;
   /* Turns div into span-like property */
   width: -moz-fit-content;
   width: fit-content;
   block-size: fit-content;
   margin: auto;
-  background-color: white;
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
     0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
     0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086),
     0 100px 80px rgba(0, 0, 0, 0.12);
 }
-.ql-container.ql-disabled .ql-tooltip {
+.ql-container:not(.ql-disabled) .ql-container.ql-disabled .ql-tooltip {
   display: none;
+}
+.app:not(.bp3-dark) .ql-toolbar,
+.app:not(.bp3-dark) .ql-container:not(.ql-disabled),
+.bp3-portal:not(.bp3-dark) .ql-toolbar,
+.bp3-portal:not(.bp3-dark) .ql-container:not(.ql-disabled) {
+  background: #fffafa;
+}
+.app:not(.bp3-dark) .ql-container:not(.ql-disabled) .ql-editor,
+.bp3-portal:not(.bp3-dark) .ql-container:not(.ql-disabled) .ql-editor {
+  border: 1px solid #d3d3d3;
 }
 .bp3-portal .ql-disabled * {
   cursor: pointer;
@@ -36,4 +52,7 @@
 }
 .bp3-menu .ql-disabled * {
   cursor: auto;
+}
+.bp3-portal .bp3-button-group .bp3-button[class*="bp3-intent-"] {
+  z-index: 0;
 }

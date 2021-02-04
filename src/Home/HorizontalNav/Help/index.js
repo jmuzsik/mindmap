@@ -6,6 +6,7 @@ import Editor from "../../../Components/Editor";
 import { CollapseContent } from "./utils";
 
 import db from "../../../db";
+import { getItem } from "../../../Settings";
 
 async function updateHelp(content) {
   const help = await db.help.toCollection().first();
@@ -26,16 +27,19 @@ export default function Help({ open, toggleOpen, names, user, help }) {
   let editorRef;
 
   // This is done instead of useRef as I need to focus the element
-  editorRef = useCallback((node) => {
-    if (node !== null) {
-      node.focus(); // node = editorRef.current
-      editorRef.current = node; // it is not done on it's own
-    }
-  }, [editorRef]);
+  editorRef = useCallback(
+    (node) => {
+      if (node !== null) {
+        node.focus(); // node = editorRef.current
+        editorRef.current = node; // it is not done on it's own
+      }
+    },
+    [editorRef]
+  );
 
   return (
     <Dialog
-      portalClassName={`${user.theme === "dark" ? "bp3-dark" : ""}`}
+      portalClassName={getItem("theme")}
       isOpen={open}
       // this renders the header (i don't want any words)
       title=""
@@ -60,7 +64,7 @@ export default function Help({ open, toggleOpen, names, user, help }) {
               editorRef={editorRef}
               editorState={editorState}
               setEditorState={setEditorState}
-              theme={user.editor}
+              theme={getItem("editor")}
             />
           </Card>
         </div>

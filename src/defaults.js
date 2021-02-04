@@ -29,6 +29,10 @@ export const DEF_NAMES = {
   action: "Do it",
   content: "Content",
   delete: "Delete",
+  settings: "Settings",
+  editor: "Editor",
+  theme: "Theme",
+  names: "Names",
   createdAt: +new Date(),
 };
 
@@ -36,9 +40,6 @@ export const DEF_USER = {
   name: "",
   createdAt: +new Date(),
   picture: "",
-  theme: "light",
-  view: "dnd",
-  editor: "snow",
   currentSubject: "",
   subjects: [],
   trees: [],

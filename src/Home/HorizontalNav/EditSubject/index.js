@@ -3,11 +3,11 @@ import update from "immutability-helper";
 import { Button, Intent, ButtonGroup } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 
-import { UserContext } from "../../../App";
-
 import Editor from "../../../Components/Editor";
 
 import db from "../../../db";
+import { getItem } from "../../../Settings";
+
 import { DEF_STRUCTURE_DATA, DEF_SUBJECT_DATA } from "../../../defaults";
 
 export async function handleSubmit(
@@ -41,7 +41,8 @@ export async function handleSubmit(
 export async function deleteSubject({
   changeData,
   subject,
-  userObj: { user, setUser },
+  user,
+  setUser,
   setClosed,
 }) {
   const subjectId = subject.id;
@@ -62,7 +63,6 @@ export async function deleteSubject({
 
   const nodes = (await db.nodes.where({ subjectId }).toArray()) || [];
   const nodesIds = nodes.map(({ id }) => id);
-  console.log(nodes, nodesIds);
   await db.nodes.bulkDelete(nodesIds);
 
   await db.user.update(user.id, {
@@ -108,6 +108,7 @@ export default function EditSubject({
   structure,
   names,
   user,
+  setUser,
 }) {
   const [submitting, isSubmitting] = useState(false);
   const [editorState, setEditorState] = useState(null);
@@ -115,12 +116,15 @@ export default function EditSubject({
 
   let editorRef;
   // This is done instead of useRef as I need to focus the element
-  editorRef = useCallback((node) => {
-    if (node !== null) {
-      node.focus(); // node = editorRef.current
-      editorRef.current = node; // it is not done on it's own
-    }
-  }, [editorRef]);
+  editorRef = useCallback(
+    (node) => {
+      if (node !== null) {
+        node.focus(); // node = editorRef.current
+        editorRef.current = node; // it is not done on it's own
+      }
+    },
+    [editorRef]
+  );
 
   useEffect(() => {
     setEditorState(subject.content);
@@ -128,63 +132,54 @@ export default function EditSubject({
 
   return (
     <Popover2
-      autoFocus
+      portalClassName={getItem("theme")}
       isOpen={closed}
-      enforceFocus={false}
       content={
-        <UserContext.Consumer>
-          {(userObj) => (
-            <form
-              className="edit-subject"
-              onSubmit={(e) => {
-                e.preventDefault();
-                isSubmitting(true);
-                const editor = editorRef.current.getEditor();
-                const content = editor.getContents();
-                const box = editor.root;
-                handleSubmit(
-                  {
-                    content,
-                    aspectRatio: box.clientWidth / box.clientHeight,
-                    width: box.clientWidth,
-                  },
-                  {
-                    changeData,
-                    subject,
-                    structure,
-                    isSubmitting,
-                  }
-                );
-              }}
+        <form
+          className="edit-subject"
+          onSubmit={(e) => {
+            e.preventDefault();
+            isSubmitting(true);
+            const editor = editorRef.current.getEditor();
+            const content = editor.getContents();
+            const box = editor.root;
+            handleSubmit(
+              {
+                content,
+                aspectRatio: box.clientWidth / box.clientHeight,
+                width: box.clientWidth,
+              },
+              {
+                changeData,
+                subject,
+                structure,
+                isSubmitting,
+              }
+            );
+          }}
+        >
+          <Editor
+            editorRef={editorRef}
+            editorState={editorState}
+            setEditorState={setEditorState}
+            theme={getItem('editor')}
+            controls="minimal"
+          />
+          <ButtonGroup fill>
+            <Button type="submit" intent={Intent.SUCCESS} loading={submitting}>
+              {names.action}
+            </Button>
+            <Button
+              type="button"
+              intent={Intent.DANGER}
+              onClick={() =>
+                deleteSubject({ changeData, subject, user, setUser, setClosed })
+              }
             >
-              <Editor
-                editorRef={editorRef}
-                editorState={editorState}
-                setEditorState={setEditorState}
-                theme={user.editor}
-                controls="minimal"
-              />
-              <ButtonGroup fill>
-                <Button
-                  type="submit"
-                  intent={Intent.SUCCESS}
-                  loading={submitting}
-                >
-                  {names.action}
-                </Button>
-                <Button
-                  type="button"
-                  intent={Intent.DANGER}
-                  onClick={() =>
-                    deleteSubject({ changeData, subject, userObj, setClosed })
-                  }
-                >
-                  {names.delete}
-                </Button>
-              </ButtonGroup>
-            </form>
-          )}
-        </UserContext.Consumer>
+              {names.delete}
+            </Button>
+          </ButtonGroup>
+        </form>
       }
     >
       <Button text={`${names.edit} ${names.subject}`} />

@@ -6,7 +6,6 @@ header.horizontal-nav {
 }
 .horizontal-nav .bp3-navbar {
   display: flex;
-  justify-content: flex-end;
 }
 .right-group > * {
   margin-left: 10px;

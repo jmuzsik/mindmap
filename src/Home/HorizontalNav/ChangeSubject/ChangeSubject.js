@@ -5,6 +5,7 @@ import { Popover2 } from "@blueprintjs/popover2";
 import Editor from "../../../Components/Editor";
 
 import db from "../../../db";
+import { getItem } from "../../../Settings";
 
 function createMenu({ subjects, user }, { changeData, setUser }) {
   return (
@@ -61,6 +62,7 @@ export default function ChangeSubject({
 }) {
   return (
     <Popover2
+      portalClassName={getItem("theme")}
       autoFocus
       content={createMenu({ subjects, user }, { changeData, setUser })}
     >

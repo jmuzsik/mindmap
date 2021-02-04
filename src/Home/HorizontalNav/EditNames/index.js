@@ -4,6 +4,7 @@ import { Popover2 } from "@blueprintjs/popover2";
 import { IconNames } from "@blueprintjs/icons";
 
 import db from "../../../db";
+import {getItem} from "../../../Settings";
 
 function handleUpdate(e, property, updateNames, names) {
   const value = e.target.value;
@@ -34,6 +35,9 @@ const icons = {
   action: IconNames.TAKE_ACTION,
   content: IconNames.DOCUMENT,
   delete: IconNames.DELETE,
+  settings: IconNames.COG,
+  editor: IconNames.ANNOTATION,
+  theme: IconNames.CONTRAST,
 };
 
 function IGroup({ icon, str, value, updateNames, names }) {
@@ -47,7 +51,7 @@ function IGroup({ icon, str, value, updateNames, names }) {
   );
 }
 
-export default function EditNames({ changeData, treeData }) {
+export default function EditNames({ changeData, treeData, user }) {
   const [submitting, isSubmitting] = useState(false);
   const [names, updateNames] = useState({
     subject: "",
@@ -59,6 +63,8 @@ export default function EditNames({ changeData, treeData }) {
     network: "",
     dnd: "",
     settings: "",
+    theme: "",
+    editor: "",
     action: "",
   });
 
@@ -71,8 +77,7 @@ export default function EditNames({ changeData, treeData }) {
   return (
     <Popover2
       placement="bottom-end"
-      autoFocus
-      enforceFocus={false}
+      portalClassName={getItem("theme")}
       content={
         <form
           className="edit-name"
@@ -103,7 +108,7 @@ export default function EditNames({ changeData, treeData }) {
         </form>
       }
     >
-      <Button icon={IconNames.KEY} />
+      <Button icon={IconNames.KEY} text={names.names} />
     </Popover2>
   );
 }

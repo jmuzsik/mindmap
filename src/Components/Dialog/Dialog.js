@@ -2,9 +2,10 @@ import React from "react";
 import { Dialog, Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
+import { getItem } from "../../Settings";
+
 export default function DialogWrapper(props) {
   const { className, icon, setOpen, title, children, isOpen, user } = props;
-
   return (
     <Dialog
       {...props}
@@ -12,13 +13,9 @@ export default function DialogWrapper(props) {
       icon={icon}
       onClose={() => setOpen(false)}
       title={title}
-      autoFocus
-      canEscapeKeyClose
       canOutsideClickClose={false}
-      enforceFocus
       isOpen={isOpen}
-      usePortal
-      portalClassName={user.theme === "dark" ? "bp3-dark" : ""}
+      portalClassName={getItem("theme")}
       labelElement={<Icon icon={IconNames.SHARE} />}
     >
       {children}
