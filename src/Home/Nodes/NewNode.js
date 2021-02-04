@@ -43,7 +43,7 @@ export default function NewNode({ setOpen, changeData, names, user }) {
       node.focus(); // node = editorRef.current
       editorRef.current = node; // it is not done on it's own
     }
-  }, []);
+  }, [editorRef]);
 
   return (
     <div className={`new-node ${Classes.DIALOG_BODY}`}>

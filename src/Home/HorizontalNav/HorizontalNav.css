@@ -44,7 +44,7 @@ header.horizontal-nav {
   font-size: 20px;
   padding: 15px;
 }
-.change-subject .subject {
+.change-subject .subject:not(.bp3-active) * {
   cursor: pointer;
 }
 .subject-buttons {

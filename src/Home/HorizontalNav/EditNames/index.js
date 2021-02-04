@@ -29,6 +29,7 @@ const icons = {
   edit: IconNames.EDIT,
   change: IconNames.CHANGES,
   network: IconNames.GLOBE_NETWORK,
+  view: IconNames.GLOBE,
   names: IconNames.KEY,
   action: IconNames.TAKE_ACTION,
   content: IconNames.DOCUMENT,

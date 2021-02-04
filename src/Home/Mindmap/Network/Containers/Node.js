@@ -7,17 +7,48 @@
  * file that was distributed with this source code.
  */
 import React, { memo } from "react";
-import {
-  Classes,
-  Icon,
-  Intent,
-} from "@blueprintjs/core";
+import { Classes, Icon, Intent } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import PropTypes from "prop-types";
 
+const icons = [
+  "circle",
+  "clean",
+  "locate",
+  "predictive-analysis",
+  "tick",
+  "graph",
+  "layout-circle",
+  "airplane",
+  "hand",
+  "hand-right",
+  "hand-left",
+  "key",
+  "rig",
+  "star",
+  "symbol-circle",
+  "symbol-diamond",
+  "taxi",
+  "walk",
+  "flame",
+  "heart",
+  "moon",
+  "mountain",
+  "ninja",
+  "tree",
+  "ring",
+];
+function randomIcon() {
+  const rand = Math.random();
+  const len = icons.length;
+  return icons[Math.floor(rand * len)];
+}
+
 const Node = ({ x, node, y, radius, color, scale = 1 }) => {
   const { depth, jsx } = node;
-  const icon = "annotation";
+  // just as it looks sorta cool and i don't have a better way to put icons atm
+  // the best thought is to have the ability to add an icon to a content, but it feels not necessary
+  const icon = randomIcon();
   return (
     <foreignObject
       className={`depth-${depth}`}

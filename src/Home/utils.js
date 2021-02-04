@@ -1,5 +1,4 @@
 import React from "react";
-import { Intent, Callout } from "@blueprintjs/core";
 import update from "immutability-helper";
 
 import db from "../db";

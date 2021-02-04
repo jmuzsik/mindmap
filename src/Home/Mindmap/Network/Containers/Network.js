@@ -11,9 +11,7 @@ import {
   withContainer,
   useDimensions,
   SvgWrapper,
-  useTheme,
 } from "@nivo/core";
-import { useInheritedColor } from "@nivo/colors";
 import { NetworkPropTypes, NetworkDefaultProps } from "../props";
 import { useNetwork, useNodeColor, useLinkThickness } from "../hooks";
 import AnimatedNodes from "../AnimatedNodes";
@@ -40,7 +38,6 @@ const Network = (props) => {
     nodeBorderWidth,
 
     linkThickness,
-    linkColor,
     role,
   } = props;
 
@@ -52,10 +49,8 @@ const Network = (props) => {
     outerHeight,
   } = useDimensions(width, height, partialMargin);
 
-  const theme = useTheme();
   const getColor = useNodeColor(nodeColor);
   const getLinkThickness = useLinkThickness(linkThickness);
-  const getLinkColor = useInheritedColor(linkColor, theme);
   const [nodes, links] = useNetwork({
     nodes: rawNodes,
     links: rawLinks,
@@ -72,7 +67,7 @@ const Network = (props) => {
       key: "links",
       links,
       linkThickness: getLinkThickness,
-      linkColor: getLinkColor,
+      linkColor: "blue",
     }),
     nodes: React.createElement(AnimatedNodes, {
       key: "nodes",

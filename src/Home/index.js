@@ -23,14 +23,12 @@ export default function Home(props) {
   } = props;
 
   useEffect(() => {
-    console.log(getDim(mainRef, isOpen));
     const dataObj = update(treeData, {
       dimensions: { $set: getDim(mainRef, isOpen) },
     });
     setTreeData(dataObj);
-  }, [isOpen, user.currentSubject]);
+  }, [isOpen, user.currentSubject, mainRef, setTreeData]);
 
-  console.log(treeData);
   return (
     <section className={`layout ${open}`}>
       <HorizontalNav

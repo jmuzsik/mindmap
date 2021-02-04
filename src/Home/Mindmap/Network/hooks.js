@@ -19,7 +19,6 @@ import {
 
 const computeForces = ({
   linkDistance,
-  repulsivity,
   distanceMin,
   distanceMax,
   center,

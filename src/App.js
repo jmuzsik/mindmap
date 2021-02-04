@@ -96,7 +96,7 @@ function App(props) {
       setUser(DEF_USER);
     };
   }, [setUser, handleFetchUser]);
-  console.log(user)
+
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <div

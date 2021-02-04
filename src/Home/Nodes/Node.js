@@ -57,7 +57,7 @@ export default function Node(props) {
       node.focus(); // node = editorRef.current
       editorRef.current = node; // it is not done on it's own
     }
-  }, []);
+  }, [editorRef]);
 
   return (
     <form className="node">

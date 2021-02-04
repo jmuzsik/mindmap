@@ -31,7 +31,7 @@ export default function Help({ open, toggleOpen, names, user, help }) {
       node.focus(); // node = editorRef.current
       editorRef.current = node; // it is not done on it's own
     }
-  }, []);
+  }, [editorRef]);
 
   return (
     <Dialog

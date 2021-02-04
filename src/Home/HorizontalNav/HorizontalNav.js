@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar, Button, Dialog, ButtonGroup } from "@blueprintjs/core";
+import { Navbar, Button, ButtonGroup } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 
 import ChangeSubject from "./ChangeSubject/ChangeSubject";
@@ -96,7 +96,7 @@ export default function HorizontalNav(props) {
                         }
                       />
                       <Button
-                        icon={aOrB("flash", "moon", user.theme === "dark")}
+                        icon={aOrB("moon", "flash", user.theme === "dark")}
                         onClick={() =>
                           updateUser(user, setUser, {
                             theme: aOrB("dark", "light", user.theme === "dark"),
