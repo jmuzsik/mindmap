@@ -1,13 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Navbar,
-  Divider,
-  Button,
-  Menu,
-  MenuDivider,
-  MenuItem,
-} from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
 
 import db from "./db";
 
@@ -20,6 +11,7 @@ import {
   DEF_DATA_CHANGE,
   DEF_NAMES,
   DEF_USER,
+  DEF_HELP,
 } from "./defaults";
 import { useDeepEffect } from "./Utils";
 import mainFetch from "./mainFetch";
@@ -29,6 +21,8 @@ import Home from "./Home";
 
 import "normalize.css";
 import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.bubble.css";
+import Skeleton from "./Skeleton";
 
 export const UserContext = React.createContext({
   user: DEF_USER,
@@ -48,6 +42,7 @@ function App(props) {
       // Both happen at same time (names are above subjects) but I
       // prefer to not have too many properties on the user object
       await db.names.add(DEF_NAMES);
+      await db.help.add(DEF_HELP);
       return;
     }
     setUser(users[0]);
@@ -71,6 +66,7 @@ function App(props) {
     subjects: DEF_SUBJECTS_DATA,
     dimensions: DEF_DIMENSIONS,
     names: DEF_NAMES,
+    help: DEF_HELP,
     // also names here but it is redundant
   });
   const [dataChange, changeData] = useState(DEF_DATA_CHANGE);
@@ -100,7 +96,7 @@ function App(props) {
       setUser(DEF_USER);
     };
   }, [setUser, handleFetchUser]);
-console.log(treeData, user)
+  console.log(user)
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <div
@@ -109,41 +105,7 @@ console.log(treeData, user)
         }`}
       >
         {loading ? (
-          <section className="bp3-skeletonlayout">
-            <header className="bp3-skeletonhorizontal-nav bp3-skeleton">
-              <Navbar className="bp3-skeleton">
-                {" "}
-                <Navbar.Group className="bp3-skeleton">
-                  <Navbar.Heading className="bp3-skeleton"></Navbar.Heading>
-                  <Divider className="bp3-skeleton" />
-                </Navbar.Group>
-                <Navbar.Group className="bp3-skeleton right-group"></Navbar.Group>
-              </Navbar>
-            </header>
-            <main>
-              <div className="vertical-nav open bp3-skeleton">
-                <Button large />
-                <div className="bp3-skeleton sidebar open">
-                  <div className="bp3-skeleton header">
-                    <Button
-                      className="bp3-skeleton sidebar-close"
-                      icon={IconNames.MENU_CLOSED}
-                      large
-                    />
-                  </div>
-                  <Menu className="bp3-skeleton content">
-                    <MenuDivider className="bp3-skeleton" title="DnD" />
-                    <MenuItem
-                      className="bp3-skeleton"
-                      icon={IconNames.ANNOTATION}
-                      text="New Content"
-                    />
-                  </Menu>
-                </div>
-              </div>
-              <div className="network-container bp3-skeleton"></div>
-            </main>
-          </section>
+          <Skeleton />
         ) : (
           <Home
             {...{

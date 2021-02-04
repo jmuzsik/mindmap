@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import update from "immutability-helper";
-import { Button, Intent } from "@blueprintjs/core";
+import { Button, Intent, ButtonGroup } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 
 import { UserContext } from "../../../App";
@@ -102,7 +102,13 @@ export async function deleteSubject({
   setTimeout(() => setClosed(undefined), 1);
 }
 
-export default function EditSubject({ changeData, subject, structure, names }) {
+export default function EditSubject({
+  changeData,
+  subject,
+  structure,
+  names,
+  user,
+}) {
   const [submitting, isSubmitting] = useState(false);
   const [editorState, setEditorState] = useState(null);
   const [closed, setClosed] = useState(undefined);
@@ -123,7 +129,6 @@ export default function EditSubject({ changeData, subject, structure, names }) {
   return (
     <Popover2
       autoFocus
-      placement="bottom-end"
       isOpen={closed}
       enforceFocus={false}
       content={
@@ -156,26 +161,27 @@ export default function EditSubject({ changeData, subject, structure, names }) {
                 editorRef={editorRef}
                 editorState={editorState}
                 setEditorState={setEditorState}
-                theme="snow"
+                theme={user.editor}
                 controls="minimal"
               />
-
-              <Button
-                type="submit"
-                intent={Intent.SUCCESS}
-                loading={submitting}
-              >
-                {names.action}
-              </Button>
-              <Button
-                type="button"
-                intent={Intent.DANGER}
-                onClick={() =>
-                  deleteSubject({ changeData, subject, userObj, setClosed })
-                }
-              >
-                {names.delete}
-              </Button>
+              <ButtonGroup fill>
+                <Button
+                  type="submit"
+                  intent={Intent.SUCCESS}
+                  loading={submitting}
+                >
+                  {names.action}
+                </Button>
+                <Button
+                  type="button"
+                  intent={Intent.DANGER}
+                  onClick={() =>
+                    deleteSubject({ changeData, subject, userObj, setClosed })
+                  }
+                >
+                  {names.delete}
+                </Button>
+              </ButtonGroup>
             </form>
           )}
         </UserContext.Consumer>

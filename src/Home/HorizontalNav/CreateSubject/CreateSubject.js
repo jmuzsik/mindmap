@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Button, Intent } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 
-import { UserContext } from "../../../App";
 import Editor from "../../../Components/Editor";
 
 import db from "../../../db";
@@ -15,7 +14,8 @@ export async function handleSubmit(
     changeData,
     isSubmitting,
     setEditorState,
-    userObj: { user, setUser },
+    user,
+    setUser,
     setClosed,
     setForcedOpen,
   }
@@ -67,7 +67,7 @@ export async function handleSubmit(
   }, 1);
 }
 
-export default function CreateSubject({ changeData, names, userObj }) {
+export default function CreateSubject({ changeData, names, user, setUser }) {
   const [submitting, isSubmitting] = useState(false);
   const [editorState, setEditorState] = useState(null);
   // if false, cannot open unless set, if undefined, can open without being set
@@ -87,64 +87,60 @@ export default function CreateSubject({ changeData, names, userObj }) {
   }, []);
 
   useEffect(() => {
-    if (!userObj.user.currentSubject) {
+    if (!user.currentSubject) {
       setForcedOpen(true);
     }
-  }, [userObj.user]);
+  }, [user]);
 
   return (
     <Popover2
       autoFocus
       portalClassName="create-subject-portal"
-      placement="bottom-end"
-      hasBackdrop
+      hasBackdrop={!user.currentSubject}
       isOpen={closed || forceOpen}
       content={
-        <UserContext.Consumer>
-          {(userObj) => (
-            <form
-              className="create-subject"
-              onSubmit={(e) => {
-                e.preventDefault();
-                isSubmitting(true);
-                const editor = editorRef.current.getEditor();
-                const content = editor.getContents();
-                const box = editor.root;
-                handleSubmit(
-                  {
-                    content,
-                    width: box.clientWidth,
-                    aspectRatio: box.clientWidth / box.clientHeight,
-                  },
-                  {
-                    changeData,
-                    userObj,
-                    isSubmitting,
-                    setEditorState,
-                    setClosed,
-                    setForcedOpen,
-                  }
-                );
-              }}
-            >
-              <Editor
-                editorRef={editorRef}
-                editorState={editorState}
-                setEditorState={setEditorState}
-                theme="snow"
-                controls="minimal"
-              />
-              <Button
-                type="submit"
-                intent={Intent.SUCCESS}
-                // disabled={content.length === 0 || submitting}
-                loading={submitting}
-              >
-                {names.action}
-              </Button>
-            </form>
-          )}
-        </UserContext.Consumer>
+        <form
+          className="create-subject"
+          onSubmit={(e) => {
+            e.preventDefault();
+            isSubmitting(true);
+            const editor = editorRef.current.getEditor();
+            const content = editor.getContents();
+            const box = editor.root;
+            handleSubmit(
+              {
+                content,
+                width: box.clientWidth,
+                aspectRatio: box.clientWidth / box.clientHeight,
+              },
+              {
+                changeData,
+                user,
+                setUser,
+                isSubmitting,
+                setEditorState,
+                setClosed,
+                setForcedOpen,
+              }
+            );
+          }}
+        >
+          <Editor
+            editorRef={editorRef}
+            editorState={editorState}
+            setEditorState={setEditorState}
+            theme={user.editor}
+            controls="minimal"
+          />
+          <Button
+            type="submit"
+            intent={Intent.SUCCESS}
+            // disabled={content.length === 0 || submitting}
+            loading={submitting}
+          >
+            {names.action}
+          </Button>
+        </form>
       }
     >
       <Button text={`${names.create} ${names.subject}`} />

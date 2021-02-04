@@ -73,11 +73,11 @@ export const Container = ({ treeData, changeData, border }) => {
 
   return (
     <div
+      className="drag-container"
       ref={drop}
       style={{
         ...styles,
         height: treeData.dimensions.height,
-        width: treeData.dimensions.width,
       }}
     >
       {Object.keys(boxes).map((key) => renderBox(boxes[key], key, border))}

@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import update from "immutability-helper";
 
 import HorizontalNav from "./HorizontalNav/HorizontalNav";
 import VerticalNav from "./VerticalNav/VerticalNav";
 import MindMapContainer from "./Mindmap/Container";
 
-import { createCallout, getDim } from "./utils";
+import { getDim } from "./utils";
 
 import "./Home.css";
 
 export default function Home(props) {
   const {
     changeData,
-    userProp,
+    user,
     treeData,
     setTreeData,
     history,
@@ -23,11 +23,12 @@ export default function Home(props) {
   } = props;
 
   useEffect(() => {
+    console.log(getDim(mainRef, isOpen));
     const dataObj = update(treeData, {
       dimensions: { $set: getDim(mainRef, isOpen) },
     });
     setTreeData(dataObj);
-  }, [isOpen, userProp.currentSubject]);
+  }, [isOpen, user.currentSubject]);
 
   console.log(treeData);
   return (
@@ -36,16 +37,10 @@ export default function Home(props) {
         {...{
           ...props,
           changeData,
-          user: userProp,
           treeData,
         }}
       />
       <main ref={mainRef}>
-        {/* This is for when someone initially comes into the site
-              - they need to create a subject */}
-        {/* {!userProp.currentSubject ? (
-          createCallout()
-        ) : ( */}
         <VerticalNav
           {...{
             history,
@@ -53,11 +48,10 @@ export default function Home(props) {
             setOpen,
             treeData,
             changeData,
-            user: userProp,
+            user,
           }}
         />
         <MindMapContainer treeData={treeData} changeData={changeData} />
-        {/* )} */}
       </main>
     </section>
   );

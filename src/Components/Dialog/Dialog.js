@@ -3,7 +3,7 @@ import { Dialog, Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
 export default function DialogWrapper(props) {
-  const { className, icon, setOpen, title, children, isOpen } = props;
+  const { className, icon, setOpen, title, children, isOpen, user } = props;
 
   return (
     <Dialog
@@ -18,6 +18,7 @@ export default function DialogWrapper(props) {
       enforceFocus
       isOpen={isOpen}
       usePortal
+      portalClassName={user.theme === "dark" ? "bp3-dark" : ""}
       labelElement={<Icon icon={IconNames.SHARE} />}
     >
       {children}

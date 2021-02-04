@@ -23,13 +23,9 @@ export const DEF_DIMENSIONS = { width: null, height: null };
 export const DEF_NAMES = {
   subject: "Subject",
   create: "Create",
-  view: "View",
   edit: "Edit",
+  view: "View",
   change: "Change",
-  fresh: "New",
-  network: "Network",
-  dnd: "DnD",
-  settings: "Settings",
   action: "Do it",
   content: "Content",
   delete: "Delete",
@@ -41,8 +37,22 @@ export const DEF_USER = {
   createdAt: +new Date(),
   picture: "",
   theme: "light",
+  view: "dnd",
+  editor: "snow",
   currentSubject: "",
   subjects: [],
   trees: [],
   nodes: [],
+};
+
+export const DEF_HELP = {
+  id: 1,
+  createdAt: +new Date(),
+  content: {
+    ops: [
+      { insert: "Emojis on mac? command + control + enter " },
+      { attributes: { size: "huge" }, insert: "👐🏼" },
+      { insert: "\n" },
+    ],
+  },
 };

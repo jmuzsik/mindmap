@@ -1,16 +1,17 @@
 import React from "react";
-import { Button, Menu, MenuItem, Intent } from "@blueprintjs/core";
+import { Button, Menu, MenuItem } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 
 import Editor from "../../../Components/Editor";
 
 import db from "../../../db";
 
-function createMenu({ subjects }, { changeData }) {
+function createMenu({ subjects, user }, { changeData, setUser }) {
   return (
-    <Menu>
+    <Menu className="change-subject">
       {subjects.map((subject, i) => (
         <MenuItem
+          className="subject"
           text={
             <Editor
               contentEditable={false}
@@ -20,7 +21,10 @@ function createMenu({ subjects }, { changeData }) {
               theme="bubble"
             />
           }
-          onClick={() => handleOnChange({ subjects, subject }, { changeData })}
+          active={user.currentSubject === subject.id}
+          onClick={() =>
+            handleOnChange({ subjects, subject, user }, { changeData, setUser })
+          }
           key={subject.id || i}
         ></MenuItem>
       ))}
@@ -28,15 +32,15 @@ function createMenu({ subjects }, { changeData }) {
   );
 }
 
-async function handleOnChange({ subject }, { changeData }) {
+async function handleOnChange({ subject, user }, { changeData, setUser }) {
   const subjectId = subject.id;
   const nodes = (await db.nodes.where({ subjectId }).toArray()) || [];
   const tree = await db.trees.get({ subjectId });
   const structure = tree.structure;
-  const user = await db.user.toCollection().first();
   await db.user.update(user.id, {
     currentSubject: subjectId,
   });
+  const updatedUser = await db.user.get(user.id);
 
   changeData({
     update: "updateSubject",
@@ -44,19 +48,23 @@ async function handleOnChange({ subject }, { changeData }) {
     data: nodes,
     structure,
   });
+
+  setUser(updatedUser);
 }
 
-export default function ChangeSubject({ changeData, subjects, names }) {
+export default function ChangeSubject({
+  changeData,
+  subjects,
+  names,
+  user,
+  setUser,
+}) {
   return (
     <Popover2
-      placement="bottom-end"
       autoFocus
-      content={createMenu({ subjects }, { changeData })}
+      content={createMenu({ subjects, user }, { changeData, setUser })}
     >
-      <Button
-        text={`${names.change} ${names.subject}`}
-        intent={Intent.PRIMARY}
-      />
+      <Button text={`${names.change} ${names.subject}`} />
     </Popover2>
   );
 }

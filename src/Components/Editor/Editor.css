@@ -9,12 +9,19 @@
   block-size: fit-content;
   margin: auto;
 }
-
 .ql-container.ql-disabled .ql-tooltip {
   display: none;
 }
 .bp3-portal .ql-disabled * {
   cursor: pointer;
+}
+.bp3-portal .help .ql-disabled * {
+  cursor: inherit;
+}
+.bp3-portal .help .ql-editor {
+  min-width: auto;
+  width: auto;
+  block-size: inherit;
 }
 .bp3-menu .ql-disabled * {
   cursor: auto;

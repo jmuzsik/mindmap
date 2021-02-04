@@ -42,7 +42,7 @@ async function handleDelete({ changeData, setOpen, id }) {
 }
 
 export default function Node(props) {
-  const { node, changeData, setOpen, names } = props;
+  const { node, changeData, setOpen, names, user } = props;
 
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -93,7 +93,7 @@ export default function Node(props) {
         </ButtonGroup>
         <Editor
           contentEditable={editable}
-          theme={editable ? "snow" : "bubble"}
+          theme={editable ? user.editor : "bubble"}
           readOnly={!editable}
           editorRef={editorRef}
           editorState={editorState}

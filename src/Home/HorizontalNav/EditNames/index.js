@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Intent, InputGroup } from "@blueprintjs/core";
+import { Button, Intent, InputGroup, ButtonGroup } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { IconNames } from "@blueprintjs/icons";
 
@@ -26,13 +26,10 @@ export async function handleSubmit(names, { changeData, isSubmitting }) {
 const icons = {
   subject: IconNames.LIGHTBULB,
   create: IconNames.BUILD,
-  view: IconNames.GLOBE,
   edit: IconNames.EDIT,
   change: IconNames.CHANGES,
-  fresh: IconNames.CLEAN,
   network: IconNames.GLOBE_NETWORK,
-  dnd: IconNames.MOVE,
-  settings: IconNames.SETTINGS,
+  names: IconNames.KEY,
   action: IconNames.TAKE_ACTION,
   content: IconNames.DOCUMENT,
   delete: IconNames.DELETE,
@@ -87,23 +84,25 @@ export default function EditNames({ changeData, treeData }) {
             });
           }}
         >
-          {Object.keys(names).map((name) => (
-            <IGroup
-              key={name}
-              icon={icons[name]}
-              str={name}
-              value={names[name]}
-              updateNames={updateNames}
-              names={names}
-            />
-          ))}
-          <Button type="submit" intent={Intent.SUCCESS} loading={submitting}>
-            {names.action}
-          </Button>
+          <ButtonGroup vertical large>
+            {Object.keys(names).map((name) => (
+              <IGroup
+                key={name}
+                icon={icons[name]}
+                str={name}
+                value={names[name]}
+                updateNames={updateNames}
+                names={names}
+              />
+            ))}
+            <Button type="submit" intent={Intent.SUCCESS} loading={submitting}>
+              {names.action}
+            </Button>
+          </ButtonGroup>
         </form>
       }
     >
-      <Button text={`${names.edit} Names`} />
+      <Button icon={IconNames.KEY} />
     </Popover2>
   );
 }

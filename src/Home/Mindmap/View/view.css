@@ -1,3 +1,6 @@
+.drag-container {
+  width: 100%;
+}
 .drag {
   overflow: hidden;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Button, Classes, Icon } from "@blueprintjs/core";
+import { Button, Classes } from "@blueprintjs/core";
 
 import db from "../../db";
 
@@ -31,7 +31,7 @@ async function handleSubmit(
   setOpen(false);
 }
 
-export default function NewNode({ setOpen, changeData, names }) {
+export default function NewNode({ setOpen, changeData, names, user }) {
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editorState, setEditorState] = useState("");
@@ -72,7 +72,7 @@ export default function NewNode({ setOpen, changeData, names }) {
           editorRef={editorRef}
           editorState={editorState}
           setEditorState={setEditorState}
-          theme="snow"
+          theme={user.editor}
         />
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

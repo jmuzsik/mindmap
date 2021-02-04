@@ -5,18 +5,20 @@ import {
   subjectModel,
   nodeModel,
   namesModel,
+  helpModel,
 } from "./models";
 
-// Literally deletes entire db
+// deletes entire db
 // Dexie.delete("mindmap");
 const db = new Dexie("mindmap");
 // Everytime a model changes, the version also needs to change
-db.version(11).stores({
+db.version(20).stores({
   user: userModel,
   trees: treeModel,
   subjects: subjectModel,
   nodes: nodeModel,
   names: namesModel,
+  help: helpModel,
 });
 
 export default db;

@@ -19,6 +19,7 @@ export default async (treeData) => {
   const subjects = (await db.subjects.toArray()) || [];
   const nodes = (await db.nodes.where({ subjectId }).toArray()) || [];
   const tree = await db.trees.get({ subjectId });
+  const help = await db.help.toCollection().first();
   const structure = tree?.structure || DEF_STRUCTURE_DATA;
 
   return update(treeData, {
@@ -28,5 +29,6 @@ export default async (treeData) => {
     structure: { $set: structure },
     dimensions: { $set: DEF_DIMENSIONS },
     names: { $set: names },
+    help: { $set: help },
   });
 };

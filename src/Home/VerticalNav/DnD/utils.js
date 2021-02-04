@@ -42,7 +42,7 @@ function createContent(props) {
 
 // This and below corresponds to the nodes of the tree
 function TreeNodeContent(props) {
-  const { i, id, data, type, changeData, names } = props;
+  const { i, id, data, type, changeData, names, user } = props;
   const [isOpen, setOpen] = useState(false);
   return (
     <div className="data-content">
@@ -55,6 +55,7 @@ function TreeNodeContent(props) {
       </Button>
       <Dialog
         {...{
+          user,
           className: "edit-content-dialog",
           icon: IconNames.ANNOTATION,
           title: `${names.edit} ${names.content}`,
@@ -68,6 +69,7 @@ function TreeNodeContent(props) {
           changeData={changeData}
           setOpen={setOpen}
           names={names}
+          user={user}
         />
       </Dialog>
     </div>
@@ -260,7 +262,7 @@ export function createTreeDustbins({
   return nodes;
 }
 
-export function createTreeBoxes({ changeData, data, names }) {
+export function createTreeBoxes({ changeData, data, names, user }) {
   let id = 0;
   const treeNodes = [
     {
@@ -286,6 +288,7 @@ export function createTreeBoxes({ changeData, data, names }) {
         changeData,
         inTree: node.inTree,
         names,
+        user,
       })
     );
   }

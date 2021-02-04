@@ -10,7 +10,7 @@ import Dialog from "../../Components/Dialog/Dialog";
 import "./VerticalNav.css";
 
 export default function VerticalNav(props) {
-  const { isOpen, setOpen, changeData, treeData } = props;
+  const { isOpen, setOpen, changeData, treeData, user } = props;
 
   const [nodeOpen, setNodeOpen] = useState(false);
   let leftOpen = isOpen ? "open" : "closed";
@@ -37,17 +37,18 @@ export default function VerticalNav(props) {
           <DnDContainer {...{ ...props, setOpen }} />
           <MenuItem
             icon={IconNames.ANNOTATION}
-            text={`${treeData.names.fresh} ${treeData.names.content}`}
+            text={`${treeData.names.create} ${treeData.names.content}`}
             onClick={() => setNodeOpen(true)}
           />
         </Menu>
       </div>
       <Dialog
         {...{
+          user,
           className: "new-node-dialog",
           icon: IconNames.ANNOTATION,
+          title: `${treeData.names.create} ${treeData.names.content}`,
           setOpen: setNodeOpen,
-          title: `${treeData.names.fresh} ${treeData.names.content}`,
           isOpen: nodeOpen,
         }}
       >
@@ -56,6 +57,7 @@ export default function VerticalNav(props) {
           setOpen={setNodeOpen}
           changeData={changeData}
           names={treeData.names}
+          user={user}
         />
       </Dialog>
     </div>

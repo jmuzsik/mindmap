@@ -21,15 +21,22 @@ button a:hover {
 .bp3-dark .bp3-menu {
   background: #394b59;
 }
-.bp3-dark .bp3-popover2-content .ql-toolbar {
-  background-color: #ebf1f5;
-}
-.bp3-dark .bp3-popover2-content .ql-container {
-  background-color: #ebf1f5;
-}
-.bp3-dark .bp3-popover2-content .ql-editor {
+.bp3-dark .bp3-popover2-content .ql-editor,
+.bp3-dark .bp3-dialog .ql-editor {
   background-color: white;
   color: #182026;
+}
+.bp3-dark .ql-snow .ql-picker {
+  color: inherit;
+}
+.bp3-dark .ql-snow .ql-stroke {
+  stroke: rgb(245, 248, 250);
+}
+.bp3-dark .ql-snow .ql-fill {
+  fill: rgb(245, 248, 250);
+}
+.bp3-dark .ql-snow .ql-picker-options {
+  background-color: #293742;
 }
 div.bp3-input-group .bp3-button {
   min-width: 30px;
@@ -93,17 +100,7 @@ img {
   width: calc(100% - (100% / 4));
   height: calc(100vh - 60px);
   margin: auto;
-}
-header.horizontal-nav {
-  box-shadow: 0 2px 8px #f0f1f2;
-  padding-left: 0;
-  padding-right: 0;
-  height: 60px;
-}
-.horizontal-nav .bp3-navbar {
-  display: grid;
-  gap: 0 15px;
-  grid-template-columns: 2fr 6fr;
+  padding: 15px 25px;
 }
 .vertical-nav .sidebar-open {
   position: fixed;

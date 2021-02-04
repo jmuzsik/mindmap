@@ -31,12 +31,6 @@ export function InnerContent({ data }) {
   );
 }
 
-export const createCallout = () => (
-  <Callout intent={Intent.WARNING} title="You have no subject!">
-    Please create a subject by clicking the button above to use this website!
-  </Callout>
-);
-
 // https://stackoverflow.com/questions/22222599/javascript-recursive-search-in-json-object
 export function findNode(id, currentNode, parent = {}, returnParent = false) {
   let i, currentChild, result;
