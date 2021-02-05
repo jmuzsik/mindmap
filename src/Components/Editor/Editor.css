@@ -1,7 +1,7 @@
 .ql-container {
   padding: 10px;
 }
-.ql-container .ql-toolbar {
+.ql-container .ql-toolbar, .ql-container .ql-tooltip {
   z-index: 1;
 }
 .ql-toolbar .ql-active svg {

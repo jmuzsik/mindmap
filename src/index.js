@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 
 import App from "./App";
 
+import "normalize.css";
+import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.bubble.css";
 import "./index.css";
 
 import * as serviceWorker from "./serviceWorker";
