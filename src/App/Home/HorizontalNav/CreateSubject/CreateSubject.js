@@ -29,6 +29,7 @@ export async function handleSubmit(
     subjectId,
     structure: {
       id: subjectId,
+      nodeId: `subject-${subjectId}`,
       type: "subject",
       content: data.content,
       data: subject,
@@ -46,7 +47,7 @@ export async function handleSubmit(
   });
   const updatedUser = await db.user.get(user.id);
   setUser(updatedUser);
-
+  
   changeData({
     update: "newSubject",
     subject,
@@ -54,15 +55,20 @@ export async function handleSubmit(
     data: [],
     structure,
   });
-  isSubmitting(false);
-  setEditorState(null);
-  // Kind of hacky way to close it then have it instantly accessible
-  setClosed(false);
-  setForcedOpen(false);
-  setTimeout(() => {
-    setClosed(undefined);
-    setForcedOpen(undefined);
-  }, 1);
+  // This is when there was no subject previously, which caused a forced
+  // creation of a subject, the component should not get a state update
+  // if so as it will no longer be rendered
+  if (user.currentSubject !== "") {
+    isSubmitting(false);
+    setEditorState(null);
+    // Kind of hacky way to close it then have it instantly accessible
+    setClosed(false);
+    setForcedOpen(false);
+    setTimeout(() => {
+      setClosed(undefined);
+      setForcedOpen(undefined);
+    }, 1);
+  } 
 }
 
 export default function CreateSubject({
@@ -86,7 +92,7 @@ export default function CreateSubject({
   editorRef = useFocusAndSet(editorRef);
 
   useEffect(() => {
-    if (!user.currentSubject || user.step === 1) {
+    if (user.step === 1) {
       setForcedOpen(true);
     }
   }, [user]);

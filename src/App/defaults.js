@@ -6,6 +6,7 @@ const DEF_NODES_DATA = [];
 
 const DEF_STRUCTURE_DATA = {
   id: "",
+  nodeId: "",
   // subject
   type: "subject",
   content: null,
@@ -55,9 +56,13 @@ const DEF_HELP = {
   createdAt: +new Date(),
   content: {
     ops: [
-      { insert: "Emojis on mac? command + control + enter " },
-      { attributes: { size: "huge" }, insert: "👐🏼" },
-      { insert: "\n" },
+      { attributes: { size: "large" }, insert: "An open canvas" },
+      {
+        insert:
+          "\nPut whatever you want here\nHere's a tip:\nEmojis on mac? command + control + spacebar ",
+      },
+      { attributes: { size: "large" }, insert: "👐🏼" },
+      { attributes: { list: "bullet" }, insert: "\n" },
     ],
   },
 };

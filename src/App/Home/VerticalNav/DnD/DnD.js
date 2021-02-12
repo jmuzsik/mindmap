@@ -41,8 +41,9 @@ const TreeContainer = memo(function TreeContainer({
       },
     }),
   ];
+
   // Used to cause an update when there is a change in data
-  const update = JSON.stringify({ subject, structure, data, names });
+  const update = JSON.stringify({ subject, structure, data, names, settings });
   return (
     <div className="tree-map">
       {showDnDCallout && (

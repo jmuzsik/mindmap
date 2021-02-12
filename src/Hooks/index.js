@@ -7,6 +7,7 @@ export const useFocusAndSet = (ref) => {
       if (node !== null) {
         ref.current = node; // it is not done on it's own
         const len = node.unprivilegedEditor.getLength();
+        node.focus();
         const selection = { index: len, length: len };
         node.setEditorSelection(node.editor, selection);
       }

@@ -76,6 +76,7 @@ export async function deleteSubject({
       }
       return true;
     }),
+    step: subjects.length === 0 ? 1 : user.step,
   });
 
   const updatedUser = await db.user.get(user.id);
@@ -95,9 +96,14 @@ export async function deleteSubject({
     subject: newSubject,
   });
 
-  // Kind of hacky way to close it then have it instantly accessible
-  setClosed(false);
-  setTimeout(() => setClosed(undefined), 1);
+  // I do not want to do it at this time as this component will not be rendered
+  // Causing this warning: Can't perform a React state update on an unmounted component.
+  // which does not break it but is not good practice
+  if (subjects.length !== 0) {
+    // Kind of hacky way to close it then have it instantly accessible
+    setClosed(false);
+    setTimeout(() => setClosed(undefined), 1);
+  }
 }
 
 export default function EditSubject({

@@ -12,8 +12,10 @@ import { useDeepEffect } from "../../../../Hooks";
 
 import db from "../../../../db";
 
-const createStyles = (border) => ({
-  border: border ? "1px solid black" : "none",
+const createStyles = (border, theme) => ({
+  border: border
+    ? `1px solid ${theme === "bp3-dark" ? "white" : "black"}`
+    : "none",
   position: "relative",
 });
 
@@ -85,7 +87,7 @@ export const Container = ({ state: { treeData, settings }, changeData }) => {
       className="drag-container"
       ref={drop}
       style={{
-        ...createStyles(box),
+        ...createStyles(box, settings.theme),
         height: treeData.dimensions.height,
       }}
     >

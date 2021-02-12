@@ -79,7 +79,7 @@ function TreeNodeContent({ i, id, data, type, changeData, names, settings }) {
 export function createTreeNode(props) {
   const { id, data, type, inTree, hooks } = props;
 
-  const content = <TreeNodeContent {...props} />;
+  const content = <TreeNodeContent {...{ ...props, ...hooks }} />;
 
   return {
     label: inTree ? (
@@ -217,6 +217,7 @@ export function createTreeDustbins({
             />
           ),
           id: `subject-${subject.id}`,
+          nodeId: `subject-${subject.id}`,
           data: subject,
         },
         changeData,

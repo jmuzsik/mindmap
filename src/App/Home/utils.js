@@ -34,7 +34,7 @@ export function InnerContent({ data }) {
 export function findNode(id, currentNode, parent = {}, returnParent = false) {
   let i, currentChild, result;
 
-  if (id === currentNode.id) {
+  if (id === currentNode.nodeId) {
     if (returnParent) return parent;
     return currentNode;
   } else {

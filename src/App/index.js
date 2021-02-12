@@ -86,6 +86,7 @@ function App() {
     };
   }, [dataChange]);
 
+  // Ending toast for tutorial
   useDeepEffect(() => {
     if (user.step === 4) {
       toasterRef.current.show({
@@ -102,7 +103,6 @@ function App() {
       updateUserStep(5, setUser);
     }
   }, [user]);
-
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <div

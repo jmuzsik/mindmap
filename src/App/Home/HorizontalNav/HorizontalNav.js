@@ -43,34 +43,34 @@ export default function HorizontalNav({
             <Navbar.Group className="right-group" align="none">
               {/* This only runs when user first visits site as a subject is
                   necessary to use the site. */}
-              {(!user.currentSubject || user.step === 1) && (
+              {!user.currentSubject ? (
                 <CreateSubject
                   state={{ names, user, settings }}
                   hooks={{ changeData, setUser }}
                 />
+              ) : (
+                <Popover2
+                  portalClassName={theme}
+                  content={
+                    <ButtonGroup vertical large className="subject-buttons">
+                      <ChangeSubject
+                        state={{ subjects, names, user, theme }}
+                        hooks={{ changeData, setUser }}
+                      />
+                      <EditSubject
+                        state={{ structure, subject, names, user, settings }}
+                        hooks={{ changeData, setUser }}
+                      />
+                      <CreateSubject
+                        state={{ names, user, settings }}
+                        hooks={{ changeData, setUser }}
+                      />
+                    </ButtonGroup>
+                  }
+                >
+                  <Button icon="lightbulb" text={names.subject} />
+                </Popover2>
               )}
-              {/* Nested here as they are all together in one dropdown */}
-              <Popover2
-                portalClassName={theme}
-                content={
-                  <ButtonGroup vertical large className="subject-buttons">
-                    <ChangeSubject
-                      state={{ subjects, names, user, theme }}
-                      hooks={{ changeData, setUser }}
-                    />
-                    <EditSubject
-                      state={{ structure, subject, names, user, settings }}
-                      hooks={{ changeData, setUser }}
-                    />
-                    <CreateSubject
-                      state={{ names, user, settings }}
-                      hooks={{ changeData, setUser }}
-                    />
-                  </ButtonGroup>
-                }
-              >
-                <Button icon="lightbulb" text={names.subject} />
-              </Popover2>
               <EditNames
                 state={{ namesObj: names, theme }}
                 hooks={{ changeData }}

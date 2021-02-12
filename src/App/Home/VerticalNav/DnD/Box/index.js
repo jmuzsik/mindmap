@@ -9,10 +9,6 @@ async function handleUpdate(
   { parent, data },
   { changeData, setShowDnDCallout, setUser }
 ) {
-  // Need number type for comparison
-  // type is also available: const [parentType, parentId] = parent.split(',');
-  const parentSplit = parent.split("-");
-  const parentId = Number(parentSplit[1]);
   // First find the data object with dataId
   let [dataType, dataId] = data.split("-");
   dataId = Number(dataId);
@@ -25,7 +21,7 @@ async function handleUpdate(
   const user = await db.user.toCollection().first();
   const tree = await db.trees.get({ subjectId: user.currentSubject });
   const structure = tree.structure;
-  const node = findNode(parentId, tree.structure, {}, false);
+  const node = findNode(parent, tree.structure, {}, false);
   node.childNodes.push({
     id: item.id,
     nodeId: data,
