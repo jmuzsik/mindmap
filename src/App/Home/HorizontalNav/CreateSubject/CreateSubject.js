@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Intent } from "@blueprintjs/core";
+import { Button, ButtonGroup, Intent, Callout } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 
 import Editor from "../../../../Components/Editor";
@@ -41,6 +41,8 @@ export async function handleSubmit(
   // update user as well but no need to hold onto this data
   await db.user.update(user.id, {
     currentSubject: subjectId,
+    // To next step or do not change
+    step: user.step === 1 ? 2 : user.step,
   });
   const updatedUser = await db.user.get(user.id);
   setUser(updatedUser);
@@ -67,7 +69,7 @@ export default function CreateSubject({
   state: {
     names,
     user,
-    settings: { theme, editor },
+    settings: { theme },
   },
   hooks: { changeData, setUser },
 }) {
@@ -84,7 +86,7 @@ export default function CreateSubject({
   editorRef = useFocusAndSet(editorRef);
 
   useEffect(() => {
-    if (!user.currentSubject) {
+    if (!user.currentSubject || user.step === 1) {
       setForcedOpen(true);
     }
   }, [user]);
@@ -129,12 +131,24 @@ export default function CreateSubject({
             editorRef={editorRef}
             editorState={editorState}
             setEditorState={setEditorState}
-            theme={editor}
+            theme="snow"
             controls="minimal"
           />
-          <Button type="submit" intent={Intent.SUCCESS} loading={submitting}>
-            {names.action}
-          </Button>
+          {forceOpen && (
+            <Callout
+              intent={Intent.PRIMARY}
+              icon="info-sign"
+              title="Create your first subject"
+            >
+              A subject is the foundation of any page. You can have infinite
+              subjects. Each subject can be updated or deleted.
+            </Callout>
+          )}
+          <ButtonGroup fill large>
+            <Button type="submit" intent={Intent.SUCCESS} loading={submitting}>
+              {names.action}
+            </Button>
+          </ButtonGroup>
         </form>
       }
     >

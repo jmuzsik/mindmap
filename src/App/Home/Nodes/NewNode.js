@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Button, Classes } from "@blueprintjs/core";
+import {
+  Button,
+  ButtonGroup,
+  Classes,
+  Callout,
+  Intent,
+} from "@blueprintjs/core";
 
 import Editor from "../../../Components/Editor";
 
@@ -10,7 +16,7 @@ import "./Nodes.css";
 
 async function handleSubmit(
   { content, height, width },
-  { setOpen, setEditorState, changeData }
+  { setOpen, setEditorState, changeData, setUser, setForcedOpen }
 ) {
   const user = await db.user.toCollection().first();
 
@@ -25,15 +31,27 @@ async function handleSubmit(
     y: "calc",
   });
   const node = await db.nodes.get(contentId);
+
+  if (user.step === 2) {
+    await db.user.update(user.id, {
+      // To next step, this only runs during first visit or if help is clicked
+      step: 3,
+    });
+    const updatedUser = await db.user.get(user.id);
+    setUser(updatedUser);
+    setForcedOpen(false);
+  }
+
   setEditorState("");
 
   setOpen(false);
+  
   changeData({ update: "newData", item: node });
 }
 
 export default function NewNode({
-  state: { names, editor },
-  hooks: { setOpen, changeData },
+  state: { names, forceOpen },
+  hooks: { setOpen, changeData, setUser, setForcedOpen },
 }) {
   const [editorState, setEditorState] = useState("");
   let editorRef;
@@ -54,6 +72,8 @@ export default function NewNode({
               setEditorState,
               setOpen,
               changeData,
+              setUser,
+              setForcedOpen,
             }
           );
         }}
@@ -62,16 +82,25 @@ export default function NewNode({
           editorRef={editorRef}
           editorState={editorState}
           setEditorState={setEditorState}
-          theme={editor}
+          theme="snow"
         />
+        {forceOpen && (
+          <Callout
+            intent={Intent.PRIMARY}
+            icon="info-sign"
+            title="Create content"
+          >
+            Each subject has content. You can create either rich text and/or
+            image(s).
+          </Callout>
+        )}
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button
-              type="submit"
-              intent="primary"
-            >
-              {names.action}
-            </Button>
+            <ButtonGroup large fill>
+              <Button type="submit" intent="primary">
+                {names.action}
+              </Button>
+            </ButtonGroup>
           </div>
         </div>
       </form>

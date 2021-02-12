@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Button, Card, Classes, Collapse, Dialog } from "@blueprintjs/core";
+import { Button, Card, Classes, Dialog } from "@blueprintjs/core";
 
 import Editor from "../../../../Components/Editor";
 
-import { CollapseContent } from "./utils";
+import { updateUserStep } from "../../../utils";
 import { useFocusAndSet } from "../../../../Hooks";
 
 import db from "../../../../db";
@@ -21,10 +21,9 @@ function handleClose({ editorRef, toggleOpen }) {
 }
 
 export default function Help({
-  state: { open, names, help, settings },
-  hooks: { toggleOpen },
+  state: { open, help, settings },
+  hooks: { toggleOpen, setUser },
 }) {
-  const [collapseOpen, setCollapseOpen] = useState(false);
   const [editorState, setEditorState] = useState(help?.content || "");
 
   let editorRef;
@@ -44,27 +43,22 @@ export default function Help({
         <div className={Classes.DIALOG_BODY}>
           <div className="confusion">
             <Button
-              className="collapse-button"
-              text={collapseOpen ? "👌" : "🤨"}
-              onClick={() => setCollapseOpen(!collapseOpen)}
+              className="step-button"
+              text={`🤔? Click this for a quick walkthrough.`}
+              onClick={() => {
+                updateUserStep(1, setUser);
+                toggleOpen(false);
+              }}
             />
           </div>
-          <Collapse isOpen={collapseOpen}>
-            <CollapseContent names={names} />
-          </Collapse>
           <Card>
             <Editor
               editorRef={editorRef}
               editorState={editorState}
               setEditorState={setEditorState}
-              theme={settings.editor}
+              theme="snow"
             />
           </Card>
-        </div>
-        <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button onClick={() => toggleOpen(false)}>Close</Button>
-          </div>
         </div>
       </div>
     </Dialog>

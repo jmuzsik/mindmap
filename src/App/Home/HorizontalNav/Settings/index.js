@@ -11,7 +11,7 @@ export default function Settings({
   state: { settings, names },
   hooks: { setSettings },
 }) {
-  const { theme, view, editor } = settings;
+  const { theme, view } = settings;
 
   return (
     <Popover2
@@ -37,17 +37,6 @@ export default function Settings({
               setSettings({
                 ...settings,
                 theme: theme === 'light' ? 'bp3-dark' : 'light',
-              });
-            }}
-          />
-          <Button
-            icon={aOrB("snowflake", "tint", editor === "snow")}
-            text={names.editor}
-            onClick={() => {
-              setItem("editor");
-              setSettings({
-                ...settings,
-                editor: editor === 'snow' ? 'bubble' : 'snow',
               });
             }}
           />

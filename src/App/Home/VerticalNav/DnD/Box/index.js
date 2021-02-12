@@ -5,7 +5,10 @@ import { findNode } from "../../../utils";
 
 import db from "../../../../../db";
 
-async function handleUpdate({ parent, data }, changeData) {
+async function handleUpdate(
+  { parent, data },
+  { changeData, setShowDnDCallout, setUser }
+) {
   // Need number type for comparison
   // type is also available: const [parentType, parentId] = parent.split(',');
   const parentSplit = parent.split("-");
@@ -31,10 +34,21 @@ async function handleUpdate({ parent, data }, changeData) {
   });
   // update tree
   await db.trees.update(tree.id, { structure });
+  // update user if step needs to be updated
+  if (user.step === 3) {
+    await db.user.update(user.id, {
+      // To next step, this only runs during first visit or if help is clicked
+      step: 4,
+    });
+    const updatedUser = await db.user.get(user.id);
+    setUser(updatedUser);
+    setShowDnDCallout(false);
+  }
+
   changeData({ update: "updateTreeSingular", item, type: dataType, structure });
 }
 
-export const Box = ({ name, content, hooks: { changeData } }) => {
+export const Box = ({ name, content, hooks }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { name, type: "box" },
     end: (item, monitor) => {
@@ -48,7 +62,7 @@ export const Box = ({ name, content, hooks: { changeData } }) => {
             parent: dropResult.name,
             data: item.name,
           },
-          changeData
+          hooks
         );
       }
     },

@@ -44,17 +44,6 @@ div.bp3-input-group .bp3-button {
   margin: inherit;
   padding: inherit;
 }
-.app.loading {
-  opacity: 0;
-  -moz-transition: opacity 1.5s;
-  -webkit-transition: opacity 1.5s;
-  -o-transition: opacity 1.5s;
-  transition: opacity 1.5s;
-}
-
-.app.finished-loading {
-  opacity: 1;
-}
 @media (min-width: 768px) {
   div.bp3-card {
     margin-left: auto;
@@ -115,4 +104,10 @@ img {
   line-height: 1;
   margin-top: 5px;
   margin-bottom: 5px;
+}
+.bp3-dialog-footer {
+  margin: 0;
+}
+.bp3-fill .bp3-button {
+  margin: 0;
 }

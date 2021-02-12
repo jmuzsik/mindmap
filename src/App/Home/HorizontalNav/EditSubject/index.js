@@ -153,7 +153,7 @@ export default function EditSubject({
             editorRef={editorRef}
             editorState={editorState}
             setEditorState={setEditorState}
-            theme={editor}
+            theme="snow"
             controls="minimal"
           />
           <ButtonGroup fill>

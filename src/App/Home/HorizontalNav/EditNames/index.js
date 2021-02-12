@@ -35,7 +35,6 @@ const icons = {
   content: IconNames.DOCUMENT,
   delete: IconNames.DELETE,
   settings: IconNames.COG,
-  editor: IconNames.ANNOTATION,
   remove: IconNames.REMOVE,
   theme: IconNames.CONTRAST,
 };
@@ -67,7 +66,6 @@ export default function EditNames({
     dnd: "",
     settings: "",
     theme: "",
-    editor: "",
     action: "",
   });
 

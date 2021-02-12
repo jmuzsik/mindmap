@@ -58,7 +58,7 @@ export default function Node(props) {
   return (
     <form className="node">
       <div className={Classes.DIALOG_BODY}>
-        <ButtonGroup>
+        <ButtonGroup fill large>
           <Button
             type="button"
             intent="none"

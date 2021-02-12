@@ -33,10 +33,9 @@ const DEF_NAMES = {
   content: "Content",
   delete: "Delete",
   settings: "Settings",
-  editor: "Editor",
   theme: "Theme",
   names: "Names",
-  remove: 'Remove',
+  remove: "Remove",
   createdAt: +new Date(),
 };
 
@@ -48,6 +47,7 @@ const DEF_USER = {
   subjects: [],
   trees: [],
   nodes: [],
+  step: 1,
 };
 
 const DEF_HELP = {
@@ -64,7 +64,6 @@ const DEF_HELP = {
 
 const DEF_SETTINGS = {
   theme: getItem("theme"),
-  editor: getItem("editor"),
   view: getItem("view"),
 };
 

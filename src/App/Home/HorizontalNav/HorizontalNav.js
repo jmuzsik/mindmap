@@ -43,7 +43,7 @@ export default function HorizontalNav({
             <Navbar.Group className="right-group" align="none">
               {/* This only runs when user first visits site as a subject is
                   necessary to use the site. */}
-              {!user.currentSubject && (
+              {(!user.currentSubject || user.step === 1) && (
                 <CreateSubject
                   state={{ names, user, settings }}
                   hooks={{ changeData, setUser }}
@@ -79,7 +79,7 @@ export default function HorizontalNav({
               <Button icon="help" onClick={() => toggleOpen(!open)} />
               <Help
                 state={{ open, names, settings, help }}
-                hooks={{ toggleOpen }}
+                hooks={{ toggleOpen, setUser }}
               />
             </Navbar.Group>
           </Navbar>

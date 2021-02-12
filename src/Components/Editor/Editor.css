@@ -1,7 +1,8 @@
 .ql-container {
   padding: 10px;
 }
-.ql-container .ql-toolbar, .ql-container .ql-tooltip {
+.ql-container .ql-toolbar,
+.ql-container .ql-tooltip {
   z-index: 1;
 }
 .ql-toolbar .ql-active svg {
@@ -10,6 +11,7 @@
 .ql-container .ql-editor {
   max-height: 500px;
   overflow: scroll;
+  max-width: 50vw;
 }
 .ql-container.ql-disabled .ql-editor {
   box-shadow: none;
@@ -31,7 +33,6 @@
 }
 .app:not(.bp3-dark) .ql-toolbar,
 .app:not(.bp3-dark) .ql-container:not(.ql-disabled),
-.bp3-portal:not(.bp3-dark) .ql-toolbar,
 .bp3-portal:not(.bp3-dark) .ql-container:not(.ql-disabled) {
   background: #fffafa;
 }

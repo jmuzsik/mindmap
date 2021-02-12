@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Toast, Toaster } from "@blueprintjs/core";
 
 import Home from "./Home";
 
@@ -9,7 +10,7 @@ import db from "../db";
 import { useDeepEffect } from "../Hooks";
 import mainFetch from "./mainFetch";
 import handleDataChange from "./handleDataChange";
-import { UserContext } from "./utils";
+import { UserContext, updateUserStep } from "./utils";
 
 import DEFAULTS from "./defaults";
 
@@ -35,6 +36,7 @@ function App() {
   const [isOpen, setOpen] = useState(true);
   // in conjunction with this
   const mainRef = useRef();
+  const toasterRef = useRef();
 
   const handleFetchUser = useCallback(async () => {
     let users = await db.user.toArray();
@@ -73,7 +75,7 @@ function App() {
 
   // Primary handler of change within tree data
   useDeepEffect(() => {
-    const dataObj = handleDataChange(dataChange, treeData, setTreeData);
+    const dataObj = handleDataChange(dataChange, treeData);
     // If statement occurs during first render
     if (dataObj === null) {
       return;
@@ -83,6 +85,23 @@ function App() {
       changeData(DEFAULTS.dataChange);
     };
   }, [dataChange]);
+
+  useDeepEffect(() => {
+    if (user.step === 4) {
+      toasterRef.current.show({
+        icon: "info-sign",
+        message: `That's that. 
+         Now be sure to check out the rest of the site by clicking the buttons to the right. 
+         Have fun creating! 😀`,
+        intent: "success",
+        timeout: 10000,
+      });
+      setTimeout(() => {
+        toasterRef.current.clear();
+      }, 10000);
+      updateUserStep(5, setUser);
+    }
+  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -100,6 +119,8 @@ function App() {
             extra={{ mainRef }}
           />
         )}
+        {/* Toast stuff */}
+        <Toaster usePortal={false} ref={toasterRef} />
       </div>
     </UserContext.Provider>
   );

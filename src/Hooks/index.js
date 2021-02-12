@@ -5,8 +5,10 @@ export const useFocusAndSet = (ref) => {
   ref = useCallback(
     (node) => {
       if (node !== null) {
-        node.focus(); // node = editorRef.current
         ref.current = node; // it is not done on it's own
+        const len = node.unprivilegedEditor.getLength();
+        const selection = { index: len, length: len };
+        node.setEditorSelection(node.editor, selection);
       }
     },
     [ref]

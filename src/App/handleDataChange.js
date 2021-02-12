@@ -27,8 +27,16 @@ export default (dataChange, treeData) => {
         structure: { $set: dataChange.structure },
       });
     case "updateSubject":
+      idx = treeData.subjects.findIndex(
+        ({ id }) => id === dataChange.subject.id
+      );
       return update(treeData, {
         subject: { $set: dataChange.subject },
+        subjects: {
+          [idx]: {
+            $set: dataChange.subject,
+          },
+        },
         structure: { $set: dataChange.structure },
         data: { $set: dataChange.data },
       });

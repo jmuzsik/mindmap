@@ -9,12 +9,6 @@
   cursor: pointer;
   border-radius: 50%;
 }
-.network-container svg .depth-0:hover {
-  fill: #d13913;
-}
-.network-container svg foreignObject:hover {
-  fill: #d13913;
-}
 .network-container svg foreignObject {
   filter: brightness(90%);
 }

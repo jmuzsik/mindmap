@@ -34,7 +34,9 @@ function createContent(props) {
         </Popover>
       )}
       {type !== "subject" && (
-        <Button onClick={() => removeFromTree(id, changeData)}>{names.remove}</Button>
+        <Button onClick={() => removeFromTree(id, changeData)}>
+          {names.remove}
+        </Button>
       )}
     </React.Fragment>
   );
@@ -46,7 +48,7 @@ function TreeNodeContent({ i, id, data, type, changeData, names, settings }) {
   return (
     <div className="data-content">
       <span className="treenode-id">{id}</span>
-      <Popover {...{ type, id, names }}>
+      <Popover {...{ type, id, names, className: names.theme }}>
         <InnerContent {...{ type, data, id }} />
       </Popover>
       <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>
@@ -54,7 +56,7 @@ function TreeNodeContent({ i, id, data, type, changeData, names, settings }) {
       </Button>
       <Dialog
         state={{
-          className: "edit-content-dialog",
+          className: settings.theme,
           icon: IconNames.ANNOTATION,
           title: `${names.edit} ${names.content}`,
           isOpen,
@@ -75,7 +77,7 @@ function TreeNodeContent({ i, id, data, type, changeData, names, settings }) {
 }
 
 export function createTreeNode(props) {
-  const { id, data, type, changeData, inTree } = props;
+  const { id, data, type, inTree, hooks } = props;
 
   const content = <TreeNodeContent {...props} />;
 
@@ -83,7 +85,7 @@ export function createTreeNode(props) {
     label: inTree ? (
       content
     ) : (
-      <Box hooks={{ changeData }} name={`${type}-${id}`} content={content} />
+      <Box hooks={hooks} name={`${type}-${id}`} content={content} />
     ),
     id,
     hasCaret: false,
@@ -194,15 +196,8 @@ function recurseNested(cur, data, depth = 1, changeData, names) {
 }
 
 export function createTreeDustbins({
-  state: {
-    data,
-    names,
-    subject,
-    structure
-  },
-  hooks: {
-    changeData,
-  },
+  state: { data, names, subject, structure },
+  hooks: { changeData },
 }) {
   // Max of 8 children
   const structureCopy = JSON.parse(JSON.stringify(structure));
@@ -264,10 +259,7 @@ export function createTreeDustbins({
   return nodes;
 }
 
-export function createTreeBoxes({
-  state: { data, names, settings },
-  hooks: { changeData },
-}) {
+export function createTreeBoxes({ state: { data, names, settings }, hooks }) {
   let id = 0;
   const treeNodes = [
     {
@@ -293,7 +285,7 @@ export function createTreeBoxes({
         inTree: node.inTree,
         names,
         settings,
-        changeData,
+        hooks,
       })
     );
   }

@@ -23,9 +23,6 @@
   cursor: move;
   padding: 0;
 }
-.dnd-content .RichEditor-editor {
-  box-shadow: none;
-}
 .drag .subject h1 {
   margin: 0;
   padding: 15px;

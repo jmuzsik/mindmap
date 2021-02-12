@@ -14,35 +14,6 @@ header.horizontal-nav {
 .bp3-navbar-heading {
   width: 100%;
 }
-.horizontal-nav .bp3-navbar-heading .bp3-icon {
-  margin-right: 10px;
-}
-.horizontal-nav .bp3-divider {
-  height: 60px;
-}
-.horizontal-nav .menu-col {
-  display: flex;
-  align-items: center;
-}
-.horizontal-nav .menu-col:before {
-  content: "";
-  display: block;
-  height: 30px;
-  position: absolute;
-  width: 1px;
-}
-.horizontal-nav .ant-select-auto-complete {
-  margin-left: 20px;
-}
-.horizontal-nav .search-box .label {
-  display: flex;
-  justify-content: space-between;
-}
-.create-subject {
-  text-align: center;
-  font-size: 20px;
-  padding: 15px;
-}
 .change-subject .subject:not(.bp3-active) * {
   cursor: pointer;
 }

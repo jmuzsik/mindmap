@@ -9,3 +9,7 @@
 .create-subject-portal .bp3-overlay-backdrop {
   background: rgba(16, 22, 26, 0.7);
 }
+.create-subject-portal .bp3-callout {
+  width: 400px;
+  margin: 15px;
+}
