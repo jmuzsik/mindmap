@@ -11,73 +11,14 @@ function createContent(props) {
     </div>
   );
 }
-
-function getLocationOfParent(id, dimensions) {
-  let left = 0.5,
-    top = 0;
-  switch (id) {
-    case "1":
-      left = 0.05;
-      break;
-    case "2":
-      left = 0.75;
-      break;
-    case "3":
-      left = 0.25;
-      break;
-    case "4":
-      left = 0.5;
-      break;
-    case "5":
-      left = 0;
-      top = 0.25;
-      break;
-    case "6":
-      left = 0.75;
-      top = 0.25;
-      break;
-    case "7":
-      left = 0.25;
-      top = 0.25;
-      break;
-    case "8":
-      left = 0.5;
-      top = 0.25;
-      break;
-    default:
-      console.warn("should never reach here");
-  }
-  return { left: left * dimensions.width, top: top * dimensions.height };
-}
-
-// Max of 4 children
-function getLocationFromParent(parent, count) {
-  let top;
-  if (parent.top === 0) {
-    top = 125;
-  } else top = parent.top;
-  switch (count) {
-    case "0":
-      return { left: parent.left * 0.2, top: top * 1.5 };
-    case "1":
-      return { left: parent.left * 2.5, top: top * 1.5 };
-    case "2":
-      return { left: parent.left * 4.5, top: top * 1.5 };
-    case "3":
-      return { left: parent.left * 6, top: top * 1.5 };
-    default:
-      console.warn("should never be here", parent, count);
-  }
-}
-
 /**
  *
  * @param {object} data - the data object related to node
  * @param {Number} count - the indece of the childNodes related to parent
  * @param {Number} depth - how far into the tree we currently are (either 0,1,2)
  */
-function calcLocation(data, depth, parent, id, dimensions) {
-  let left, top, zIndex;
+function calcLocation(data, depth, dimensions) {
+  let left = 0, top = 0, zIndex;
   // Two options here (either centered or necessary to manually calculate)
   // ie. data.x/data.y equals 'center' or 'calc'
   // They are either set to these strings or a number (when data.x is a string, so is data.y)
@@ -89,15 +30,10 @@ function calcLocation(data, depth, parent, id, dimensions) {
   }
   if (depth === 1 && data.x === "calc") {
     zIndex = 9;
-    const res = getLocationOfParent(id, dimensions);
-    return { left: res.left, top: res.top, zIndex };
+    return { left, top, zIndex };
   } else if (depth === 2 && data.x === "calc") {
     zIndex = 10;
-    // ex. 1.2 -> 2
-    const count = id.split(".")[1];
-    const parentLocations = getLocationOfParent(parent, dimensions);
-    const res = getLocationFromParent(parentLocations, count);
-    return { left: res.left, top: res.top, zIndex };
+    return { left, top, zIndex };
   }
   zIndex = depth === 0 ? 10 : depth === 1 ? 9 : 8;
   left = data.x;
