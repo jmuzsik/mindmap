@@ -82,7 +82,7 @@ function calcLocation(data, depth, parent, id, dimensions) {
   // ie. data.x/data.y equals 'center' or 'calc'
   // They are either set to these strings or a number (when data.x is a string, so is data.y)
   if (depth === 0 && data.x === "center") {
-    zIndex = 10;
+    zIndex = 8;
     left = 0.5 * dimensions.width;
     top = 0.5 * dimensions.height;
     return { left, top, zIndex };
@@ -92,7 +92,7 @@ function calcLocation(data, depth, parent, id, dimensions) {
     const res = getLocationOfParent(id, dimensions);
     return { left: res.left, top: res.top, zIndex };
   } else if (depth === 2 && data.x === "calc") {
-    zIndex = 8;
+    zIndex = 10;
     // ex. 1.2 -> 2
     const count = id.split(".")[1];
     const parentLocations = getLocationOfParent(parent, dimensions);
