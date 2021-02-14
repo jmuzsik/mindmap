@@ -11,6 +11,65 @@ function createContent(props) {
     </div>
   );
 }
+
+function getLocationOfParent(id, dimensions) {
+  let left = 0.5,
+    top = 0;
+  switch (id) {
+    case "1":
+      left = 0.05;
+      break;
+    case "2":
+      left = 0.75;
+      break;
+    case "3":
+      left = 0.25;
+      break;
+    case "4":
+      left = 0.5;
+      break;
+    case "5":
+      left = 0;
+      top = 0.25;
+      break;
+    case "6":
+      left = 0.75;
+      top = 0.25;
+      break;
+    case "7":
+      left = 0.25;
+      top = 0.25;
+      break;
+    case "8":
+      left = 0.5;
+      top = 0.25;
+      break;
+    default:
+      console.warn("should never reach here");
+  }
+  return { left: left * dimensions.width, top: top * dimensions.height };
+}
+
+// Max of 4 children
+function getLocationFromParent(parent, count) {
+  let top;
+  if (parent.top === 0) {
+    top = 125;
+  } else top = parent.top;
+  switch (count) {
+    case "0":
+      return { left: parent.left * 0.2, top: top * 1.5 };
+    case "1":
+      return { left: parent.left * 2.5, top: top * 1.5 };
+    case "2":
+      return { left: parent.left * 4.5, top: top * 1.5 };
+    case "3":
+      return { left: parent.left * 6, top: top * 1.5 };
+    default:
+      console.warn("should never be here", parent, count);
+  }
+}
+
 /**
  *
  * @param {object} data - the data object related to node
@@ -18,7 +77,7 @@ function createContent(props) {
  * @param {Number} depth - how far into the tree we currently are (either 0,1,2)
  */
 function calcLocation(data, depth, dimensions) {
-  let left = 0, top = 0, zIndex;
+  let left, top, zIndex;
   // Two options here (either centered or necessary to manually calculate)
   // ie. data.x/data.y equals 'center' or 'calc'
   // They are either set to these strings or a number (when data.x is a string, so is data.y)
@@ -89,7 +148,7 @@ export function createBoxesContent({ data, structure, subject, dimensions }) {
     obj[n.nodeId] = {
       ...n,
       data: d,
-      ...calcLocation(d, n.depth, n.parent, n.id, dimensions),
+      ...calcLocation(d, n.depth, dimensions),
       content: createContent({ type: n.type, id: n.id, data: d }),
     };
     return obj;
@@ -115,7 +174,7 @@ export function createBoxesContent({ data, structure, subject, dimensions }) {
         data: subject,
         type: "subject",
         depth: 0,
-        ...calcLocation(subject, 0, null, subject.id, dimensions),
+        ...calcLocation(subject, 0, dimensions),
       },
     },
     nodesWithDataAndContent
