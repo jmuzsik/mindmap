@@ -12,64 +12,6 @@ function createContent(props) {
   );
 }
 
-function getLocationOfParent(id, dimensions) {
-  let left = 0.5,
-    top = 0;
-  switch (id) {
-    case "1":
-      left = 0.05;
-      break;
-    case "2":
-      left = 0.75;
-      break;
-    case "3":
-      left = 0.25;
-      break;
-    case "4":
-      left = 0.5;
-      break;
-    case "5":
-      left = 0;
-      top = 0.25;
-      break;
-    case "6":
-      left = 0.75;
-      top = 0.25;
-      break;
-    case "7":
-      left = 0.25;
-      top = 0.25;
-      break;
-    case "8":
-      left = 0.5;
-      top = 0.25;
-      break;
-    default:
-      console.warn("should never reach here");
-  }
-  return { left: left * dimensions.width, top: top * dimensions.height };
-}
-
-// Max of 4 children
-function getLocationFromParent(parent, count) {
-  let top;
-  if (parent.top === 0) {
-    top = 125;
-  } else top = parent.top;
-  switch (count) {
-    case "0":
-      return { left: parent.left * 0.2, top: top * 1.5 };
-    case "1":
-      return { left: parent.left * 2.5, top: top * 1.5 };
-    case "2":
-      return { left: parent.left * 4.5, top: top * 1.5 };
-    case "3":
-      return { left: parent.left * 6, top: top * 1.5 };
-    default:
-      console.warn("should never be here", parent, count);
-  }
-}
-
 /**
  *
  * @param {object} data - the data object related to node
