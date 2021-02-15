@@ -12,34 +12,39 @@ async function handleEditSave(
   { content, height, width },
   { setLoading, setDisabled, setEditable, changeData, id }
 ) {
+  const user = await db.user.toCollection().first();
   await db.nodes.update(id, {
     width,
     aspectRatio: width / height,
     content,
   });
-  const editedNode = await db.nodes.get(id);
+  await db.nodes.get(id);
+  const nodes =
+    (await db.nodes.where({ subjectId: user.currentSubject }).toArray()) || [];
 
   setLoading(false);
   setDisabled(false);
   setEditable(false);
-  changeData({ update: "edit", node: editedNode });
+  changeData({ update: "setData", data: nodes });
 }
 
 async function handleDelete({ changeData, setOpen, id }) {
+  const user = await db.user.toCollection().first();
   const treeRemoval = await removeFromTree(`node-${id}`, null, true);
 
   // undefined or rejection
   await db.nodes.delete(id);
+  const nodes =
+    (await db.nodes.where({ subjectId: user.currentSubject }).toArray()) || [];
 
   setOpen(false);
   if (treeRemoval === null) {
-    changeData({ update: "delete", id });
+    changeData({ update: "setData", data: nodes });
   } else {
     changeData({
-      update: "deleteAndRemove",
-      id,
+      update: "updateTreeAndData",
+      data: nodes,
       structure: treeRemoval.updatedStructure,
-      data: treeRemoval.data,
     });
   }
 }

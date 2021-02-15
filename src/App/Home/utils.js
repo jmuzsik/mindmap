@@ -113,11 +113,18 @@ export async function removeFromTree(nodeId, changeData, deletion) {
   // - this is called whenever a node is deleted
   if (data.length === 0) return null;
 
+  const nodes =
+    (await db.nodes.where({ subjectId: user.currentSubject }).toArray()) || [];
+
   await db.trees.update(tree.id, { structure: updatedStructure });
   if (deletion) {
     return { data, updatedStructure };
   } else {
-    changeData({ update: "updateTree", data, structure: updatedStructure });
+    changeData({
+      update: "updateTreeAndData",
+      data: nodes,
+      structure: updatedStructure,
+    });
   }
 }
 

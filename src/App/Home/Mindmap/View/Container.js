@@ -23,17 +23,25 @@ function renderBox(item, key, border) {
   return <DraggableBox key={key} id={key} {...item} border={border} />;
 }
 
-export const Container = ({ state: { treeData, settings }, changeData }) => {
+export const Container = ({
+  state: { treeData, settings, user },
+  changeData,
+}) => {
   // Settings for dnd container
   const [border, setBorder] = useState(true);
   const [box, setBox] = useState(true);
+  // amount of nodes + 1
+  // zIndex increments whenever an object is moved for that object
+  const [zIndex, setZIndex] = useState(
+    user.zIndex + treeData.structure.childNodes.length + 1
+  );
   const [boxes, setBoxes] = useState(
     createBoxesContent({
       data: treeData.data,
       structure: treeData.structure,
       subject: treeData.subject,
-      changeData,
       dimensions: treeData.dimensions,
+      user,
     })
   );
 
@@ -43,8 +51,8 @@ export const Container = ({ state: { treeData, settings }, changeData }) => {
         data: treeData.data,
         structure: treeData.structure,
         subject: treeData.subject,
-        changeData,
         dimensions: treeData.dimensions,
+        user,
       })
     );
   }, [
@@ -55,14 +63,15 @@ export const Container = ({ state: { treeData, settings }, changeData }) => {
     treeData.dimensions,
   ]);
 
-  const moveBox = (id, left, top) => {
+  const moveBox = (id, left, top, zIndex) => {
     setBoxes(
       update(boxes, {
         [id]: {
-          $merge: { left, top },
+          $merge: { left, top, zIndex },
         },
       })
     );
+    setZIndex(zIndex + 1);
   };
 
   const [, drop] = useDrop({
@@ -70,18 +79,26 @@ export const Container = ({ state: { treeData, settings }, changeData }) => {
     drop(item, monitor) {
       const [type, id] = item.nodeId.split("-");
       const delta = monitor.getDifferenceFromInitialOffset();
+      // not sure why it rarely happens to be NaN
+      if (isNaN(item.left)) item.left = 0;
+      if (isNaN(item.top)) item.top = 0;
       let left = Math.round(item.left + delta.x);
       let top = Math.round(item.top + delta.y);
+      // zIndex updated with state as to not have to await for db
+      // for performance reasons
       db[type + "s"].update(Number(id), {
         x: left,
         y: top,
+        zIndex: zIndex + 1,
       });
+      db.user.update(user.id, { zIndex: zIndex + 1 });
 
-      moveBox(item.nodeId, left, top);
+      moveBox(item.nodeId, left, top, zIndex + 1);
       return undefined;
     },
   });
 
+  console.log(zIndex)
   return (
     <div
       className="drag-container"

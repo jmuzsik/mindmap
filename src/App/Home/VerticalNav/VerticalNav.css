@@ -52,3 +52,6 @@
   display: flex;
   justify-content: flex-end;
 }
+.view-content .ql-bubble .ql-editor img {
+  max-width: 300px;
+}

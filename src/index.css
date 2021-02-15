@@ -111,3 +111,7 @@ img {
 .bp3-fill .bp3-button {
   margin: 0;
 }
+.bp3-overlay, .bp3-overlay-content {
+  /* Above any DnD content */
+  z-index: 999999999;
+}

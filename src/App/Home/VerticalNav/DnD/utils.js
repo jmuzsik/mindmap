@@ -29,7 +29,7 @@ function createContent(props) {
         <span className="treenode-id">{handleStringCreation(label, data)}</span>
       )}
       {type !== "subject" && (
-        <Popover {...{ type, id, names }}>
+        <Popover {...{ type, id, names, className: "view-content" }}>
           <InnerContent {...{ id, data, type }} />
         </Popover>
       )}
@@ -48,7 +48,7 @@ function TreeNodeContent({ i, id, data, type, changeData, names, settings }) {
   return (
     <div className="data-content">
       <span className="treenode-id">{id}</span>
-      <Popover {...{ type, id, names, className: names.theme }}>
+      <Popover {...{ type, id, names, className: "view-content" }}>
         <InnerContent {...{ type, data, id }} />
       </Popover>
       <Button intent={Intent.PRIMARY} minimal onClick={() => setOpen(true)}>

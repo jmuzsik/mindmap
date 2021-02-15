@@ -22,8 +22,8 @@ function getKey(type) {
 function getDef(type) {
   switch (type) {
     case "theme":
-      localStorage.setItem("theme", THEME_LIGHT);
-      return THEME_LIGHT;
+      localStorage.setItem("theme", THEME_DARK);
+      return THEME_DARK;
     case "view":
       localStorage.setItem("view", VIEW_DND);
       return VIEW_DND;

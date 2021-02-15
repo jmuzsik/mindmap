@@ -3,6 +3,8 @@ import React from "react";
 import Editor from "../../../../Components/Editor";
 import { InnerContent } from "../../utils";
 
+import db from "../../../../db";
+
 function createContent(props) {
   const { type, data } = props;
   return (
@@ -15,31 +17,21 @@ function createContent(props) {
 /**
  *
  * @param {object} data - the data object related to node
- * @param {Number} count - the indece of the childNodes related to parent
  * @param {Number} depth - how far into the tree we currently are (either 0,1,2)
  */
 function calcLocation(data, depth, dimensions) {
-  let left, top, zIndex;
+  let left, top;
   // Two options here (either centered or necessary to manually calculate)
-  // ie. data.x/data.y equals 'center' or 'calc'
+  // ie. data.x/data.y equals 'center' or use current x/y
   // They are either set to these strings or a number (when data.x is a string, so is data.y)
   if (depth === 0 && data.x === "center") {
-    zIndex = 8;
     left = 0.5 * dimensions.width;
     top = 0.5 * dimensions.height;
-    return { left, top, zIndex };
+    return { left, top };
   }
-  if (depth === 1 && data.x === "calc") {
-    zIndex = 9;
-    return { left, top, zIndex };
-  } else if (depth === 2 && data.x === "calc") {
-    zIndex = 10;
-    return { left, top, zIndex };
-  }
-  zIndex = depth === 0 ? 10 : depth === 1 ? 9 : 8;
   left = data.x;
   top = data.y;
-  return { left, top, zIndex };
+  return { left, top };
 }
 
 // https://stackoverflow.com/questions/35272533/flattening-deeply-nested-array-of-objects
@@ -82,7 +74,13 @@ function flatten(array) {
   return result;
 }
 
-export function createBoxesContent({ data, structure, subject, dimensions }) {
+export function createBoxesContent({
+  user,
+  data,
+  structure,
+  subject,
+  dimensions,
+}) {
   const structureCopy = JSON.parse(JSON.stringify(structure));
   const nodes = flatten(structureCopy.childNodes);
   const nodesWithDataAndContent = nodes.reduce((obj, n) => {
@@ -91,10 +89,15 @@ export function createBoxesContent({ data, structure, subject, dimensions }) {
       ...n,
       data: d,
       ...calcLocation(d, n.depth, dimensions),
+      zIndex: d.zIndex,
       content: createContent({ type: n.type, id: n.id, data: d }),
     };
     return obj;
   }, {});
+  // update zIndex on user for future use
+  db.user.update(user.id, {
+    zIndex: user.zIndex + nodes.length + 1,
+  });
   // I am using the same data format that the example of the node module i am using used
   // ie. {a: {}, b: {}} rather than array of objects
   return Object.assign(
@@ -116,7 +119,9 @@ export function createBoxesContent({ data, structure, subject, dimensions }) {
         data: subject,
         type: "subject",
         depth: 0,
+        // on top of rest of content at start
         ...calcLocation(subject, 0, dimensions),
+        zIndex: subject.zIndex,
       },
     },
     nodesWithDataAndContent

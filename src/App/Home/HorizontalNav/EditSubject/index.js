@@ -28,10 +28,12 @@ export async function handleSubmit(
     }),
   });
   const updatedTree = await db.trees.get(tree.id);
+  const subjects = (await db.subjects.toArray()) || [];
 
   changeData({
-    update: "updateSubject",
+    update: "updateSubjects",
     subject: updatedSubject,
+    subjects,
     structure: updatedTree.structure,
     data: nodes,
   });
@@ -86,13 +88,14 @@ export async function deleteSubject({
     (await db.nodes.where({ subjectId: newSubject.id }).toArray()) || [];
   const currentTree = await db.trees.get({ subjectId: newSubject.id });
   const structure = currentTree?.structure || DEFAULTS.structure;
+  const updatedSubjects = (await db.subjects.toArray()) || [];
 
   setUser(updatedUser);
   changeData({
-    update: "deleteSubject",
+    update: "updateSubjects",
     data: currentNodes,
     structure,
-    subjects,
+    subjects: updatedSubjects,
     subject: newSubject,
   });
 

@@ -20,23 +20,25 @@ async function handleSubmit(
 ) {
   const user = await db.user.toCollection().first();
 
-  const contentId = await db.nodes.add({
+  await db.nodes.add({
     createdAt: +new Date(),
     content,
     subjectId: user.currentSubject,
     width,
     aspectRatio: width / height,
     inTree: false,
-    x: "calc",
-    y: "calc",
+    x: "0",
+    y: "0",
+    // user zIndex is the highest current zIndex of dnd node
+    zIndex: user.zIndex + 1,
   });
-  const node = await db.nodes.get(contentId);
-
+  // This rather than solely one to handle if there were update in DnD
+  const nodes =
+    (await db.nodes.where({ subjectId: user.currentSubject }).toArray()) || [];
+  await db.user.update(user.id, { zIndex: user.zIndex + 1 });
   if (user.step === 2) {
-    await db.user.update(user.id, {
-      // To next step, this only runs during first visit or if help is clicked
-      step: 3,
-    });
+    // To next step, this only runs during first visit or if help is clicked
+    await db.user.update(user.id, { step: 3 });
     const updatedUser = await db.user.get(user.id);
     setUser(updatedUser);
     setForcedOpen(false);
@@ -45,8 +47,8 @@ async function handleSubmit(
   setEditorState("");
 
   setOpen(false);
-  
-  changeData({ update: "newData", item: node });
+
+  changeData({ update: "setData", data: nodes });
 }
 
 export default function NewNode({

@@ -41,7 +41,9 @@ async function handleUpdate(
     setShowDnDCallout(false);
   }
 
-  changeData({ update: "updateTreeSingular", item, type: dataType, structure });
+  const nodes =
+    (await db.nodes.where({ subjectId: user.currentSubject }).toArray()) || [];
+  changeData({ update: "updateTreeAndData", structure, data: nodes });
 }
 
 export const Box = ({ name, content, hooks }) => {

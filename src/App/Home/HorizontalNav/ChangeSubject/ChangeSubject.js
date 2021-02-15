@@ -41,10 +41,12 @@ async function handleOnChange({ subject, user }, { changeData, setUser }) {
     currentSubject: subjectId,
   });
   const updatedUser = await db.user.get(user.id);
+  const subjects = (await db.subjects.toArray()) || [];
 
   changeData({
-    update: "updateSubject",
+    update: "updateSubjects",
     subject,
+    subjects,
     data: nodes,
     structure,
   });

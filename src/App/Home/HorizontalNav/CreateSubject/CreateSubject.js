@@ -20,6 +20,7 @@ export async function handleSubmit(
     createdAt: +new Date(),
     x: "center",
     y: "center",
+    zIndex: user.zIndex + 1,
     ...data,
   };
   const subjectId = await db.subjects.add(subjectObj);
@@ -44,13 +45,17 @@ export async function handleSubmit(
     currentSubject: subjectId,
     // To next step or do not change
     step: user.step === 1 ? 2 : user.step,
+    zIndex: user.zIndex + 1,
   });
   const updatedUser = await db.user.get(user.id);
   setUser(updatedUser);
-  
+
+  const subjects = (await db.subjects.toArray()) || [];
+
   changeData({
-    update: "newSubject",
+    update: "updateSubjects",
     subject,
+    subjects,
     // New subject has no associated data
     data: [],
     structure,
@@ -68,7 +73,7 @@ export async function handleSubmit(
       setClosed(undefined);
       setForcedOpen(undefined);
     }, 1);
-  } 
+  }
 }
 
 export default function CreateSubject({

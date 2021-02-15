@@ -9,7 +9,7 @@ import { Container } from "./View/Container";
 import "./View/view.css";
 
 export default function NetworkContainer({
-  state: { treeData, settings },
+  state: { treeData, settings, user },
   changeData,
 }) {
   return (
@@ -21,7 +21,10 @@ export default function NetworkContainer({
         <Network treeData={treeData} />
       ) : (
         <DndProvider backend={HTML5Backend}>
-          <Container state={{ treeData, settings }} changeData={changeData} />
+          <Container
+            state={{ treeData, settings, user }}
+            changeData={changeData}
+          />
         </DndProvider>
       )}
     </div>

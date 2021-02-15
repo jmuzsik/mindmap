@@ -49,6 +49,7 @@ const DEF_USER = {
   trees: [],
   nodes: [],
   step: 1,
+  zIndex: 10,
 };
 
 const DEF_HELP = {

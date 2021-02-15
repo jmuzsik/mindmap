@@ -34,7 +34,7 @@ export default function Home({
           hooks={{ setOpen, changeData }}
         />
         <MindMapContainer
-          state={{ treeData, settings }}
+          state={{ treeData, settings, user }}
           changeData={changeData}
         />
       </main>
