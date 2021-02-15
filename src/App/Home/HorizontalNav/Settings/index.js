@@ -30,7 +30,7 @@ export default function Settings({
             }}
           />
           <Button
-            icon={aOrB("moon", "flash", theme === "dark")}
+            icon={aOrB("moon", "flash", theme === "bp3-dark")}
             text={names.theme}
             onClick={() => {
               setItem("theme");
