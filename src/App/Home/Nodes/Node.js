@@ -104,32 +104,38 @@ export default function Node(props) {
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           {editable && (
-            <Button
-              type="button"
-              intent="primary"
-              disabled={disabled}
-              loading={loading}
-              onClick={async () => {
-                setLoading(true);
-                setDisabled(true);
-                const editor = editorRef.current.getEditor();
-                const content = editor.getContents();
-                const box = editor.root;
-                await handleEditSave(
-                  { content, height: box.clientHeight, width: box.clientWidth },
-                  {
-                    setLoading,
-                    setDisabled,
-                    setEditable,
-                    id: node.id,
-                    changeData,
-                  }
-                );
-                // TODO: Handle error
-              }}
-            >
-              {names.action}
-            </Button>
+            <ButtonGroup fill>
+              <Button
+                type="button"
+                intent="primary"
+                disabled={disabled}
+                loading={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  setDisabled(true);
+                  const editor = editorRef.current.getEditor();
+                  const content = editor.getContents();
+                  const box = editor.root;
+                  await handleEditSave(
+                    {
+                      content,
+                      height: box.clientHeight,
+                      width: box.clientWidth,
+                    },
+                    {
+                      setLoading,
+                      setDisabled,
+                      setEditable,
+                      id: node.id,
+                      changeData,
+                    }
+                  );
+                  // TODO: Handle error
+                }}
+              >
+                {names.action}
+              </Button>
+            </ButtonGroup>
           )}
         </div>
       </div>

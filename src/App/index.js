@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Toast, Toaster } from "@blueprintjs/core";
+import { Toaster } from "@blueprintjs/core";
 
 import Home from "./Home";
 
