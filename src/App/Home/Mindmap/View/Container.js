@@ -94,11 +94,9 @@ export const Container = ({
       db.user.update(user.id, { zIndex: zIndex + 1 });
 
       moveBox(item.nodeId, left, top, zIndex + 1);
-      return undefined;
     },
   });
 
-  console.log(zIndex)
   return (
     <div
       className="drag-container"

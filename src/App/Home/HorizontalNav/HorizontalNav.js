@@ -26,7 +26,6 @@ export default function HorizontalNav({
   const [open, toggleOpen] = useState(false);
 
   const theme = settings.theme;
-
   return (
     <header className="horizontal-nav">
       <UserContext.Consumer>
@@ -43,7 +42,7 @@ export default function HorizontalNav({
             <Navbar.Group className="right-group" align="none">
               {/* This only runs when user first visits site as a subject is
                   necessary to use the site. */}
-              {!user.currentSubject ? (
+              {!user.currentSubject || user.step === 1 ? (
                 <CreateSubject
                   state={{ names, user, settings }}
                   hooks={{ changeData, setUser }}

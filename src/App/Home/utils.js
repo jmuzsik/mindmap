@@ -67,7 +67,6 @@ export async function removeFromTree(nodeId, changeData, deletion) {
 
   // Remove from structure
   // Either nested one down the heirarchy
-
   let childNodes;
 
   for (let i = 0; i < structure.childNodes.length; i++) {

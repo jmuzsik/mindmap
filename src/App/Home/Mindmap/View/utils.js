@@ -127,9 +127,3 @@ export function createBoxesContent({
     nodesWithDataAndContent
   );
 }
-
-// const [boxes, setBoxes] = useState({
-//   // TODO: This must be changed
-//   a: { left: "50%", top: "50%", transform: "translateX(-50%) translateY(-50%)", content: "Drag me around" },
-//   b: { top: 180, left: 20, content: "Drag me too" },
-// });

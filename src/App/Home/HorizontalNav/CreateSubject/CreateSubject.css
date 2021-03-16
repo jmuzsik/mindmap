@@ -1,11 +1,3 @@
-/* https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript */
-.hidden-content {
-  position: absolute;
-  visibility: hidden;
-  height: auto;
-  width: auto;
-  white-space: nowrap; /* Thanks to Herb Caudill comment */
-}
 .create-subject-portal .bp3-overlay-backdrop {
   background: rgba(16, 22, 26, 0.7);
 }

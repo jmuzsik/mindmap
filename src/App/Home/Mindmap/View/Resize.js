@@ -21,8 +21,6 @@ export const Resize = (props) => {
     top: props.top,
     transform: "translate3d(0, 0, 0)",
     zIndex,
-    // height: props.dimensions.height,
-    // width: props.dimensions.width,
   };
 
   return (
